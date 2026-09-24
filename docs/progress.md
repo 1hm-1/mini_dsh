@@ -1,6 +1,6 @@
 # 进度
 
-IMPLEMENTING。用户于2026-09-24授权开始开发，M0–M8使用GPT-6 Sol（medium）子智能体实现，M9按最新授权改为GPT-6 Luna high，主智能体负责架构审阅与验收。M0–M5 DONE；M6.1–M6.6 DONE：DeepSeek真实baseline诊断36次已完整运行、verify及九项分析验收通过，独立分析提交`93d075b80ce15616ca019f71153935b5d3ad51cb`；M7.1–M7.3 DONE；M8.1–M8.3 DONE；M9.1 DONE，M9.2/M9.3收尾中。S8/H4题库保持benchmark-v1；最终144次消融已完整重跑四组并verify通过，baseline/context/optimizer/full分别25/36、23/36、24/36、21/36。M6诊断23/36不混入最终主表。历史分阶段状态按当时记录保留，最新结论见本文末尾与[消融报告](../reports/ablation-report.md)。
+DONE。用户于2026-09-24授权开始开发，M0–M8使用GPT-6 Sol（medium）子智能体实现，M9按最新授权改为GPT-6 Luna high，主智能体负责架构审阅与验收。M0–M5 DONE；M6.1–M6.6 DONE：DeepSeek真实baseline诊断36次已完整运行、verify及九项分析验收通过，独立分析提交`93d075b80ce15616ca019f71153935b5d3ad51cb`；M7.1–M7.3 DONE；M8.1–M8.3 DONE；M9.1–M9.3 DONE，M0–M9全部完成。S8/H4题库保持benchmark-v1；最终144次消融已完整重跑四组并verify通过，baseline/context/optimizer/full分别25/36、23/36、24/36、21/36。M6诊断23/36不混入最终主表。历史分阶段状态按当时记录保留，最新结论见本文末尾与[消融报告](../reports/ablation-report.md)。
 
 ## 本次规划修订
 
@@ -718,7 +718,7 @@ GPT-6 Luna high负责报告、离线提取与代表trace，主智能体独立复
 
 F03与最终S01–S03通过；E01–E07的工程覆盖由下项307项检查和真实verify共同核验。M9.3仅补交付文档/离线CI，不再调用模型。
 
-### M9.3：复现文档与离线CI（2026-09-25，验收中）
+### M9.3：复现文档与离线CI（2026-09-25，DONE）
 
 GPT-6 Luna high负责根README与`.github/workflows/ci.yml`；主审运行同等本地命令。CI只安装依赖、执行工程检查、mock smoke/verify和题库预检/冻结检查，不读取provider凭据或启动付费实验。README区分已有报告的离线复核和新run的付费重跑，明确原始runs本地保留、Git提交报告/派生证据、负结果与研究局限。
 
@@ -733,3 +733,11 @@ GPT-6 Luna high负责根README与`.github/workflows/ci.yml`；主审运行同等
 | `node reports/evidence/<M9run>/hash-index.mjs runs/<M9run> reports/evidence/<M9run> reports/ablation-report.md` | 0 | 校正选择规则/节选说明后重建派生索引，未改raw run |
 
 提交后的干净工作树冻结检查与最终Git信息另行记录。此时仅本地等价CI命令通过，尚未宣称GitHub Actions远程运行通过。
+
+
+### M9最终提交与验收（2026-09-25，DONE）
+
+- 报告/证据/README/CI提交：`a299413a8f0fbaf23f87a70a5a5c30ca0c9d7808`（`report: complete M9 four-group ablation and offline CI`），`git diff --cached --check`与`git commit -F /tmp/mini-harness-m9-commit.txt`退出0；196个新增/修改文件经凭据模式及忽略路径审查，无`.env`、原始runs或node_modules进入Git。
+- 报告提交后的`git status --short`为空；`node --import tsx benchmark/check-freeze.mjs`退出0，原benchmark提交/hash一致、12题S8/H4、错误hash/commit拒绝、provider=null。CI全部步骤的本地等价检查完成。
+- 本次报告/CI提交只改变交付材料；实际实验的implementationCommit仍是`6f779ba9712d88fafac76fd6c43df8dbb38e8442`，未将较晚文档提交冒充运行版本。M6分析与C/O机制提交不变。
+- M0–M9 DONE。最终144次四组实验完成、全部失败与辅助成本保留、验证通过。负结果不构成工程验收失败；当前证据不支持C/O成功率收益。没有额外付费重跑，没有为提高full成绩改题/调机制。GitHub Actions在线结果独立于已通过的本地命令，未运行完成前不标记在线通过。
