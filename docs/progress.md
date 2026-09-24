@@ -1,6 +1,6 @@
 # 进度
 
-IMPLEMENTING。用户于2026-09-24授权开始开发，使用GPT-6 Sol（medium）子智能体实现，主智能体负责架构审阅与验收。M0.1、M0.2、M1.1、M1.2、M2.1、M2.2 DONE，M0/M1/M2完成；M3.1、M3.2、M3.3 DONE，M3完成；M4.1、M4.2、M4.3、M4.4 DONE，M4整体完成；M5.1、M5.2、M5.3、M5.4 DONE，M5整体完成；M6.1–M6.6 DONE：DeepSeek真实baseline 36次已完整运行、verify及九项分析验收通过，独立分析提交`93d075b80ce15616ca019f71153935b5d3ad51cb`；M7.1–M7.3 DONE（281项工程检查、两组mock及旧baseline verify通过）；M8/M9 NOT_STARTED。S8/H4题库保持benchmark-v1；真实baseline主成功23/36（S20/24、H3/12），尚无消融成绩。
+IMPLEMENTING。用户于2026-09-24授权开始开发，使用GPT-6 Sol（medium）子智能体实现，主智能体负责架构审阅与验收。M0.1、M0.2、M1.1、M1.2、M2.1、M2.2 DONE，M0/M1/M2完成；M3.1、M3.2、M3.3 DONE，M3完成；M4.1、M4.2、M4.3、M4.4 DONE，M4整体完成；M5.1、M5.2、M5.3、M5.4 DONE，M5整体完成；M6.1–M6.6 DONE：DeepSeek真实baseline 36次已完整运行、verify及九项分析验收通过，独立分析提交`93d075b80ce15616ca019f71153935b5d3ad51cb`；M7.1–M7.3 DONE（281项工程检查、两组mock及旧baseline verify通过）；M8.1–M8.3 DONE（307项工程检查、四组mock及旧baseline verify通过）；M9 NOT_STARTED。S8/H4题库保持benchmark-v1；真实baseline主成功23/36（S20/24、H3/12），尚无消融成绩。
 
 ## 本次规划修订
 
@@ -627,3 +627,47 @@ M7整体验收DONE。下一步M8关联同一baselineAnalysisCommit及HYP-002实�
 - `git merge-base --is-ancestor 93d075b80ce15616ca019f71153935b5d3ad51cb 42427e9d5e6e11d37352ba19b3aa9b2dbcdc89ec`退出0；先分析后机制的历史关系成立，未amend或重写M6。
 - 机制提交后的干净工作树运行`node --import tsx benchmark/check-freeze.mjs`退出0：12题S8/H4、原冻结提交`9fd463f618edfe25e8a683a62b7f540f3e644f90`与原manifest hash一致，错误hash/commit拒绝，无模型调用。
 - 本条在机制提交生成后通过独立文档提交记录真实SHA；M8/M9引用上述分析与机制提交。M7 DONE，M8/M9 NOT_STARTED。
+
+
+### M8.1：Optimizer依据与前置核验（2026-09-24，DONE）
+
+用户要求完成M8；开始时工作树干净，已阅读README、00/10、03和M8工单。baselineAnalysisCommit=`93d075b80ce15616ca019f71153935b5d3ad51cb`、contextImplementationCommit=`42427e9d5e6e11d37352ba19b3aa9b2dbcdc89ec`分别执行`git merge-base --is-ancestor <SHA> HEAD`均退出0。对M6真实run `2026-09-24T13-25-30-131Z-e441166e-f602-430b-a3f8-c14c091d777b`及M7 mock run `2026-09-24T14-45-06-709Z-ca780118-d0ae-4cdc-ac8a-089ce6063025`各执行`npm run eval:verify -- --run runs/<runId>`均退出0，passed=true/errors=[]。
+
+M8关联HYP-002：m01的行乘积溢出与m02 r1异常类型遗漏对应公开约束，值得检验一次需求重述；m02另外两次baseline成功，不能宣称必须O或已证明收益。HYP-003继续限制结论：O不增加工具/输出额度。按03只对原始任务做一次简短改写，无工具、不计划/选算法/选文件/写代码/增加要求；原user与系统规则保留，建议低优先级。辅助请求使用同ModelService、计入16次共同预算，输出至多min(512,maxOutputTokens)。默认窗口/预算、题库与M6报告不变；本次只做离线工程验收，不启动M9付费实验。
+
+M8.2已完成核心验收（见下），M8.3开始，M9 NOT_STARTED。
+
+### M8.2：一次性Prompt Optimizer（2026-09-24，DONE）
+
+GPT-6 Sol medium子智能体先新增6项测试，`node --import tsx --test tests/prompt-optimizer.test.ts`因模块缺失退出1；实现后同命令退出0（6/6），`npm run typecheck`及`git diff --check`退出0。主审再次运行聚焦测试与typecheck均退出0。插件通过model服务发送唯一optimizer请求，只带原user、固定OPTIMIZER_SYSTEM和空tools，输出上限min(512,配置额度)。空白/工具调用/非法finish显式失败，无重试；ModelCallError原样保留。并发、重复调用、取消、dispose等待及非法参数已覆盖。未改变公共接口或Context策略。
+
+
+### M8.3：四组装配、共同计量与离线验收（2026-09-24，DONE）
+
+GPT-6 Sol medium子智能体分别负责runtime/eval接线与journal复算，另一子智能体独立只读审阅；主智能体补充跨层边界、默认窗口四组S/H重复矩阵、审阅修复并验收。runtime按specs/variants.json仅在optimizer/full注册O；runner/attempt/CLI移除阶段性实现门禁，原phase矩阵、权限、工具、模型和共同预算不变。Loop只新增现有SUGGESTION_LABEL导出，不新增策略或组分支。eval复核唯一O请求的精确body、原任务、空tools、cap、响应到每个worker system的对应关系，以及失败/预算/取消的终止证据。full压缩后仍保留原user和低优先级建议。
+
+审阅修复两项：1）合法O成功后首worker输入硬超限只有observation，没有worker请求，旧收尾检查误拒；2）只信观测长度会接受“短建议+伪造巨大观测”的超限日志。第二项先由独立审阅用真实日志副本复现，再补回归，现使用原task、固定system/建议及五工具schema重编码核对六项metrics和真正超限。file-tools仅抽出同一份schema供注册与复核，JSON序列与ToolsService严格相等、返回副本；未改工具行为或公共服务接口。
+
+| 实际命令/操作 | 退出码 | 结果与证据 |
+| --- | --- | --- |
+| `node --import tsx --test tests/optimizer-runtime.test.ts tests/attempt.test.ts tests/runner.test.ts tests/eval-cli.test.ts tests/runtime.test.ts`（接线前→后） | 1→0 | 缺SUGGESTION_LABEL导出/旧门禁先失败；接线后18项通过，随后另加四组runner案例通过 |
+| `node --import tsx --test tests/optimizer-boundaries.test.ts`（主审先红） | 1 | 8项均被旧runtime门禁拒绝；接线后7/8，发现合法首worker overflow误拒 |
+| 同上（修复后，包含于最终检查） | 0 | 8/8：最后一次额度、O输入超限0派发、建议导致worker超限、缺usage、工具调用、响应落盘取消、IO失败、dispose等待 |
+| `node --import tsx --test tests/optimizer-journal.test.ts`（先红→修复） | 1→0 | 旧cap/超限证明拒绝合法日志；独立审阅补伪造超限回归先Missing expected exception，再重编码拒绝篡改 |
+| `node --import tsx --test tests/file-tools.test.ts`（先红→抽取schema后） | 1→0 | 导出缺失先失败；6/6通过，schema JSON序列与实际注册一致且副本隔离 |
+| `npm run typecheck`（并行开发中间检查） | 2 | 新测试usage:null类型及窄化的termination联合类型不符，修正为字段null及RunResult显式类型；未绕过类型检查 |
+| `npm run typecheck && node --import tsx --test tests/optimizer-*.test.ts tests/prompt-optimizer.test.ts` | 0 | 当时24项通过；之后增加伪造超限回归也通过 |
+| `node --import tsx --test tests/optimizer-evaluation.test.ts` | 0 | 默认8192/0.75/4，S/H两夹具×四组×2次，16次真实文件操作/外部验收/报告/verify通过，provider=mock |
+| `npm ci --offline --ignore-scripts --no-audit --no-fund` | 0 | 从lock离线安装6包，依赖未改 |
+| `npm run check > /tmp/mini-harness-m8-final-check.log 2>&1` | 0 | 最终typecheck及307项具名测试通过，0失败/跳过 |
+| `npm run eval:verify -- --run runs/2026-09-24T13-25-30-131Z-e441166e-f602-430b-a3f8-c14c091d777b` | 0 | 原M6真实baseline passed=true/errors=[]，未重新调用模型 |
+| `npm run eval:verify -- --run runs/2026-09-24T14-45-06-709Z-ca780118-d0ae-4cdc-ac8a-089ce6063025` | 0 | 原M7 mock passed=true/errors=[] |
+| `node --import tsx /tmp/mini-harness-m8-smoke.mjs` | 0 | 使用tests/optimizer-fixture.ts保留四组S/H重复运行，16次功能验收及verify均通过 |
+| `node --import tsx benchmark/preflight.mjs runs/m8-preflight-2026-09-24-01` | 0 | 全12题初始验收失败/参考两层通过及完整性检查通过 |
+| Python内联：Git祖先、冻结路径diff、manifest SHA | 0 | M6/M7提交为HEAD祖先；benchmark/specs/experiments/reports未改；原manifest hash保持d3d3321d3347017e58be60215e00a7ceb8e75fee5d4d77a2c07b0677160165a2 |
+| Python内联：原始证据索引大小/hash与src依赖检查 | 1→0 | 初次脚本误用size字段失败；改为索引实际sizeBytes后315个原始文件大小/SHA全部匹配，src无eval依赖 |
+| `git diff --check` | 0 | 无空白错误 |
+
+保留的M8工程run：`runs/m8-engineering-2026-09-24-01/runs/2026-09-24T14-58-58-214Z-e589e9d6-48ed-428d-bc0a-ba1cd64ad16a/`，phase=smoke、provider=mock、dirty=true（实现提交前如实记录），夹具也保留在其上级tasks。固定默认窗口、16次总模型/24次工具预算。S每次3 worker，各组均0 compactions，O组额外1 optimizer；H每次7 worker，context/full额外2 summary及2 compactions，optimizer/full额外1 optimizer，因此H总请求baseline/context/optimizer/full分别7/9/8/10。full与baseline功能评分相同，这是工程预期，不是O有效或无效的真实实验结论。合成长历史仅存在测试夹具，未进入Benchmark v1。
+
+验收O01/O02、E06四组mock、S01/S02/S03通过：报告既有固定25%/75%对照、失败样本、未知用量、S/H分层与跨phase/commit混样拒绝均在307项全量检查中。M8 DONE；M9 NOT_STARTED，真实四组144次必须新run重新跑包括baseline在内全部组。未读取/打印密钥，未启动付费实验或推送远程。真实optimizerImplementationCommit将在机制提交生成后另行记录，不回写M6分析。

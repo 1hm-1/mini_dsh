@@ -11,6 +11,7 @@ import { httpModelPlugin } from './plugins/http-model.js';
 import { jsonlPersistencePlugin } from './plugins/jsonl-persistence.js';
 import { memorySessionPlugin } from './plugins/memory-session.js';
 import { permissionsPlugin } from './plugins/permissions.js';
+import { promptOptimizerPlugin } from './plugins/prompt-optimizer.js';
 import { toolsPlugin } from './plugins/tools.js';
 import type { ModelConfig, RunResult } from './types.js';
 
@@ -31,7 +32,6 @@ export async function createRuntime(config: unknown, options: RuntimeOptions = {
   // Validate and copy caller-owned input before the first asynchronous setup step.
   const parsed = parseRunConfig(config);
   const flags = variantFlags(parsed.variant);
-  if (flags.optimizer) throw new Error(`variant ${parsed.variant} is not implemented`);
   if (options === null || typeof options !== 'object'
     || options.signal !== undefined && !(options.signal instanceof AbortSignal)
     || options.modelPlugin !== undefined && typeof options.modelPlugin !== 'function') {
@@ -57,6 +57,7 @@ export async function createRuntime(config: unknown, options: RuntimeOptions = {
     await context.use(modelFactory({ model: parsed.model, accounting }));
     await context.use(contextManagerPlugin({ context: parsed.context, enabled: flags.context,
       maxOutputTokens: parsed.budget.maxOutputTokens }));
+    if (flags.optimizer) await context.use(promptOptimizerPlugin({ maxOutputTokens: parsed.budget.maxOutputTokens }));
     await context.use(agentLoopPlugin({ system: BASE_SYSTEM, accounting }));
   } catch (error) {
     try { await context.dispose(); } catch { /* preserve the startup error */ }

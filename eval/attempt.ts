@@ -48,9 +48,9 @@ export async function runAttempt(options: {
   const modelPlugin = options.modelPlugin;
   const signal = options.signal;
   parseTaskId(entry.taskId, 'attempt taskId');
-  if (entry.taskId !== task.spec.id || entry.variant !== 'baseline' && entry.variant !== 'context' || !config.taskIds.includes(entry.taskId)
+  if (entry.taskId !== task.spec.id || !config.taskIds.includes(entry.taskId)
     || !config.variants.includes(entry.variant) || !Number.isSafeInteger(entry.repeat) || entry.repeat < 1 || entry.repeat > config.repeats
-    || !Number.isSafeInteger(entry.orderIndex) || entry.orderIndex < 0) throw new Error('attempt entry: invalid or variant not implemented');
+    || !Number.isSafeInteger(entry.orderIndex) || entry.orderIndex < 0) throw new Error('attempt entry: invalid');
   if (typeof runId !== 'string' || !runId || implementationCommit !== null && typeof implementationCommit !== 'string'
     || benchmarkCommit !== null && typeof benchmarkCommit !== 'string'
     || signal !== undefined && !(signal instanceof AbortSignal)

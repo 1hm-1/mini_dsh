@@ -3,6 +3,9 @@ import { parseRunConfig, variantFlags } from '../src/config.js';
 import { parseMessage, type JournalRead } from '../src/journal.js';
 import { encodeChatRequest, isDeepSeekChatEndpoint } from '../src/model-protocol.js';
 import { SUMMARY_PREFIX, SUMMARY_SYSTEM } from '../src/plugins/context-manager.js';
+import { OPTIMIZER_SYSTEM } from '../src/plugins/prompt-optimizer.js';
+import { SUGGESTION_LABEL } from '../src/plugins/agent-loop.js';
+import { fileToolSchemas } from '../src/plugins/file-tools.js';
 import { BASE_SYSTEM } from '../src/runtime.js';
 import type { ContextCompactedData } from '../src/context-events.js';
 import type { ContextObservationData, RequestData, ResponseData } from '../src/model-events.js';
@@ -68,7 +71,13 @@ export function inspectJournal(journal: JournalRead, config: RunConfig): Journal
   if (events[0]?.type !== 'run_start' || events.at(-1)?.type !== 'run_end') throw new Error('journal metrics: missing run boundaries');
   const result = (events.at(-1)!.data as { result: RunResult }).result;
   const contextEnabled = variantFlags(settings.variant).context;
+  const optimizerEnabled = variantFlags(settings.variant).optimizer;
   const input = (events[0]!.data as { input: string }).input;
+  const optimizerInputBody = optimizerEnabled ? encodeChatRequest(settings.model, {
+    kind: 'optimizer', system: OPTIMIZER_SYSTEM, messages: [{ role: 'user', content: input }],
+    tools: [], maxOutputTokens: Math.min(512, settings.budget.maxOutputTokens),
+    signal: new AbortController().signal,
+  }) : null;
   const history: Message[] = [];
   const observations = new Map<number, ContextObservationData['metrics']>();
   const referenced = new Set<number>();
@@ -98,6 +107,12 @@ export function inspectJournal(journal: JournalRead, config: RunConfig): Journal
   let pendingSummary: { requestSeq: number; responseSeq: number | null; from: number; to: number;
     preEstimate: number; olderRounds: number; response: ModelResponse | null; error: ResponseData['error'] | null } | null = null;
   let preAfterCompaction: { estimate: number; olderRounds: number } | null = null;
+  let optimizerRequestSeq: number | null = null;
+  let optimizerResponseSeq: number | null = null;
+  let optimizerResponse: ModelResponse | null = null;
+  let optimizerError: ResponseData['error'] | null = null;
+  let suggestion: string | null = null;
+  let seenWorkerRequest = false;
   const candidate = () => {
     if (!contextEnabled || lastWorkerSystem === null || lastWorkerTools === null) return null;
     const before = projection(history, boundary, summary);
@@ -152,7 +167,7 @@ export function inspectJournal(journal: JournalRead, config: RunConfig): Journal
       equal(data.requestChars, data.body.length, 'requestChars');
       equal(body.model, settings.model.id, 'model');
       equal(body.temperature, settings.model.temperature, 'temperature');
-      const outputLimit = data.kind === 'summary' ? Math.min(512, settings.budget.maxOutputTokens) : settings.budget.maxOutputTokens;
+      const outputLimit = data.kind === 'worker' ? settings.budget.maxOutputTokens : Math.min(512, settings.budget.maxOutputTokens);
       if (isDeepSeekChatEndpoint(settings.model.endpoint)) {
         equal(Object.keys(body).sort(), ['model', 'temperature', 'stream', 'max_tokens', 'thinking', 'messages', 'tools'].sort(), 'DeepSeek protocol fields');
         equal(body.max_tokens, outputLimit, 'DeepSeek max_tokens');
@@ -191,7 +206,9 @@ export function inspectJournal(journal: JournalRead, config: RunConfig): Journal
       equal(data.estimatedInputTokens, requestEstimate, 'estimatedInputTokens');
       if (data.requestChars > settings.budget.maxInputChars) throw new Error('journal metrics: request exceeds maxInputChars');
       if (data.kind === 'worker') {
-        if (!variantFlags(settings.variant).optimizer) equal(system.content, BASE_SYSTEM, 'worker system');
+        if (optimizerEnabled && suggestion === null) throw new Error('journal metrics: worker before valid optimizer suggestion');
+        equal(system.content, optimizerEnabled ? BASE_SYSTEM + SUGGESTION_LABEL + suggestion : BASE_SYSTEM, 'worker system');
+        seenWorkerRequest = true;
         const expectedBefore = projection(history, boundary, summary);
         const preEstimate = preAfterCompaction?.estimate ?? estimate(system.content, expectedBefore, tools);
         const olderRounds = preAfterCompaction?.olderRounds ?? Math.max(0,
@@ -225,6 +242,18 @@ export function inspectJournal(journal: JournalRead, config: RunConfig): Journal
         }), 'summary body');
         pendingSummary = { requestSeq: event.seq, responseSeq: null, from: expected.from, to: expected.to,
           preEstimate: expected.preEstimate, olderRounds: expected.olderRounds, response: null, error: null };
+      }
+      if (data.kind === 'optimizer') {
+        if (!optimizerEnabled || optimizerRequestSeq !== null || seenWorkerRequest || history.length !== 1
+          || observations.size !== 0
+          || optimizerResponseSeq !== null || compactions > 0) {
+          throw new Error('journal metrics: unexpected optimizer request');
+        }
+        equal(system.content, OPTIMIZER_SYSTEM, 'optimizer system');
+        equal(projected, [{ role: 'user', content: input }], 'optimizer original task');
+        equal(tools, [], 'optimizer tools');
+        equal(data.body, optimizerInputBody, 'optimizer body');
+        optimizerRequestSeq = event.seq;
       }
       pending.set(event.seq, data);
     }
@@ -261,6 +290,19 @@ export function inspectJournal(journal: JournalRead, config: RunConfig): Journal
           modelFailure = true;
         }
       }
+      if (data.kind === 'optimizer') {
+        if (optimizerRequestSeq !== data.requestSeq || optimizerResponseSeq !== null) {
+          throw new Error('journal metrics: untracked optimizer response');
+        }
+        optimizerResponseSeq = event.seq;
+        optimizerResponse = data.response;
+        optimizerError = data.error;
+        if (data.error === null && data.response) {
+          if (data.response.finish === 'stop' && data.response.calls.length === 0 && data.response.content.trim() !== '') {
+            suggestion = data.response.content.trim();
+          } else modelFailure = true;
+        }
+      }
     }
     if (event.type === 'context_compacted') {
       const compacted = event.data as ContextCompactedData;
@@ -292,6 +334,50 @@ export function inspectJournal(journal: JournalRead, config: RunConfig): Journal
     }
   }
   if (history.length === 0) throw new Error('journal metrics: missing initial user message');
+  if (optimizerEnabled) {
+    if (optimizerRequestSeq === null) {
+      if (observations.size !== 0) throw new Error('journal metrics: context observation before optimizer');
+      if (!['cancelled', 'timeout', 'context_overflow'].includes(result.termination)) {
+        throw new Error('journal metrics: optimizer request missing');
+      }
+      if (result.termination === 'context_overflow'
+        && (optimizerInputBody === null || optimizerInputBody.length <= settings.budget.maxInputChars)) {
+        throw new Error('journal metrics: optimizer input does not exceed hard limit');
+      }
+    } else if (optimizerResponseSeq === null) {
+      throw new Error('journal metrics: optimizer response missing');
+    } else if (suggestion === null) {
+      const semanticFailure = optimizerError === null && optimizerResponse !== null;
+      const allowed = optimizerError === null
+        ? semanticFailure ? ['model_error', 'cancelled', 'timeout'] : ['cancelled', 'timeout']
+        : [optimizerError];
+      if (!allowed.includes(result.termination)) throw new Error('journal metrics: optimizer failure termination mismatch');
+    } else if (!seenWorkerRequest && !['request_limit', 'cancelled', 'timeout'].includes(result.termination)
+      && !(result.termination === 'context_overflow' && overflow)) {
+      throw new Error('journal metrics: successful optimizer has no worker continuation');
+    }
+  }
+  if (optimizerEnabled && suggestion !== null && !seenWorkerRequest
+    && result.termination === 'context_overflow') {
+    const workerSystem = BASE_SYSTEM + SUGGESTION_LABEL + suggestion;
+    const workerMessages: Message[] = [{ role: 'user', content: input }];
+    const workerTools = fileToolSchemas();
+    const workerBody = encodeChatRequest(settings.model, {
+      kind: 'worker', system: workerSystem, messages: workerMessages, tools: workerTools,
+      maxOutputTokens: settings.budget.maxOutputTokens, signal: new AbortController().signal,
+    });
+    const workerEstimate = estimate(workerSystem, workerMessages, workerTools);
+    const threshold = workerEstimate >= settings.context.estimatedWindowTokens * settings.context.triggerRatio;
+    const unpaired = [...observations].filter(([seq]) => !referenced.has(seq));
+    if (unpaired.length !== 1 || workerBody.length <= settings.budget.maxInputChars) {
+      throw new Error('journal metrics: first worker context overflow lacks evidence');
+    }
+    equal(unpaired[0]![1], {
+      requestChars: workerBody.length, estimatedInputTokens: workerEstimate,
+      preCompressionEstimatedTokens: workerEstimate, olderRounds: 0,
+      thresholdReached: threshold, compactionEligible: false,
+    }, 'first worker context observation');
+  }
   if (pendingSummary) {
     if (pendingSummary.responseSeq === null || result.termination === 'completed') {
       throw new Error('journal metrics: summary request lacks valid termination');
@@ -348,6 +434,8 @@ export function inspectJournal(journal: JournalRead, config: RunConfig): Journal
     if (result.termination === 'request_limit' && requests.length !== settings.budget.maxModelRequests
       || result.termination === 'tool_limit' && !skippedTools
       || result.termination === 'context_overflow' && !overflow && !(() => {
+        if (optimizerEnabled && optimizerRequestSeq === null && optimizerInputBody !== null
+          && optimizerInputBody.length > settings.budget.maxInputChars) return true;
         const expected = candidate();
         if (!expected) return false;
         const summaryBody = encodeChatRequest(settings.model, {

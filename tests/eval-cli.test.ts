@@ -24,6 +24,7 @@ test('eval arguments merge task, variant and repeat overrides before strict vali
   assert.equal(parsed.repeats, 3);
   assert.equal(input.repeats, 2);
   assert.deepEqual(applyEvalOverrides(input, { config: 'x', variants: ['context'] }).variants, ['context']);
+  assert.deepEqual(applyEvalOverrides(input, { config: 'x', variants: ['optimizer', 'full'] }).variants, ['optimizer', 'full']);
   assert.throws(() => applyEvalOverrides({ ...input, unknown: true }, args));
   assert.throws(() => applyEvalOverrides({ ...input, phase: 'baseline-diagnostic', benchmarkManifest: 'benchmark/v1.json' },
     { config: 'x', variants: ['full'] }));

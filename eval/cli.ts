@@ -61,10 +61,6 @@ export async function main(argv: string[] = process.argv.slice(2)): Promise<numb
   process.on('SIGINT', onSigint);
   try {
     const config = applyEvalOverrides(JSON.parse(await readFile(path.resolve(args.config), 'utf8')), args);
-    if (config.variants.some(variant => variant !== 'baseline' && variant !== 'context')) {
-      process.stderr.write('Only baseline and context are available; other variants are not implemented yet.\n');
-      return 1;
-    }
     if (config.phase === 'smoke') {
       process.stderr.write('Smoke requires the explicit offline entry: npm run eval:smoke.\n');
       return 1;

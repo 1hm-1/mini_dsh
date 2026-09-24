@@ -35,14 +35,37 @@ test('E06 smoke runner preflights and records failed attempts without retry', as
   assert.equal((await readdir(path.join(result.runRoot, 'attempts'))).length, 2);
 });
 
-test('runner rejects unsupported variants and bad preflight before model calls', async t => {
+test('E06 smoke runner schedules all four variants with shared two-request budgets', async t => {
+  const root = await mkdtemp(path.join(tmpdir(), 'runner-four-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  await cp(source, path.join(root, 'tasks/eval-smoke'), { recursive: true });
+  const variants = ['baseline', 'context', 'optimizer', 'full'] as const;
+  const result = await runEvaluation({ ...config('runs'), variants: [...variants], repeats: 1 },
+    { projectRoot: root, smokeTaskRoot: path.join(root, 'tasks'), modelPlugin: ({ model, accounting }) =>
+      mockModelPlugin({ model, accounting, script: [
+        request => ({ content: request.kind === 'optimizer' ? 'Fix sum.' : 'No edit',
+          calls: [], finish: 'stop', usage: { inputTokens: 1, outputTokens: 1 }, actualModel: 'mock', fingerprint: null }),
+        { content: 'No edit', calls: [], finish: 'stop',
+          usage: { inputTokens: 1, outputTokens: 1 }, actualModel: 'mock', fingerprint: null },
+      ] }) });
+  assert.deepEqual(new Set(result.manifest.schedule.map(item => item.variant)), new Set(variants));
+  assert.equal(result.attempts.length, 4);
+  for (const attempt of result.attempts) {
+    assert.equal(attempt.agent.termination, 'completed');
+    assert.equal(attempt.agent.optimizerRequests, attempt.variant === 'optimizer' || attempt.variant === 'full' ? 1 : 0);
+    assert.equal(attempt.agent.workerRequests, 1);
+  }
+});
+
+test('runner keeps phase matrix and bad preflight rejection before model calls', async t => {
   const root = await mkdtemp(path.join(tmpdir(), 'runner-bad-'));
   t.after(() => rm(root, { recursive: true, force: true }));
   await cp(source, path.join(root, 'tasks/eval-smoke'), { recursive: true });
   let calls = 0;
   const modelPlugin = ({ model, accounting }: Parameters<NonNullable<NonNullable<Parameters<typeof runEvaluation>[1]>['modelPlugin']>>[0]) =>
     mockModelPlugin({ model, accounting, script: [() => { calls++; throw new Error('unexpected'); }] });
-  await assert.rejects(runEvaluation({ ...config('runs'), variants: ['optimizer'] }, { projectRoot: root, smokeTaskRoot: path.join(root, 'tasks'), modelPlugin }), /not implemented|baseline|context/i);
+  await assert.rejects(runEvaluation({ ...config('runs'), phase: 'baseline-diagnostic', benchmarkManifest: 'benchmark/v1.json', variants: ['optimizer'] },
+    { projectRoot: root, smokeTaskRoot: path.join(root, 'tasks'), modelPlugin }), /phase matrix/i);
   const { writeFile } = await import('node:fs/promises');
   await writeFile(path.join(root, 'tasks/eval-smoke/workspace/sum.mjs'), 'export const sum = (a, b) => a + b;\n');
   await assert.rejects(runEvaluation(config('runs'), { projectRoot: root, smokeTaskRoot: path.join(root, 'tasks'), modelPlugin }), /preflight/i);

@@ -101,7 +101,7 @@ jsonlPersistencePlugin接收绝对workspace/sessionPath，要求workspace路径�
 
 ## M3.1 模型请求与计量
 
-Accounting由每个runtime独立创建，接收Budget及可选运行取消信号；复制并校验预算，建立覆盖全部调用的共同deadline。httpModelPlugin({model,accounting})和mockModelPlugin({model,accounting,script})均依赖Session并注册ModelService。两者复用编码和计量路径；mock脚本不读取API key。每个服务拒绝并发complete，调用输入在首个await前复制；关闭后旧引用不能继续请求。异步mock脚本须配合传入signal，取消时等待脚本结束并拒绝迟到成功，不丢弃仍运行的回调。辅助kind共用公共计量；M7摘要已接入，优化插件留M8。
+Accounting由每个runtime独立创建，接收Budget及可选运行取消信号；复制并校验预算，建立覆盖全部调用的共同deadline。httpModelPlugin({model,accounting})和mockModelPlugin({model,accounting,script})均依赖Session并注册ModelService。两者复用编码和计量路径；mock脚本不读取API key。每个服务拒绝并发complete，调用输入在首个await前复制；关闭后旧引用不能继续请求。异步mock脚本须配合传入signal，取消时等待脚本结束并拒绝迟到成功，不丢弃仍运行的回调。辅助kind共用公共计量；M7摘要、M8优化插件均已接入。
 
 HTTP使用配置中的完整endpoint，不自动追加路径。首版支持非流式Chat Completions的文本/function tools子集：model、temperature、stream=false、n=1、max_completion_tokens、messages与tools。assistant.calls映射tool_calls，tool.callId映射tool_call_id；usage的prompt_tokens/completion_tokens映射内部输入/输出token。字段参考[官方Chat Completions接口](https://developers.openai.com/api/reference/cli/resources/chat/subresources/completions/methods/create)。不声称兼容所有provider或模型参数组合；真实provider在M6运行前验证，不自动改参数或重试。
 
@@ -144,7 +144,7 @@ readJournal对含工具事件的日志检查assistant调用顺序、串行start/
 
 `createRuntime(config: unknown, options?: RuntimeOptions): Promise<Runtime>`位于src/runtime.ts。Runtime提供`context: Context`、`run(input: string): Promise<RunResult>`和幂等`dispose(): Promise<void>`；每实例只执行一次。RuntimeOptions接收可选signal及modelPlugin工厂，工厂入参为`{model: ModelConfig, accounting: Accounting}`，返回MiniPlugin。默认HTTP，离线测试可显式换成mock插件，Loop不变；该工厂是可信本地代码，不是CLI动态加载入口。
 
-首次await前校验并复制RunConfig、捕获signal和模型工厂。组开关读取specs/variants.json，M7已支持baseline/context装配，optimizer/full留M8，现明确拒绝。默认HTTP缺HARNESS_API_KEY时在创建日志前失败；自定义模型插件不要求该凭据。配置中的workspace/sessionPath相对启动cwd解析（不是相对配置文件目录），目录须预先存在，日志位于workspace外且不能覆盖。模型不会在setup期间调用。
+首次await前校验并复制RunConfig、捕获signal和模型工厂。组开关读取specs/variants.json，M8已支持四组装配；仅optimizer/full注册promptOptimizer服务。默认HTTP缺HARNESS_API_KEY时在创建日志前失败；自定义模型插件不要求该凭据。配置中的workspace/sessionPath相对启动cwd解析（不是相对配置文件目录），目录须预先存在，日志位于workspace外且不能覆盖。模型不会在setup期间调用。
 
 固定插件次序：JSONL persistence → events → memorySession → permissions → tools → fileTools → model → contextManager → agentLoop。每实例独立Accounting、Session、权限、工具；BASE_SYSTEM是源码内固定的简洁文件操作指令，无规划器或结束前验证门禁。启动失败清理已加载插件；run在finally逆序清理，外部dispose在运行中取消并等待在途调用结束后再清理。清理失败继续释放其余服务并拒绝调用，不改写已经保存的run_end。
 
@@ -289,4 +289,13 @@ contextMetrics里的preCompressionEstimatedTokens和olderRounds取本次build开
 
 readJournal校验压缩事件的summary请求/响应对应及复用；eval/journal-metrics独立重建完整轮次、边界、摘要输入和worker投影，核对两种长度、触发条件和累计compactions，拒绝边界/文本/引用/次数篡改；无Optimizer的baseline/context请求还必须使用固定BASE_SYSTEM，不能通过同步修改长度和统计掩盖系统提示变化。辅助模型合法协议响应但文本为空/包含calls可支持model_error；取消/超时优先保留其终止原因。summary输入硬超限未发请求时，从历史重建应发body证明超限，不伪造已派发请求或token。baseline旧日志继续按完整历史复算。
 
-runtime、eval runner与attempt开放baseline/context；optimizer/full仍拒绝，所有phase矩阵约束保持原值。baseline-diagnostic不容混入context，正式四组ablation等待M8；本阶段的两组长历史测试必须标mock，不能作为真实收益成绩。
+M7时runtime、eval runner与attempt开放baseline/context；M8现已开放四组，所有phase矩阵约束保持原值。baseline-diagnostic不容混入其他组。两组及四组离线长历史测试均标mock，不能作为真实收益成绩。
+
+
+## M8 一次需求重述与四组核验
+
+前置分析仍为baselineAnalysisCommit=`93d075b80ce15616ca019f71153935b5d3ad51cb`，关联HYP-002与HYP-003。`promptOptimizerPlugin({maxOutputTokens?:number})`依赖model并注册既有PromptOptimizerService；每个实例只接受一次optimize，使用固定OPTIMIZER_SYSTEM、唯一原始user消息、空tools，输出上限min(512,maxOutputTokens)，默认512。没有读取文件/历史/隐藏验收或其他组输出的路径，不添加planner或结束前验证门禁。
+
+固定指令要求忠实保留公开需求、约束、例外和边界，不增加要求/选文件/选算法/计划/写代码；这是模型指令，不声称能自动判定文本语义忠实度。只有非空stop且无calls的合法响应可用，文本trim后附在固定系统规则之后，使用明确低优先级SUGGESTION_LABEL；原始user保持不变。full的摘要投影保留同一system建议。错误、预算耗尽、取消与IO失败走共同路径，不重试、不静默回退。dispose等待在途操作完成。
+
+eval独立复核optimizer只能先于worker出现一次，请求body严格等于固定指令+原task+空tools的编码；所有worker system必须精确匹配BASE_SYSTEM及该次响应产生的建议（无O时仅BASE_SYSTEM）。缺请求/重复请求、跨组辅助调用、替换原任务或改写建议均拒绝。辅助输入硬超限且没有request时，重编码原task证明超限；建议令首worker超限时保留worker观测及O已耗用量，并使用fileToolSchemas()与原task/system重建首worker body逐项核对超限证据；工具schema来自注册的同一元数据，行为不变。合法协议下的空白/tool calls显式model_error，响应落盘时取消/超时仍可优先终止。请求次数、token未知值、已知token和耗时均使用原计量规则。

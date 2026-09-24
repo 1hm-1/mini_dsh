@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
 import { Context } from '../src/context.js';
-import { fileToolsPlugin } from '../src/plugins/file-tools.js';
+import { fileToolsPlugin, fileToolSchemas } from '../src/plugins/file-tools.js';
 import { atomicWrite } from '../src/plugins/file-tools-atomic.js';
 import { permissionsPlugin } from '../src/plugins/permissions.js';
 import { toolsPlugin } from '../src/plugins/tools.js';
@@ -29,6 +29,9 @@ test('T01/T02 file tools register five schemas and perform allowed CRUD in one w
   const ctx = await setup(root, ['src/a.txt', 'src/new.txt']);
   t.after(() => ctx.dispose());
   const tools = ctx.get('tools');
+  assert.equal(JSON.stringify(fileToolSchemas()), JSON.stringify(tools.schemas()));
+  const changed = fileToolSchemas(); changed[0]!.description = 'mutated';
+  assert.equal(JSON.stringify(fileToolSchemas()), JSON.stringify(tools.schemas()));
   assert.deepEqual(tools.schemas().map(item => item.name), ['delete_file', 'edit_file', 'list_files', 'read_file', 'write_file']);
   assert.equal((await tools.execute(call('read_file', { path: 'src/a.txt' }), signal)).output, 'first\n');
   assert.equal((await tools.execute(call('write_file', { path: 'src/new.txt', content: 'new' }), signal)).ok, true);

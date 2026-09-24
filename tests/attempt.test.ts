@@ -51,7 +51,7 @@ test('E06 attempt retains complete failed evidence and isolates hidden assets', 
 });
 
 
-test('M7.3 attempt accepts context and still rejects optimizer/full before materializing', async t => {
+test('M8.3 attempt accepts all variants and charges optimizer calls to each budget', async t => {
   const root = await mkdtemp(path.join(tmpdir(), 'attempt-context-'));
   t.after(() => rm(root, { recursive: true, force: true }));
   const taskRoot = path.join(root, 'eval-smoke');
@@ -63,14 +63,18 @@ test('M7.3 attempt accepts context and still rejects optimizer/full before mater
   const allVariants: EvalConfig = { ...config, variants: ['baseline', 'context', 'optimizer', 'full'] };
   const options = { task, config: allVariants, runId: 'test', runRoot, implementationCommit: null, benchmarkCommit: null,
     modelPlugin: ({ model, accounting }: Parameters<NonNullable<Parameters<typeof runAttempt>[0]['modelPlugin']>>[0]) =>
-      mockModelPlugin({ model, accounting, script: [{ content: 'No edit', calls: [], finish: 'stop',
-        usage: { inputTokens: 1, outputTokens: 1 }, actualModel: 'mock', fingerprint: null }] }) };
-  for (const variant of ['optimizer', 'full'] as const) {
-    await assert.rejects(runAttempt({ ...options, entry: { ...entry, variant } }), /variant not implemented/);
+      mockModelPlugin({ model, accounting, script: [
+        request => ({ content: request.kind === 'optimizer' ? 'Improved task wording' : 'No edit',
+          calls: [], finish: 'stop', usage: { inputTokens: 1, outputTokens: 1 }, actualModel: 'mock', fingerprint: null }),
+        { content: 'No edit', calls: [], finish: 'stop',
+          usage: { inputTokens: 1, outputTokens: 1 }, actualModel: 'mock', fingerprint: null },
+      ] }) };
+  for (const variant of allVariants.variants) {
+    const result = await runAttempt({ ...options, entry: { ...entry, variant } });
+    assert.equal(result.variant, variant);
+    assert.equal(result.agent.termination, 'completed');
+    assert.equal(result.agent.optimizerRequests, variant === 'optimizer' || variant === 'full' ? 1 : 0);
+    assert.equal(result.agent.summaryRequests, 0);
   }
-  assert.equal((await readdir(runRoot)).length, 0);
-  const result = await runAttempt({ ...options, entry: { ...entry, variant: 'context' } });
-  assert.equal(result.variant, 'context');
-  assert.equal(result.agent.termination, 'completed');
-  assert.equal(result.agent.summaryRequests, 0);
+  assert.equal((await readdir(path.join(runRoot, 'attempts'))).length, 4);
 });

@@ -2,7 +2,7 @@ import { lstat, readFile, readdir, realpath, unlink } from 'node:fs/promises';
 import { isAbsolute, join } from 'node:path';
 import type { Stats } from 'node:fs';
 import type { MiniPlugin } from '../plugin.js';
-import type { ToolDefinition, ToolResult } from '../types.js';
+import type { ToolDefinition, ToolResult, ToolSchema } from '../types.js';
 import { atomicWrite } from './file-tools-atomic.js';
 
 const MAX_FILE_BYTES = 256 * 1024;
@@ -103,12 +103,25 @@ async function handle(operation: () => Promise<ToolResult>, signal: AbortSignal)
 }
 
 const field = { type: 'string' };
-function definition(name: string, description: string, properties: Record<string, unknown>, required: string[], execute: ToolDefinition['execute']): ToolDefinition {
-  return {
-    name, description,
-    parameters: { type: 'object', properties, required, additionalProperties: false },
-    execute,
-  };
+function schema(name: string, description: string, properties: Record<string, unknown>, required: string[]): ToolSchema {
+  return { name, description, parameters: { type: 'object', properties, required, additionalProperties: false } };
+}
+const schemas = [
+  schema('list_files', 'List regular files recursively in a directory', { path: field }, []),
+  schema('read_file', 'Read a UTF-8 file', { path: field }, ['path']),
+  schema('write_file', 'Create or replace an allowed UTF-8 file', { path: field, content: field }, ['path', 'content']),
+  schema('edit_file', 'Replace exactly one text occurrence in an allowed file',
+    { path: field, oldText: field, newText: field }, ['path', 'oldText', 'newText']),
+  schema('delete_file', 'Delete one allowed regular file', { path: field }, ['path']),
+];
+/** Same immutable metadata used by registration, in ToolsService projection order. */
+export function fileToolSchemas(): ToolSchema[] {
+  return structuredClone(schemas).sort((a, b) => a.name.localeCompare(b.name));
+}
+function definition(name: string, execute: ToolDefinition['execute']): ToolDefinition {
+  const item = schemas.find(item => item.name === name);
+  if (!item) throw new Error('unknown file tool');
+  return { ...structuredClone(item), execute };
 }
 
 export function fileToolsPlugin(workspace: string): MiniPlugin {
@@ -129,11 +142,11 @@ export function fileToolsPlugin(workspace: string): MiniPlugin {
       if (failed) throw firstError;
     }
     try {
-      register(definition('list_files', 'List regular files recursively in a directory', { path: field }, [],
+      register(definition('list_files',
         (args, signal) => handle(() => listFiles(root, args.path === undefined ? '.' : args.path as string, signal), signal)));
-      register(definition('read_file', 'Read a UTF-8 file', { path: field }, ['path'],
+      register(definition('read_file',
         (args, signal) => handle(async () => ok(await boundedRead(await checkedPath(root, args.path as string, 'file', signal), signal)), signal)));
-      register(definition('write_file', 'Create or replace an allowed UTF-8 file', { path: field, content: field }, ['path', 'content'],
+      register(definition('write_file',
         (args, signal) => handle(async () => {
           const path = await checkedPath(root, args.path as string, 'new-file', signal);
           const content = args.content as string;
@@ -149,8 +162,7 @@ export function fileToolsPlugin(workspace: string): MiniPlugin {
           await atomicWrite(path, content, signal);
           return ok('File written');
         }, signal)));
-      register(definition('edit_file', 'Replace exactly one text occurrence in an allowed file',
-        { path: field, oldText: field, newText: field }, ['path', 'oldText', 'newText'],
+      register(definition('edit_file',
         (args, signal) => handle(async () => {
           const oldText = args.oldText as string;
           if (oldText.length === 0) throw new FileToolFailure('invalid_arguments', 'oldText must not be empty');
@@ -165,7 +177,7 @@ export function fileToolsPlugin(workspace: string): MiniPlugin {
           await atomicWrite(path, changed, signal);
           return ok('File edited');
         }, signal)));
-      register(definition('delete_file', 'Delete one allowed regular file', { path: field }, ['path'],
+      register(definition('delete_file',
         (args, signal) => handle(async () => {
           const path = await checkedPath(root, args.path as string, 'file', signal);
           signal.throwIfAborted();

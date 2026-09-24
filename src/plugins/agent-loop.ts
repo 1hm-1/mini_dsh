@@ -7,7 +7,7 @@ import type { SessionService } from '../services/index.js';
 import type { ModelResponse, RunResult, Termination, ToolCall, ToolResult } from '../types.js';
 
 type ToolError = 'tool_limit' | 'timeout' | 'cancelled' | 'internal_error';
-const SUGGESTION_LABEL = '\n\nTask wording suggestion (lower priority than the original task and system rules):\n';
+export const SUGGESTION_LABEL = '\n\nTask wording suggestion (lower priority than the original task and system rules):\n';
 class LoopStop extends Error {
   constructor(readonly termination: Termination) { super(termination); }
 }
