@@ -618,4 +618,12 @@ contextManagerPlugin新增内部enabled/maxOutputTokens选项，默认关闭兼�
 
 C01/C02/C03/R07通过，E06覆盖本阶段baseline/context两组链路，四组E06留M8。readJournal新增摘要引用校验，eval另独立重建边界/投影；历史完整保留且摘要不进入Session消息。原任务/system规则不变；取消与失败保留已消耗summary请求/用量；summary失败不免费重试或退回baseline。当前固定system与完整历史通常令summary输入短于上一worker，不能制造不可达日志冒充超限正例：独立Context预载长历史测试证明硬上限，完整journal中伪造无证据overflow被拒。
 
-M7整体验收DONE。下一步M8关联同一baselineAnalysisCommit及HYP-002实现一次需求改写；M9再执行同版本四组真实实验。没有启动新付费实验、修改M6报告或推送远程；机制提交将关联本次分析SHA/HYP，实际contextImplementationCommit在产生后追加记录。
+M7整体验收DONE。下一步M8关联同一baselineAnalysisCommit及HYP-002实现一次需求改写；M9再执行同版本四组真实实验。没有启动新付费实验、修改M6报告或推送远程；机制提交及实际contextImplementationCommit见下方已完成的Git核验。
+
+### M7机制提交与后续引用
+
+- **contextImplementationCommit：`42427e9d5e6e11d37352ba19b3aa9b2dbcdc89ec`**（`feat: add incremental context summarization`）。
+- 提交正文关联baselineAnalysisCommit=`93d075b80ce15616ca019f71153935b5d3ad51cb`以及HYP-001/HYP-003。`git commit -F /tmp/mini-harness-m7-commit.txt`退出0；提交前`git diff --cached --check`退出0。
+- `git merge-base --is-ancestor 93d075b80ce15616ca019f71153935b5d3ad51cb 42427e9d5e6e11d37352ba19b3aa9b2dbcdc89ec`退出0；先分析后机制的历史关系成立，未amend或重写M6。
+- 机制提交后的干净工作树运行`node --import tsx benchmark/check-freeze.mjs`退出0：12题S8/H4、原冻结提交`9fd463f618edfe25e8a683a62b7f540f3e644f90`与原manifest hash一致，错误hash/commit拒绝，无模型调用。
+- 本条在机制提交生成后通过独立文档提交记录真实SHA；M8/M9引用上述分析与机制提交。M7 DONE，M8/M9 NOT_STARTED。
