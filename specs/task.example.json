@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "id": "template-task",
+  "category": "bug-fix",
+  "promptFile": "prompt.md",
+  "workspaceDir": "workspace",
+  "writable": [
+    "subject.mjs"
+  ],
+  "publicTest": "public.test.mjs",
+  "acceptanceTest": "acceptance/acceptance.test.mjs",
+  "referencePatch": "reference/patch.diff",
+  "testTimeoutMs": 10000,
+  "suite": "S"
+}

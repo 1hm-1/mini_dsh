@@ -1,0 +1,24 @@
+{
+  "name": "mini-harness",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "scripts": {
+    "agent": "node --import tsx src/cli.ts",
+    "eval": "node --import tsx eval/cli.ts",
+    "eval:smoke": "node --import tsx eval/smoke.ts",
+    "eval:preflight": "node --import tsx eval/preflight-cli.ts",
+    "eval:verify": "node --import tsx eval/verify-cli.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --test tests/*.test.ts",
+    "check": "npm run typecheck && npm test"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "tsx": "^4.23.12",
+    "typescript": "^5.9.3"
+  }
+}

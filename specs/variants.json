@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "order": [
+    "baseline",
+    "context",
+    "optimizer",
+    "full"
+  ],
+  "variants": {
+    "baseline": {
+      "context": false,
+      "optimizer": false
+    },
+    "context": {
+      "context": true,
+      "optimizer": false
+    },
+    "optimizer": {
+      "context": false,
+      "optimizer": true
+    },
+    "full": {
+      "context": true,
+      "optimizer": true
+    }
+  }
+}

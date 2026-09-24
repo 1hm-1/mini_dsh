@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "variant": "baseline",
+  "model": {
+    "endpoint": "https://TEMPLATE.invalid/chat/completions",
+    "id": "TEMPLATE_REQUIRED",
+    "temperature": 0
+  },
+  "budget": {
+    "maxModelRequests": 16,
+    "maxToolCalls": 24,
+    "timeoutMs": 120000,
+    "maxOutputTokens": 4096,
+    "maxInputChars": 128000
+  },
+  "context": {
+    "estimatedWindowTokens": 8192,
+    "triggerRatio": 0.75,
+    "keepRecentRounds": 4
+  },
+  "workspace": "TEMPLATE_REQUIRED",
+  "writable": [
+    "subject.mjs"
+  ],
+  "sessionPath": "TEMPLATE_REQUIRED"
+}

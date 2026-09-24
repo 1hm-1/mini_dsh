@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "eval-smoke",
+  "suite": "S",
+  "category": "bug-fix",
+  "promptFile": "prompt.md",
+  "workspaceDir": "workspace",
+  "writable": ["sum.mjs"],
+  "publicTest": "public.test.mjs",
+  "acceptanceTest": "acceptance/acceptance.test.mjs",
+  "referencePatch": "reference/patch.diff",
+  "testTimeoutMs": 5000
+}

@@ -1,0 +1,6 @@
+diff --git a/sum.mjs b/sum.mjs
+--- a/sum.mjs
++++ b/sum.mjs
+@@ -1 +1 @@
+-export const sum = (a, b) => a - b;
++export const sum = (a, b) => a + b; // REFERENCE_CANARY_M4_1

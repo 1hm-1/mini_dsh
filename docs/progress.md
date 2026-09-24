@@ -1,0 +1,452 @@
+# 进度
+
+IMPLEMENTING。用户于2026-09-24授权开始开发，使用GPT-6 Sol（medium）子智能体实现，主智能体负责架构审阅与验收。M0.1、M0.2、M1.1、M1.2、M2.1、M2.2 DONE，M0/M1/M2完成；M3.1、M3.2、M3.3 DONE，M3完成；M4.1、M4.2、M4.3、M4.4 DONE，M4整体完成；M5.1 IN_PROGRESS，M5.2–M5.4及M6以后工单NOT_STARTED。正在创建实际Benchmark资产，尚无benchmark-v1提交、真实baseline报告或消融成绩。
+
+## 本次规划修订
+
+- M0–M4保持小型工程；M5实际创建S8/H4并预检/Git固定；M6真实baseline和失败分析；M7 C；M8 O；M9四组消融。
+- 新增长约束和多文件H场景；S用于基础能力/工程回归，两层分别计分。
+- baseline阶段已记录逐请求上下文长度、阈值条件、终止原因；提供两份报告模板。
+- 保留16次总模型请求、8192窗口/0.75/4轮；辅助调用没有免费额度。
+- 最终同版本重新跑baseline，不与早期诊断baseline拼主表。
+- 默认36次诊断+144次消融=180次；48次快速比较为可选额外运行。
+
+C/O是事先选择的候选能力，不能把规划写成已经有因果证据。无失败或零压缩均须如实报告。
+
+## 实施工单记录
+
+工单ID、前置证据、修改文件、实际命令/退出码、验收ID与路径、未执行项、状态。M6/M9真实证据门槛和离线mock验收分别记录。
+
+### M0.1：工程基础（2026-09-24，DONE）
+
+前置证据：用户明确要求开始开发并授权GPT-6 Sol（medium）实现；已阅读README、00/01/02/08/10/11及其余专项规格。初始Git工作树仅有未跟踪规划资料，无提交、无remote；原有资料保留，未创建提交或推送。
+
+先编写tests/engineering.test.ts，再添加package.json、package-lock.json、tsconfig.json、.gitignore和.env.example。主智能体审阅配置并同步README、AGENTS及00/08/10中的开发授权状态。仅使用TypeScript、tsx、Node类型开发依赖，无生产依赖。未实现M0.2接口、插件内核或运行时。
+
+| 实际命令/操作 | 退出码 | 结果与边界 |
+| --- | --- | --- |
+| `node --version` / `npm --version` | 各0 | v24.20.0 / 11.19.0 |
+| `git status --short` / `git remote -v` | 各0 | 初始规划文件均未跟踪；无remote |
+| `git log -1 --oneline` | 128 | 尚无提交，不记作实现或冻结SHA |
+| `npm install --package-lock-only --ignore-scripts --no-audit --no-fund` | 130 | 默认网络等待后中止 |
+| 上述安装追加`--fetch-retries=0 --fetch-timeout=15000` | 1 | 沙箱网络EPERM，未生成lock |
+| `npm install --ignore-scripts --no-audit --no-fund --fetch-retries=0 --fetch-timeout=15000`（获准升级） | 0 | 安装并生成lock |
+| `npm run check` | 0 | tsc严格检查通过；本次test只报告文件级通过，不作测试用例验收 |
+| `npm ls --depth=0` | 0 | @types/node 24.13.6、tsx 4.23.15、typescript 5.9.3 |
+| `git check-ignore .env .env.local node_modules runs/probe.json` | 0 | 密钥文件、依赖和原始runs匹配忽略规则 |
+| `npm ci --offline --ignore-scripts --no-audit --no-fund` | 0 | 从lock及本地缓存成功重装 |
+| `npm test -- --test-reporter=tap` / `node --import tsx --test --test-reporter=tap tests/engineering.test.ts` | 各0 | 仍只有文件级输出，不作具名用例证据 |
+| 临时故意失败用例的`spawnSync`诊断（Node内联脚本） | 1 | 未取得预期断言输出；后续最小子进程探针证实spawnSync EPERM，探针本身退出0 |
+| `npm test`（获准沙箱外重跑） | 0 | 具名用例`TypeScript tests execute through tsx`通过；1 test、0 fail |
+
+工程证据：tests/engineering.test.ts的TypeScript语法实际由tsx执行，两个`@ts-expect-error`在tsc检查中验证strictNullChecks/noImplicitAny生效。无API调用。A01及其余运行时/评测验收尚未执行，A01归M0.2；不能以本次1项工程测试称M0或Harness完成。
+
+本工单完成时下一子工单为M0.2，结果见下。远程发布与M6付费实验各在实际需要时取得对应信息和授权。
+
+### M0.2：接口与显式校验（2026-09-24，DONE）
+
+前置证据：用户要求继续；M0.1已完成，主智能体重新运行typecheck与具名测试通过。Git仍无提交，原有未跟踪文件保留。GPT-6 Sol（medium）子智能体先写tests/contracts.test.ts并验证缺模块失败，再实现接口与解析函数；主智能体审阅、修正边界并独立补充tests/config-boundaries.test.ts。
+
+新增文件：src/types.ts、src/plugin.ts、src/services/index.ts、src/config.ts、src/validation.ts、eval/contracts.ts、eval/task.ts及上述两个测试文件。同步README、02-contracts与本进度；未新增依赖或脚本。
+
+交付：九类服务及插件契约、消息/模型/工具/结果/上下文指标类型、任务与评测结果类型、运行/任务/实验配置纯校验。variant类型和开关读取specs/variants.json；检查未知字段、预算与上下文计数、模型端点、保留占位值、精确写入路径及实验阶段矩阵。解析不修改输入；空白名单合法。审阅修复了继承属性/稀疏数组绕过、凭据参数漏检与普通参数误判、公开测试可写冲突，以及以组顺序位置代替阶段语义的问题。
+
+| 实际命令/操作 | 退出码 | 结果与边界 |
+| --- | --- | --- |
+| `git status --short` | 0 | 保留已有未跟踪工程与规划资料 |
+| `npm run typecheck`（前置复核） | 0 | M0.1类型检查通过 |
+| `npm test`（前置复核，获准沙箱外） | 0 | 原1个具名用例通过 |
+| `npm test`（子智能体先写测试，获准沙箱外） | 1 | 缺src/config.js，契约测试文件失败；工程用例仍通过，确认测试先于实现 |
+| `npm run typecheck`（子智能体实现后） | 0 | 契约和显式校验类型检查通过 |
+| `npm test`（子智能体实现后，获准沙箱外） | 0 | 原有工程测试与6项契约测试，共7个具名用例通过 |
+| `npm run typecheck`（主智能体最终验收） | 0 | 包含独立补充边界测试 |
+| `npm test`（主智能体最终验收，获准沙箱外） | 0 | 11个具名用例通过，0失败/跳过，含7项A01具名用例 |
+| `rg`源码静态检查（实际模式见下） | 1 | 无命中；结合源码审阅确认src不依赖eval，解析无模型调用/写文件/凭据读取 |
+| 逐文件`git diff --no-index --check /dev/null <file>`（Python内联脚本汇总） | 0 | 检查12个源码/测试/文档文件，包括未跟踪文件；无空白错误。最初shell循环将无输出的差异退出码1当错误而停止，随后按no-index语义处理0/1并要求无诊断输出，完成全部文件检查 |
+
+静态检查实际命令（退出1表示无匹配）：
+
+```sh
+rg -n '\bany\b|fetch\(|writeFile|mkdir|process\.env|eval/' src
+```
+
+验收边界：A01配置契约层检查通过，入口是parseRunConfig；尚不存在runtime/CLI，其“启动失败且无副作用”集成验证留到M3接线时执行。M0.2不实现任务加载，因此TaskSpec通过形状校验不证明资产存在、无symlink或已冻结；这些检查留M4/M5。Event payload、运行结果计数一致性等行为验收随服务/运行时实现进行。未实现C/O机制，未运行API、preflight或真实评测，未提交/推送。
+
+本工单完成时下一子工单为M1.1，结果见下。
+
+### M1.1：插件内核（2026-09-24，DONE）
+
+前置证据：用户要求执行下一步，M0类型检查与11项具名测试已通过，无前置失败遗留。已阅读README、00/01/08/10/11、验收条目与现有插件/服务接口；git status确认原有未跟踪文件保留。GPT-6 Sol（medium）子智能体先写内核测试、观察缺模块失败后实现；主智能体补充独立边界测试并审阅。
+
+新增src/context.ts、src/service-registry.ts、src/plugin-registry.ts、tests/kernel.test.ts、tests/kernel-boundaries.test.ts；同步README、11-plugin-kernel与本进度。未增加依赖、脚本或修改公共插件接口。
+
+交付：泛型服务注册与身份绑定的移除函数；按调用者顺序加载、按服务名检查依赖；重复服务/插件拒绝；失败启动清理此前成功插件；逆序异步清理、首个错误报告和幂等dispose；独立Context隔离。内核只接线和管理生命周期，无业务插件实现。
+
+审阅发现并修复：原dispose在保存closing Promise前同步执行清理回调，重入dispose可提前移除上游，且关闭期间仍可注册服务。新增两项复现先失败，修复为先发布closing Promise再执行清理；启动失败触发清理时也立即拒绝新的注册。故障插件自清理及外部资源释放仍由插件负责，不增加事务。
+
+| 实际命令/操作 | 退出码 | 结果与证据 |
+| --- | --- | --- |
+| `git status --short` | 0 | 现有未跟踪资料保留；无提交或推送 |
+| `npm test`（子智能体先写测试，获准沙箱外） | 1 | kernel.test.ts缺context.js，原11项通过；测试先于实现 |
+| `npm run typecheck` / `npm test`（子智能体首轮实现后） | 各0 | 20项具名测试通过，包含首批3项独立边界测试 |
+| `npm test`（增加清理重入复现，获准沙箱外） | 1 | 22项中20通过、2失败，定位K02/K03关闭状态窗口 |
+| `npm run typecheck` / `npm test`（修复后） | 各0 | 22项全部通过 |
+| `npm run typecheck`（主智能体最终验收） | 0 | strict类型检查通过 |
+| `npm test`（主智能体最终验收，获准沙箱外） | 0 | 22项具名测试通过、0失败/跳过；其中11项为新增内核用例 |
+| 逐文件`git diff --no-index --check /dev/null <file>`（Python内联脚本汇总） | 0 | 本次8个源码/测试/文档文件无空白错误，包含未跟踪文件；按no-index语义处理0/1且要求无诊断输出 |
+
+验收：K01/K02内核行为通过；K03覆盖部分setup失败自清理、前置插件回收与同一测试consumer替换provider；K04覆盖两个Context服务隔离。K03真实Loop不改源码替换provider、K04两runtime的Session/权限/工具/预算隔离及schema/handler清理，须在相应服务与runtime存在后补做。R06属于M1.2及M3，不在本次宣称通过。未运行API、preflight或真实模型评测，未实现C/O。
+
+本工单完成时下一子工单为M1.2，结果见下。
+
+### M1.2：事件、持久化、Session与只读日志（2026-09-24，DONE）
+
+前置证据：用户要求执行下一步；M1.1已有typecheck和22项具名测试通过，无前置失败。核对README、00/02/03/08/10/11、现有接口及Git状态，原有未跟踪资料保留。GPT-6 Sol（medium）子智能体实现，主智能体审阅并补充独立边界测试。
+
+接口决定：Q-M1.2-01已记入open-questions。用户明确选择Session统一编号并返回Event；SessionService.record改为接收EventInput `{type,data}`、返回Promise<Event>，append沿用Promise<void>，二者共享序号和时间。调整前暂停依赖该选择的Session实现，先推进Events/持久化/解析；得到回复后实施。
+
+新增src/plugins/events.ts、jsonl-persistence.ts、memory-session.ts、src/journal.ts、tests/session.test.ts及tests/session-boundaries.test.ts；更新src/types.ts、src/services/index.ts和README、02-contracts、open-questions、本进度。无新依赖/脚本，不修改内核或提前实现Agent策略。
+
+交付：事件注册/取消及快照隔离；工作区外JSONL独占创建、串行写入和幂等关闭；Session先完成持久化再更新完整历史/发布事件，写失败阻断所有后续写入，正常run_end唯一；只读解析序号/时间、生命周期和message call/result关联，断尾/缺结束记录返回incomplete。支持替换持久化provider和独立Session。
+
+审阅修复：record(message)必须与append一致更新历史；均值与耗时接受有限小数；稀疏calls拒绝；最后一行坏JSON含换行仍标incomplete；dispose后的观察服务不可复活。另以两项失败测试复现并修复返回Event与历史/provider共享引用、旧unsubscribe删除后来同listener注册的问题。
+
+| 实际命令/操作 | 退出码 | 结果与证据 |
+| --- | --- | --- |
+| `git status --short` | 0 | 保留已有文件；无提交/推送 |
+| 先写Session测试后的`npm test`（完整命令见下，获准沙箱外） | 1 | 原22项通过，新session.test.ts因events.js尚不存在报ERR_MODULE_NOT_FOUND，确认测试先于实现；筛选参数位于文件列表后，实际输出包含全部旧测试 |
+| `npm run typecheck`（Session接口等待决定期间） | 2 | 当时仅缺memory-session模块，未声明实现完成 |
+| `npm run typecheck` / `npm test`（首轮集成） | 各0 | 29项具名测试通过；随后补充边界测试 |
+| `npm run typecheck` / `npm test`（子智能体补验） | 各0 | 35项具名测试通过 |
+| `npm test`（加入引用身份复现，获准沙箱外） | 1 | 39项中37通过、2失败，确认返回Event和旧unsubscribe漏洞 |
+| `npm run typecheck` / `npm test`（修复后） | 各0 | 39项具名测试通过 |
+| `npm run typecheck`（主智能体最终核验） | 0 | strict检查通过 |
+| `npm test`（主智能体最终核验，获准沙箱外） | 0 | 39项具名测试通过，0失败/跳过；相对M1.1新增17项 |
+| 逐文件`git diff --no-index --check /dev/null <file>`（Python内联脚本汇总） | 0 | 本次12个源码/测试/文档文件无空白错误，覆盖未跟踪文件；按no-index语义处理0/1且要求无诊断输出 |
+
+最初失败验证实际命令：
+
+```sh
+npm test -- --test-name-pattern='R06|K03/K04|K03 JSONL'
+```
+
+验收边界：R06的Session先写后提交、写失败封存、断尾诊断和唯一结束记录部分通过；K03/K04覆盖持久化替换、服务清理、Session隔离和观察者隔离。AgentLoop将Session拒绝映射为io_error并停止后续工具/模型动作、HTTP事件与用量重算、完整runtime预算/权限/工具隔离留M2–M4，未声称其通过。当前解析器只接受三种已实现payload，真实实验日志格式与verify尚未完成。未调用模型API、preflight或真实评测，未实现C/O。
+
+本工单完成时下一子工单为M2.1，结果见下。
+
+### M2.1：权限与工具注册（2026-09-24，DONE）
+
+前置证据：用户要求继续；M0/M1已完成，M1.2类型检查及39项具名测试通过。核对README、00/02/04/08/10/11、既有接口、未决问题和Git状态；保留全部已有未跟踪文件。GPT-6 Sol（medium）子智能体先写测试再实现；主智能体另写7项边界用例并审阅。无公共接口变更或待用户决定问题。
+
+新增src/plugins/permissions.ts、src/plugins/tools.ts、tests/tools.test.ts、tests/tool-boundaries.test.ts；同步README、04-tools及本进度。无新增依赖或脚本，不实现实际文件handler、Shell、模型计量或Agent Loop。
+
+交付：五工具默认权限及精确白名单快照、词法路径检查；明确的字符串参数schema子集；schema/handler注册快照、排序输出和身份绑定disposer；JSON/字段/类型/权限检查后执行handler；异常脱敏、16000字符上限（含标记）、取消传播。默认权限拒绝未知工具，可通过替换Permission provider验证工具服务扩展。输入含普通TEMPLATE文字不被当作配置占位值拒绝。
+
+审阅补验覆盖白名单/注册定义/返回schema修改隔离、旧disposer、取消前不执行及取消后等待handler结束、输出上限。进一步用两项失败测试复现并修复稀疏或glob白名单被接受，以及ToolResult额外字段透传的问题。
+
+| 实际命令/操作 | 退出码 | 结果与证据 |
+| --- | --- | --- |
+| `git status --short` | 0 | 原有文件保留，未提交/推送 |
+| `node --import tsx --test tests/tools.test.ts`（子智能体先写测试） | 1 | 缺permissions.js，确认测试先于实现 |
+| `npm test`（首轮检查） | 1 | 45项中44通过；测试误将约定标记断言为truncated而非[truncated]，修正该断言，未放宽输出限制 |
+| `npm run typecheck` / `npm test`（首次完整实现） | 各0 | 50项具名测试通过 |
+| `npm test`（新增两项审阅复现） | 1 | 52项中50通过、2失败，分别为白名单验证和返回值额外字段 |
+| `npm run typecheck` / `npm test`（修复后） | 各0 | 52项具名测试通过 |
+| `npm run typecheck`（主智能体最终验收） | 0 | strict检查通过 |
+| `npm test`（主智能体最终验收，获准沙箱外） | 0 | 52项具名测试通过，0失败/跳过；相对M1.2新增13项 |
+| 逐文件`git diff --no-index --check /dev/null <file>`（Python内联脚本汇总） | 0 | 本次7个源码/测试/文档文件无空白错误，覆盖未跟踪文件；按no-index语义处理0/1且要求无诊断输出 |
+
+验收边界：T01仅词法路径部分；T02仅白名单和拒绝后handler未执行部分；T04参数错误、通用输出上限与取消传播部分；K04注册/撤销、schema快照和替换Permission provider部分通过。真实文件/symlink/特殊文件/保护文件不变、T03原子写入和唯一编辑、256KiB/1000项限制留M2.2；请求/工具预算留M3。未运行API、题目preflight或真实模型评测。
+
+本工单完成时下一子工单为M2.2，结果见下。
+
+### M2.2：五个文件工具（2026-09-24，DONE）
+
+前置证据：用户要求执行下一步；M2.1类型检查与52项具名测试通过。核对README、00/02/04/08/09/10/11、既有接口、未决问题及Git状态，保留原有未跟踪文件。GPT-6 Sol（medium）子智能体先写测试再实现；主智能体新增8项边界测试并审阅、独立验收。
+
+新增src/plugins/file-tools.ts、src/plugins/file-tools-atomic.ts、tests/file-tools.test.ts及tests/file-tool-boundaries.test.ts；同步README、04-tools与本进度。file-tools只依赖tools并注册五个工具，无新增服务接口、依赖或脚本；原子写辅助函数的write/rename注入仅用于内部故障测试。
+
+交付：启动时realpath工作区并确认目录，逐段lstat拒绝symlink/特殊文件；读/写/编辑按UTF-8字节检查256KiB；write拒绝用小内容覆盖已有超限文件；edit要求非空oldText且只出现一次（含重叠匹配），替换结果同样限长。list按工作区相对路径全局字典序输出，最多1000项并受通用16000字符限制。delete仅删除精确白名单普通文件，不存在返回file_missing。父目录须已存在。
+
+审阅修复：临时文件独占open成功后才标记owned，防止创建失败时误删他人文件；固定短临时名支持255字节basename；关闭失败仍尝试清理；注册部分失败时撤销既有handler，清理失败不覆盖原始setup错误且不阻断其他撤销。测试注入rename失败、真实部分写入后失败及提交前取消，均确认原内容完整、临时文件移除。真实Unix socket与外部symlink夹具验证文件类型边界；两个工作区互不影响。
+
+| 实际命令/操作 | 退出码 | 结果与证据 |
+| --- | --- | --- |
+| `git status --short` | 0 | 保留原有未跟踪文件，未提交/推送 |
+| `npm test`（子智能体先写测试，获准沙箱外） | 1 | 原52项通过，新增file-tools.test.ts因缺file-tools.js报ERR_MODULE_NOT_FOUND；共53项、1失败，确认先测试后实现 |
+| `npm run typecheck` / `npm test`（首次实现检查） | 2 / 1 | file-tools.ts残留数组逗号导致语法错误；修正后继续验收，未绕过检查 |
+| `npm run typecheck` / `npm test`（子智能体修复后） | 各0 | 66项具名测试通过 |
+| `npm test` / `npm run typecheck`（补齐提交前取消断言后） | 各0 | 66项具名测试通过 |
+| `npm run typecheck`（主智能体最终验收） | 0 | strict检查通过 |
+| `npm test`（主智能体最终验收，获准沙箱外） | 0 | 66项具名测试通过，0失败/取消/跳过；相对M2.1新增14项 |
+| 逐文件`git diff --no-index --check /dev/null <file>`（Python内联脚本汇总） | 0 | 本次7个源码/测试/文档文件无空白错误，覆盖未跟踪文件；按no-index语义处理0/1且要求无诊断输出 |
+
+验收：T01真实相对路径、symlink父/叶、Unix socket拒绝与外部哨兵不变；T02保护文件不可写、非白名单删除/越界拒绝；T03零/多/重叠匹配不改、单次替换、原子失败清理；T04缺失文件、参数、字节边界、长输出与1000项列表；K04文件工具注册回滚及工作区隔离通过。工具实现不读取variant，四组复用同一插件；四组runtime端到端集成仍待后续工单，未声称已跑四组。所有调用由上层串行await，未实现Agent Loop或请求预算；不承诺恶意外部并发或断电持久化。未请求API、运行题目preflight或真实实验。
+
+本工单完成时下一子工单为M3.1，结果见下。
+
+### M3.1：模型插件、共享计量与模型事件（2026-09-24，DONE）
+
+前置证据：用户要求下一步，M2类型检查与66项具名测试通过。核对README、00/02/03/08/09/10/11、既有Session和接口以及Git状态；保留原有未跟踪文件。两个GPT-6 Sol（medium）子智能体分别实现模型/计量和事件校验，主智能体补13项独立边界测试并审阅、验收。按openai-docs技能核对官方Chat Completions字段，出处记录在02-contracts；仅本地fake HTTP使用测试密钥，无真实provider调用。
+
+接口决定Q-M3.1-01：用户明确批准ModelRequest.contextMetrics只输入五项投影指标，计量包装器生成requestChars与observationSeq。主智能体调整src/types.ts、02/03及open-questions；完整WorkerContextMetrics不变。未实现ContextManager、Agent Loop、CLI或C/O机制。
+
+新增src/accounting.ts、model-protocol.ts、model-events.ts、src/plugins/model-common.ts、http-model.ts、mock-model.ts及tests/models.test.ts、model-events.test.ts、model-boundaries.test.ts；更新src/journal.ts及上述类型、README/契约/流程/未决问题/本进度。无新增依赖或脚本。
+
+交付：每runtime独立Accounting复制预算并提供共同deadline，worker/optimizer/summary共享额度；持久化请求意图成功后才预留并调用provider，已调用的失败请求也计数。按输入/输出分别保留缺失用量null和known总数，结构非法但usage有效的HTTP响应也保留独立用量证据。编码实际body并记录长度，worker硬超限先记录观测但不进入已发请求统计。HTTP使用完整endpoint、环境变量key、非流式单choice文本/function工具协议，无retry/redirect；headers与body均受signal控制。模型错误脱敏，关闭或日志失败后服务封存。
+
+日志新增context_observation/request/response，校验明确payload、观测长度/估算关联、单次观测引用、串行请求和唯一响应配对；completed不得有未响应请求。完整RunResult计数重算仍留M4。非法结构的原始响应不保存为规范response，合法length/other保留诊断响应后抛model_error。模型返回后若在response保存期间取消，包装器仍拒绝迟到成功，不修改已保存的响应事件。
+
+审阅修复与回归：调用输入快照避免日志await期间更改kind/messages；替换Session失败也封存，不仅依赖默认Session；取消等待底层provider结束而非放任后台回调；HTTP拒绝状态关闭未消费body；局部取消、共同deadline及最后一次合法额度分别检查；生命周期关闭旧引用；响应落盘期间取消的失败用例修复。预先验证指标等价关系和JSON可序列化性，避免将输入错误误判为io_error。
+
+| 实际命令/操作 | 退出码 | 结果与证据 |
+| --- | --- | --- |
+| `git status --short` | 0 | 保留原有未跟踪文件，无提交/推送 |
+| `node --import tsx --test tests/models.test.ts`（模型子智能体先测） | 1 | 缺model-protocol.js，确认先测试后实现 |
+| `node --import tsx --test tests/model-events.test.ts`（事件子智能体先测） | 1 | 缺model-events模块；沙箱内运行不据文件级结果作具名验收 |
+| `npm run typecheck`（事件首次集成） | 2 | 并行实现中的accounting.ts可选signal字段违反exactOptionalPropertyTypes，修正后再验收 |
+| `npm test`（中间集成，获准沙箱外） | 1 | 当时81项中80通过；事件测试fixture序号先触发sequence gap，修正fixture以实际覆盖缺失观测引用 |
+| `node --import tsx --test tests/model-events.test.ts`（事件修正后，获准沙箱外） | 0 | 4项具名测试通过；事件子智能体typecheck随后退出0 |
+| `node --import tsx --test tests/model-boundaries.test.ts tests/models.test.ts`（取消回归，获准沙箱外） | 1 | 当时17项中16通过，复现response持久化期间取消却返回成功 |
+| `node --import tsx --test tests/model-boundaries.test.ts tests/models.test.ts tests/model-events.test.ts`（修复后，获准沙箱外） | 0 | 26项具名用例/子用例通过 |
+| `npm run typecheck` / `npm test`（模型子智能体最终检查） | 各0 | 92项具名用例/子用例通过 |
+| `npm run typecheck`（主智能体最终验收） | 0 | strict检查通过 |
+| `npm test`（主智能体最终验收，获准沙箱外） | 0 | 92项具名用例/子用例通过，0失败/取消/跳过；相对M2新增26项，含headers/body两个独立超时子用例 |
+| 逐文件`git diff --no-index --check /dev/null <file>`（Python内联脚本汇总） | 0 | 本次16个源码/测试/文档文件无空白错误，覆盖未跟踪文件；按no-index语义处理0/1且要求无诊断输出 |
+
+验收边界：R02共享请求限额、R04 HTTP超时/取消/429/重定向/非法JSON/不合法完成原因、R05模型分项计数与未知usage、R06模型层持久化失败封存、R07请求体长度与观测统计、K04模型关闭部分通过。实际HTTP收到body与日志完全相同，诊断字段/key不进入body；错误正文/key不进入事件。R01完整读改final、R03工具前缀预算、R05非法工具调用计量、ContextManager的真实历史轮次/阈值生成、Loop终止结果及A02 CLI仍待M3.2/M3.3。没有运行真实模型、题目preflight、baseline或四组实验。
+
+本工单完成时下一子工单为M3.2，结果见下。
+
+### M3.2：完整上下文投影与Agent Loop（2026-09-24，DONE）
+
+前置证据：用户要求下一步；M3.1类型检查与92项具名测试通过。核对README、00/02/03/08/09/10/11、接口及Git状态，保留原有未跟踪文件。三个GPT-6 Sol（medium）子智能体分别实现完整上下文、循环和工具事件，主智能体编写15项独立边界用例/子用例并审阅、验收。无公共服务接口变更，无新增依赖或脚本。
+
+新增src/plugins/context-manager.ts、agent-loop.ts、src/tool-events.ts及tests/context-manager.test.ts、agent-loop.test.ts、tool-events.test.ts、loop-boundaries.test.ts；更新src/journal.ts、src/plugins/model-common.ts以及README、02-contracts、03-runtime和本进度，共13个文件。
+
+交付：ContextManager保持完整历史、system和工具定义，按完整assistant/tool轮次计算olderRounds、阈值及可压缩观测；不丢历史、不调用摘要模型。Loop每实例只运行一次，记录原始任务、assistant/tool消息和唯一run_end，工具串行执行。参数错误和权限拒绝消耗工具额度；预算外后缀记录未执行，不伪造工具消息、不再调用worker。最后一次合法模型响应仍可执行工具；已派发工具取消后等待其结束。可选Optimizer只有既有服务接口连接及注入测试，未实现机制插件。
+
+工具事件校验调用内容、顺序、start/end关联、结果消息一致性，拒绝未回传结果就继续调用和终止错误后继续派发；旧版仅message日志仍可只读检查。返回RunResult与保存的run_end一致，持久化失败立即终止且不尝试伪造结束记录。完整计数重算仍留M4。
+
+审阅修复：模型日志失败不得再尝试run_end；替换Tools返回值须先校验；runOptions.signal在调用入口快照；共同deadline在model-common中优先于合并的请求signal识别为timeout，避免响应记cancelled而最终结果记timeout。真实文件夹具补finally清理Context及临时目录。
+
+| 实际命令/操作 | 退出码 | 结果与证据 |
+| --- | --- | --- |
+| `git status --short` | 0 | 保留原有文件，未提交/推送 |
+| Context子智能体先写测试后的失败验证 | 1 | 新模块尚不存在；随后实现。中间阈值fixture不符预期，修正仅该测试窗口，未改默认窗口/断言规则 |
+| `npm test`（中间集成） | 1 | 当时121项中113通过，7项循环fixture缺model依赖、1项上下文fixture阈值断言失败；修正后再验收 |
+| `npm run typecheck` / `npm test`（Context集成后） | 各0 | 当时121项具名测试通过 |
+| `node --import tsx --test tests/agent-loop.test.ts tests/loop-boundaries.test.ts`（审阅回归） | 1 | 当时22项中18通过、4失败，复现模型日志失败、非法工具结果、signal可变引用和超时分类问题 |
+| 同上（四项修复并新增真实文件链路后） | 0 | 23项具名用例/子用例通过 |
+| `node --import tsx --test tests/tool-events.test.ts tests/model-events.test.ts tests/session.test.ts`（日志顺序修复后） | 0 | 20项具名测试通过，typecheck退出0；子智能体另报告新增的结果消息顺序及终止错误后派发断言在修复前失败（退出1） |
+| `npm run typecheck` / `npm test`（循环子智能体最终检查） | 各0 | 127项具名用例/子用例通过 |
+| `npm run typecheck`（主智能体最终验收） | 0 | strict检查通过 |
+| `npm test`（主智能体最终验收，获准沙箱外） | 0 | 127项具名用例/子用例通过，0失败/取消/跳过；相对M3.1新增35项 |
+| 逐文件`git diff --no-index --check /dev/null <file>`（Python内联脚本汇总） | 0 | 本次13个源码/测试/文档文件无空白错误，覆盖未跟踪文件；按no-index语义处理0/1且要求无诊断输出 |
+
+验收边界：R01用脚本模型和真实文件工具验证read→edit→final、文件内容及完整JSONL回放；这不是CLI验收、外部功能评分或真实模型成绩。R02/R03覆盖请求与工具预算；R04覆盖取消、等待在途工具和共同超时分类；R05覆盖错误调用计数；R06覆盖各持久化失败边界及事件关联；R07覆盖完整历史轮次/阈值投影；K04覆盖重复运行、关闭旧引用和独立状态。runtime装配、finally清理、CLI/A02留M3.3；Evaluator/完整verify留M4。未运行真实模型、题目preflight或baseline/四组实验，未实现C/O算法。
+
+本工单完成时下一子工单为M3.3，结果见下。
+
+### M3.3：Baseline Runtime与单次CLI（2026-09-24，DONE）
+
+前置证据：用户要求下一步，M3.2类型检查与127项具名测试通过。核对README、00/02/03/08/09/10/11、既有插件/API及Git状态，保留原有未跟踪文件。两个GPT-6 Sol（medium）子智能体分别实现runtime和CLI，主智能体编写7项独立边界回归并审阅。新增装配API沿用既有服务接口，无服务契约变更、生产依赖或C/O机制。
+
+新增src/runtime.ts、src/cli.ts、tests/runtime.test.ts、tests/cli.test.ts、tests/runtime-boundaries.test.ts；更新package.json（agent入口）、.env.example、README、02-contracts、03-runtime及本进度，共11个文件。
+
+交付：createRuntime在首个await前校验/复制配置、捕获模型工厂及取消信号；按既有插件顺序装配，共享Accounting，默认HTTP，可显式替换脚本模型。组开关读取specs，仅baseline开放。run仅一次并finally清理，运行中dispose取消且等待在途provider，清理失败仍释放其他服务并拒绝调用；已保存run_end不被改写。固定BASE_SYSTEM仅含任务和文件操作规则，无规划器或结束前验证门禁。
+
+CLI支持config与input/input-file、help，JSON结果输出、固定脱敏错误及0/2/1/130退出码；SIGINT等待取消和清理完成。相对路径按启动cwd解析，校验先于路径解析，目录预先存在，日志在workspace外且不可覆盖；不自动加载.env。外部Node验收只在测试中运行，CLI本身不执行评分。
+
+审阅修复：CLI不得先把空workspace解析为cwd后再校验；改为parseRunConfig后由runtime解析路径，合法组开关仍取variantFlags。空路径回归使用日志在cwd外的布局，确认按配置错误拒绝且日志未创建，避免被另一个路径约束掩盖。CLI测试从临时cwd启动时使用绝对tsx loader，并为子进程加超时、SIGINT等待同时监听提前退出，避免失败用例永久挂起；临时目录和本地HTTP服务均清理。
+
+| 实际命令/操作 | 退出码 | 结果与证据 |
+| --- | --- | --- |
+| `git status --short` | 0 | 保留原有文件，无提交/推送 |
+| `npm run typecheck`（runtime先写测试） | 2 | runtime模块尚不存在，另有测试TestContext类型笔误；实现/修正后再验收 |
+| `npm test`（runtime子智能体中间集成） | 130 | CLI临时cwd下不能解析tsx，另一个CLI用例等待请求挂起，约100秒后中断；未认定通过 |
+| `node --import tsx --test tests/runtime.test.ts`（runtime子智能体） | 0 | 5项通过，真实文件修改后外部Node测试成功；其typecheck退出0 |
+| `node --import tsx --test tests/runtime-boundaries.test.ts`（主智能体初轮） | 0 | 最初5项通过 |
+| 同上（追加signal快照和两工作区隔离） | 1 | 7项中6通过；关闭Tools后schemas按既有契约抛错，测试误期望空数组 |
+| 同上（按既有关闭契约修正断言） | 0 | 7项通过，关闭旧服务拒绝调用，另一工作区可正常写入 |
+| `npm run typecheck`（主智能体集成检查） | 0 | strict检查通过 |
+| `npm run agent -- --help` | 0 | 新增脚本与真实CLI入口可运行，不读取密钥或调用模型 |
+| `node --import tsx --test tests/cli.test.ts`（CLI首次验证） | 1 | 子智能体报告未实现入口/受限监听失败；不以沙箱文件级输出作为具名验收 |
+| `node --import tsx --test --test-isolation=none tests/cli.test.ts`（CLI子智能体，获准沙箱外） | 0 | 5项具名测试通过，随后审阅调整配置校验和失败fixture；其typecheck退出0 |
+| `npm test`（主智能体完整验收，获准沙箱外） | 0 | 144项具名用例/子用例通过，0失败/取消/跳过；相对M3.2新增17项 |
+| `npm run typecheck`（主智能体最终验收） | 0 | strict检查通过 |
+| `node --import tsx --test tests/cli.test.ts`（主智能体最后fixture调整后，获准沙箱外） | 0 | 5项通过，覆盖completed 0、request_limit 2、配置1和SIGINT 130；空workspace不建日志 |
+| 逐文件`git diff --no-index --check /dev/null <file>`（Python内联脚本汇总） | 0 | 本次11个源码/测试/文档文件无空白错误，覆盖未跟踪文件；按no-index语义处理0/1且要求无诊断输出 |
+
+
+验收边界：A01/A02的严格启动检查、CLI退出码/信号/清理、输入文件与日志拒绝覆盖通过；R01脚本模型及本地fake HTTP完整read→edit→final后，实际文件修复且外部Node断言通过，正常JSONL完整；K02/K03/K04覆盖清理异常、启动失败、两工作区/预算独立及关闭旧引用；R04/R06覆盖等待在途模型和Session失败后的清理。既有R02–R07与T01–T04回归保留。工程验证不代表真实模型能力；完整计数重算、评测评分/verify及任务资产仍待M4/M5，C/O实现仍受M6门槛约束。未调用真实provider、未创建题库资产、未运行preflight、baseline或四组实验。
+
+本工单完成时下一子工单为M4.1，结果见下。
+
+### M4.1：任务资产加载、独立副本与快照（2026-09-24，DONE）
+
+前置证据：用户要求执行下一步，M3类型检查与144项具名测试通过。核对README、00/02/05/08/10、TaskSpec与评测契约及Git状态；保留全部已有未跟踪文件。两个GPT-6 Sol（medium）子智能体分别实现资产加载/副本和快照/changes，主智能体编写独立smoke资产及6项跨模块边界用例并审阅。未修改src运行时，不添加评测平台或研究机制。
+
+新增eval/assets.ts、eval/workspace.ts、tests/assets.test.ts、tests/workspace.test.ts、tests/eval-assets-boundaries.test.ts及tests/fixtures/README.md、eval-smoke下task.json/prompt.md/workspace两文件/acceptance/reference六文件；同步README、02-contracts、05-evaluator与本进度，共16个文件。无新增依赖、入口脚本或Git提交。
+
+交付：从全包一致快照解析任务，校验必需路径、ID、资产类型、工作区与隐藏材料分离；整个包拒绝symlink/特殊文件。全包相对路径/类型及原字节hash生成稳定taskHash，隐藏或附加文件与task.json格式变化均参与，绝对目录/mtime不参与。materialize重新核对任务及元数据，独占创建目标，只复制workspace文件/目录；副本和原资产独立，既有目标不覆盖，失败仅清理本次拥有的目录。
+
+快照保留排序路径、原字节SHA-256和内容（合法UTF-8含BOM/CRLF，其他字节base64），不遍历symlink或读取FIFO。changes保留增删改前后证据，完整性检查拒绝非writable文件变化及任意symlink/特殊项；纯空目录变化不扩大既有文件评分规则。重复/越界路径、缺失父目录、内容/hash不一致不能进入比较。返回结构供后续runner落盘，本阶段没有生成attempt报告。
+
+审阅修复：task.json/prompt从同一assets快照解析，避免内容与taskHash来自不同读取时点；prompt的BOM保留而非解码时丢失。普通磁盘文件名与配置白名单校验分离，避免TEMPLATE或方括号文件名导致after证据无法记录；精确writable仍拒绝通配/占位值，并用Array.from拒绝稀疏数组。
+
+| 实际命令/操作 | 退出码 | 结果与证据 |
+| --- | --- | --- |
+| `git status --short` | 0 | 保留已有未跟踪文件，无提交/推送 |
+| `node --import tsx --test tests/assets.test.ts`（资产先写测试） | 1 | 缺assets模块，确认测试先于实现 |
+| `node --import tsx --test --test-isolation=none tests/assets.test.ts`（资产首次实现） | 0 | 4项通过；typecheck退出0 |
+| 同上（新增BOM回归） | 1 | 5项中4通过，prompt的BOM丢失断言失败 |
+| 同上（同快照读取/BOM修复后） | 0 | 5项通过；typecheck退出0 |
+| `node --import tsx --test tests/eval-assets-boundaries.test.ts`（主智能体初轮，获准沙箱外） | 0 | 6项通过；独立副本、全资产hash、隐藏canary、元数据伪造、symlink与拒绝覆盖验证 |
+| `node --import tsx --test tests/workspace.test.ts`（文件名/稀疏数组审阅回归，获准沙箱外） | 1 | 8项中6通过、2失败，复现普通磁盘文件名被拒及稀疏白名单未拒 |
+| 同上（修复后） | 0 | 8项通过；快照子智能体typecheck退出0 |
+| `npm run typecheck`（主智能体最终验收） | 0 | strict检查通过 |
+| `npm test`（主智能体最终验收，获准沙箱外） | 0 | 163项具名用例/子用例通过，0失败/取消/跳过；相对M3新增19项 |
+| src→eval依赖检查（rg，完整命令见下） | 1 | 无匹配，src未导入eval；此退出码表示无匹配，不是测试失败 |
+| 逐文件`git diff --no-index --check /dev/null <file>`（Python内联脚本汇总） | 0 | 本次16个源码/测试/夹具/文档文件无空白错误，覆盖未跟踪文件；按no-index语义处理0/1且要求无诊断输出 |
+
+
+依赖检查实际命令：
+
+```sh
+rg -n 'from .*eval|import\(.*eval' src
+```
+
+验收边界：E01覆盖两个独立材料副本、相同初始快照、修改不串到另一副本或原任务；完整矩阵留M4.3。E02通过实际runtime脚本模型列文件/read/edit/final，核对每个请求均无acceptance/reference canary，公开测试独立执行通过；隐藏评分副本由M4.2实现。E03仅完整性检查部分通过，尚未形成综合passed评分。E05仅快照/changes输入一致性基础，完整run verify留M4.4；E07仅资产hash与重载漂移检查，Git/冻结manifest检查留M4.3/M5。真实磁盘symlink、FIFO、二进制及BOM/CRLF均有用例；可信自建任务，不声称对恶意外部并发进程提供OS沙箱。
+
+本工单完成时工程smoke不属于Benchmark题库，未运行judge/preflight、冻结检查、真实模型、baseline或消融实验。下一子工单为M4.2，结果见下。
+
+### M4.2：外部judge与preflight（2026-09-24，DONE）
+
+前置证据：用户要求下一步，M4.1类型检查与163项具名测试通过。核对README、00/02/05/08/09/10及当前契约和Git状态，保留全部已有未跟踪文件。两个GPT-6 Sol（medium）子智能体分别实现外部check和judge；主智能体负责reference补丁应用、preflight、独立边界回归及架构审阅。
+
+新增eval/check.ts、check-worker.mjs、judge.ts、reference.ts、preflight.ts，以及tests/check.test.ts、judge.test.ts、reference.test.ts、preflight.test.ts、judge-boundaries.test.ts；更新README、02-contracts、05-evaluator、tests/fixtures/README及本进度，共15个文件。未修改src、依赖、入口脚本或既有smoke题包，无Git提交/推送。
+
+交付：runCheck使用独立Node进程和真实测试事件，单独管道返回完成摘要，不把stdout中的伪TAP或提前exit(0)认作成功。零测试、语法错误、未完成和超时均失败；超时清理进程组，日志保留错误消息/堆栈并计算原字节hash。检查工作区、测试和输出目录的路径及祖先，日志独占创建；子进程环境白名单不传API密钥。进程组和临时目录不构成OS沙箱，仅执行可信自建任务。
+
+judge重新核对任务与初始快照，沿用checkIntegrity评分；只把允许的候选变化应用到两个全新副本。公开测试和隐藏验收各自独立，使用原始测试资产；公开测试副作用不污染隐藏副本。保留两份测试日志，清理临时副本。functionalPass与主passed分开；主passed同时要求completed终止、完整性通过和两项测试通过，终止/完整性/公开/隐藏失败原因按约定优先级记录。
+
+reference支持严格文本unified diff子集：精确上下文、多文件、创建/删除、无尾换行及CRLF，不做模糊匹配；拒绝越权、越界、重复目标及不支持的二进制/rename/copy/权限变更。preflight先确认初始公开测试真实完成、初始隐藏验收实际失败，再在快照应用reference，要求修复后两项测试和完整性通过；输出initial/reference日志与preflight.json，不覆盖旧输出。
+
+审阅修复：输出路径检查覆盖祖先symlink；日志写入失败仍关闭文件；writable文件变为空目录沿用共享完整性规则并在副本正确删除旧文件，不添加评分条件；失败事件序列化保留Error消息/堆栈/cause，避免失败日志只有空对象。
+
+| 实际命令/操作 | 退出码 | 结果与证据 |
+| --- | --- | --- |
+| `git status --short` | 0 | 保留全部已有未跟踪文件，无提交/推送 |
+| `node --import tsx --test --test-isolation=none tests/check.test.ts`（先写测试） | 1 | check模块尚不存在 |
+| 同上（首次实现） | 0 | 5项通过 |
+| 同上（祖先symlink回归／修复后） | 1／0 | 先复现未拒绝，修复后5项通过；typecheck退出0 |
+| judge子智能体定向测试（先写测试／最终审阅修复后） | 1／0 | 先缺judge模块，最终8项通过；含E03三种主评分失败与副本隔离 |
+| `node --import tsx --test tests/reference.test.ts`（先写测试／实现后） | 1／0 | 先缺reference模块，实现后4项通过 |
+| `node --import tsx --test tests/preflight.test.ts`（先写测试／实现后） | 1／0 | 先缺preflight模块，实现后10项具名用例/子用例通过 |
+| `node --import tsx --test tests/judge-boundaries.test.ts`（主智能体独立回归） | 0 | 4项通过：未完成、伪输出/环境、后代进程超时清理、保护测试及日志hash |
+| `npm test`（主智能体首次完整回归） | 0 | 194项通过，随后追加错误日志回归 |
+| `node --import tsx --test --test-isolation=none tests/check.test.ts`（Error日志回归／修复后） | 1／0 | 先复现失败消息缺失，修复后6项通过；typecheck退出0 |
+| `npm run typecheck`（主智能体最终验收） | 0 | strict检查通过 |
+| `npm test`（主智能体最终验收） | 0 | 195项具名用例/子用例通过，0失败/取消/跳过；相对M4.1新增32项 |
+| `rg -n 'from .*eval|import\(.*eval' src` | 1 | 无匹配，src未导入eval；不是测试失败 |
+| 逐文件`git diff --no-index --check /dev/null <file>`（Python内联脚本汇总） | 0 | 本次15个源码/测试/文档文件无空白错误，覆盖未跟踪文件；按no-index语义处理0/1且要求无诊断输出 |
+
+验收边界：E02隐藏验收仅注入外部副本，使用原始测试、保留候选证据且副本互不污染。E03覆盖公开通过/隐藏失败、越界但功能通过、预算终止但功能通过，主passed均false且原因独立。E04覆盖初始全过、reference失败/越权、零测试、语法错误、提前exit(0)、挂起和超时；smoke初始隐藏失败、reference两项通过。B01仅完成预检能力及smoke验证，尚无S8/H4十二题逐题证据，不能标Benchmark验收通过。调度/逐次结果/冻结检查留M4.3，汇总报告和完整verify留M4.4；真实题库与Git冻结留M5。未调用真实provider、未运行baseline/消融实验、未实现C/O。
+
+本工单完成时下一子工单为M4.3，结果见下。
+
+### M4.3：评测调度、逐次证据与冻结校验（2026-09-24，DONE）
+
+前置证据：用户要求下一步，M4.2类型检查与195项具名测试通过。核对README、00/02/05/07/08/09/10、AGENTS及当前实现/Git状态，保留全部既有未跟踪文件。两个GPT-6 Sol（medium）子智能体分别实现benchmark/Git校验和schedule/attempt/runner；主智能体实现CLI/smoke入口、独立边界与本地假HTTP集成并审阅验收。
+
+新增eval/benchmark.ts、schedule.ts、attempt.ts、runner.ts、cli.ts、smoke.ts和tests/benchmark.test.ts、schedule.test.ts、attempt.test.ts、runner.test.ts、eval-cli.test.ts、eval-boundaries.test.ts、eval-http.test.ts；更新eval/contracts.ts、package.json、README、02-contracts、05-evaluator、tests/fixtures/README及本进度，共20个源码/测试/文档文件。无新增依赖、src改动、项目Git提交或推送。临时测试Git提交仅用于校验器回归，不是本项目benchmark-v1。
+
+交付：参数覆盖先合并/校验，保存实际配置；纯schedule按specs唯一组顺序、任务ID及repeat轮换，完整顺序先于模型请求落盘。runner只接受baseline，smoke显式注入mock；真实模式使用HTTP、要求密钥、执行代码所属Git根与clean实现提交。每次创建独立workspace/runtime/Session/预算，保存journal、before/after/changes、原始测试日志及result；模型/预算/工具失败不删除、不retry，继续后续attempt。异常停止保留已有产物和脱敏error.json，已存在目录/文件不覆盖。
+
+冻结校验严格检查manifest全部任务（包括未选题）的ID/suite/taskHash，记录manifest原字节benchmarkHash；benchmarkCommit取最后修改manifest的祖先提交，逐文件核对冻结Git树，不以当前实现HEAD代替。选中题全部preflight后再次检查Git和任务，首模型请求前保存manifest/schedule。输出不得位于任何题包内，路径逐段拒绝symlink；真实输出须在忽略目录或仓库外，smoke允许dirty并记录真实HEAD/null状态。这里不创建M5题库、冻结提交或C/O机制。
+
+审阅修复：同步复制配置/入口选项和schedule稀疏数组校验，防调用方异步修改；日志转存使用EXCL防覆盖。修正误收窄的outputDir规则，绝对目录和按projectRoot解析的相对目录均支持；smoke不再丢失已有HEAD，也不因其输出造成dirty而被误拒。真实模式拒绝将无关干净仓库的SHA记作运行中实现版本，CLI集成从临时Git中的完整代码副本执行验证。
+
+| 实际命令/操作 | 退出码 | 结果与证据 |
+| --- | --- | --- |
+| `git status --short` | 0 | 保留全部已有未跟踪文件，无项目提交/推送 |
+| `node --import tsx --test tests/benchmark.test.ts`（先写测试／首次实现） | 1／0 | 缺模块后实现，首次6项通过 |
+| 同上（Git元数据、配置快照及未选题输出边界回归后） | 0 | 子智能体先复现回归失败，再修复，最终8项通过；其typecheck退出0 |
+| `node --import tsx --test tests/schedule.test.ts`（先写测试） | 1 | schedule模块尚不存在；attempt/runner先写测试亦报告缺模块退出1 |
+| `node --import tsx --test tests/attempt.test.ts tests/runner.test.ts tests/schedule.test.ts`（子智能体初次验收） | 0 | 5项通过，后由独立边界补充审阅 |
+| `node --import tsx --test tests/eval-cli.test.ts`（主智能体先写测试） | 1 | CLI模块尚不存在 |
+| `npm run typecheck`（中间集成） | 2 | runner文件尚未完成及测试assert.throws参数类型错误；完成模块并修正测试调用后通过 |
+| `node --import tsx --test tests/eval-boundaries.test.ts`（主智能体独立回归） | 1 | 3项中2项因绝对outputDir被误拒失败，未绕过断言 |
+| `node --import tsx --test tests/eval-cli.test.ts tests/eval-boundaries.test.ts`（修复后） | 0 | 7项通过，含实际smoke CLI、首请求前manifest、失败后继续、独立预算/快照、配置捕获及路径拒绝 |
+| `node --import tsx --test tests/runner.test.ts`（smoke dirty与实现归属回归） | 1 | 子智能体先复现两项失败，随后修复 |
+| `node --import tsx --test tests/runner.test.ts tests/eval-boundaries.test.ts tests/attempt.test.ts tests/schedule.test.ts`（子智能体最终验收） | 0 | 10项通过；typecheck退出0 |
+| `node --import tsx --test tests/eval-http.test.ts`（主智能体本地假HTTP集成） | 0 | 临时clean Git、独立freeze/implementation SHA、参数覆盖、首轮429失败/次轮修复成功、dirty拒绝均通过；共4个本地请求，无真实provider |
+| `npm run check`（主智能体最终验收） | 0 | typecheck及218项具名用例/子用例全部通过，0失败/取消/跳过；相对M4.2新增23项 |
+| `npm run eval -- --help` | 0 | 实际入口与覆盖参数帮助可用，无API请求 |
+| `npm run eval:smoke` | 0 | 创建下述本地mock运行，固定2次独立attempt |
+| Python内联核对该smoke的manifest/result/产物/输出hash | 0 | 2次均passed，每次3模型请求/2工具调用，before/after/changes/journal齐全、输出SHA一致、临时工作区已清理；非完整verify |
+| `rg -n 'from .*eval|import\(.*eval' src` | 1 | 无匹配，src未导入eval；此码表示无匹配 |
+| Python汇总逐文件`git diff --no-index --check /dev/null <file>`及Markdown链接/围栏检查 | 0 | 本次20个文件无空白错误，覆盖未跟踪文件；更新文档的本地链接与围栏有效 |
+
+保留的离线证据：`runs/2026-09-24T12-01-44-904Z-c105ba91-b7eb-4074-8a7d-ae37d9a17dda/`（Git忽略）。manifest记录phase=smoke、provider=mock、implementationCommit=null、dirty=true、benchmarkCommit/hash=null；初始题包未修改，该题预检及两次候选评分均基于原始资产。该结果仅验证工程流程，不是冻结题库或真实模型能力成绩。
+
+验收边界：E01/E02覆盖多重复独立初始快照/工作区/Session/计量和hidden canary隔离；E06本阶段完成baseline单组manifest/schedule/result及明确mock标记，真实四组与report可重算尚未完成。E07覆盖全部manifest任务、suite/hash/冻结字节/提交关系、dirty和输出重叠拒绝；完整verify仍待M4.4。S02完成子集/轮换与缺usage保持null；S01/S03统计、E05验证器未实现。实际S8/H4题库与Git冻结留M5，真实baseline/报告/分析留M6，四组及C/O仍受对应门槛约束。未启动付费实验或发布远程仓库。
+
+本工单完成时下一子工单为M4.4，结果见下。
+
+### M4.4：汇总报告、完整verify与M4收尾（2026-09-24，DONE）
+
+前置证据：用户明确要求一次性做到M4收尾，M4.3已通过typecheck和218项具名测试。核对README、00/02/05/07/08/09/10、AGENTS、既有事件/评测契约与Git状态，保留所有原有未跟踪文件及旧run。两个GPT-6 Sol（medium）子智能体实现journal计量复算与summary/report；主智能体实现verify、历史冻结检查、报告落盘/诊断、CLI及独立篡改回归，并完成架构审阅。计量子智能体另进行只读verify审阅。
+
+新增eval/journal-metrics.ts、report.ts、verify.ts、finalize.ts、verify-cli.ts、preflight-cli.ts及tests/journal-metrics.test.ts、report.test.ts、verify.test.ts、eval-finalize.test.ts；更新eval/contracts.ts、check.ts、benchmark.ts、runner.ts、tests/check.test.ts、eval-http.test.ts、package.json、README、02-contracts、05-evaluator、09-acceptance、tests/fixtures/README和本进度，共23个文件。没有src策略改动、新增依赖、项目Git提交或远程操作。
+
+交付：inspectJournal从完整journal重新计算实际派发请求/kind、工具/错误、token已知量和contextStats，对照run_end及Agent结果，检查body/config/观测关联、预算和回答；缺usage保持null，不漏辅助成本。summarize按组及S/H/总体统计严格成功率、full-baseline百分点差、请求/工具、token完整率、Agent与验收耗时、请求加权上下文、压缩次数和失败分布。纯统计测试使用明确的手工mock多组数据，不执行未实现机制。
+
+verify只读核对manifest/schedule与精确attempt集合、同版本/配置/任务身份、原任务和before/after/changes完整性、两类测试输出原字节hash与末尾结构化结果、全部preflight材料、journal计量/主评分及summary/report重算。路径固定到本attempt，拒绝symlink或越界引用。真实证据检查历史实现/题库提交及当时manifest、全部冻结题包，不要求当前实现HEAD仍停留在旧SHA；须保留原题包路径和该版本资产。校验是内部一致性，不能证明所有本地证据从未同时重写。
+
+runner完成矩阵后先检查底层证据，再独占写summary/report并verify；不完整时保留原attempt并只写diagnostic，不产生完整成功率表。既有报告不会被覆盖，旧M4.3运行未补写产物。新增eval:verify与eval:preflight入口；CheckResult可选durationMs记录真实验收wall time且参与输出hash，新产物有值，旧证据缺失保持unknown。
+
+审阅修复：放宽无法从journal推导的外部取消/超时判断，避免在assistant持久化后取消被误拒；仍严格要求完整计量。修正单侧usage缺失时combined.known丢失已知部分，以及未知验收耗时sum被写成0的问题。summary独立校验合法phase矩阵、provider和评分，拒绝把两组当ablation。报告写入诊断前先检查所有父目录，独立失败测试复现并修复symlink输出写穿问题。原始评分与运行时策略不变。
+
+| 实际命令/操作 | 退出码 | 结果与证据 |
+| --- | --- | --- |
+| `git status --short` | 0 | 原有未跟踪文件保留，无项目提交/推送 |
+| `node --import tsx --test tests/journal-metrics.test.ts`（先写测试／最终审阅后） | 1／0 | 先缺模块，最终6项通过；真实runtime日志、缺usage、计数/长度篡改、辅助遗漏、预算/工具/overflow/timeout/cancel覆盖 |
+| `node --import tsx --test tests/report.test.ts`（先写测试／最终审阅后） | 1／0 | 先缺模块，最终8项通过；25%/75%/50pp、S/H分层、失败成本、加权上下文、缺usage、未知耗时及非法矩阵/评分拒绝 |
+| `node --import tsx --test tests/check.test.ts tests/verify.test.ts`（主智能体先写测试） | 1 | 新duration断言失败及verify模块不存在，原有其余check测试通过 |
+| `node --import tsx --test tests/eval-finalize.test.ts`（主智能体先写测试） | 1 | 未对不完整日志拒绝出表、preflight-cli不存在，2项失败 |
+| 子智能体中间typecheck | 2 | 并行模块尚未落盘及测试optional signal类型错误；修正后各自typecheck退出0 |
+| `npm run typecheck`及`node --import tsx --test tests/check.test.ts tests/verify.test.ts tests/eval-finalize.test.ts tests/eval-http.test.ts`（首次集成） | 各0 | 23项具名用例/子用例通过；含14项verify总用例/子用例与本地假HTTP完整链路 |
+| `node --import tsx --test tests/eval-finalize.test.ts`（symlink审阅回归） | 1 | 3项中1失败：错误诊断沿symlink写入目标；随后修复父路径检查 |
+| `npm run check`（主智能体最终验收） | 0 | typecheck与249项具名用例/子用例全部通过，0失败/取消/跳过；相对M4.3新增31项 |
+| `npm run eval:smoke`（最终代码的新运行） | 0 | 新runId见下，2次独立mock attempt，自动summary/report及verify成功 |
+| `npm run eval:verify -- --run runs/2026-09-24T12-18-32-191Z-aaa4f30a-7d26-47e5-b02b-a9c397242b8f` | 0 | 返回passed=true、errors=[]，独立命令只读复核 |
+| `npm run eval:preflight -- --help` | 0 | 新脚本入口可用；实际单题执行与坏summary的verify退出1在CLI集成中通过 |
+| `rg -n 'from .*eval|import\(.*eval' src` | 1 | 无匹配，src不导入eval；不是失败 |
+| Python汇总逐文件`git diff --no-index --check /dev/null <file>`、Markdown及旧run保留检查 | 0 | 本次23个文件无空白错误；文档本地链接/围栏有效，旧M4.3运行仍无补写报告 |
+
+保留最终离线证据：`runs/2026-09-24T12-18-32-191Z-aaa4f30a-7d26-47e5-b02b-a9c397242b8f/`，含manifest、preflight、2次全部attempt、summary.json与report.md。报告明确provider=mock/phase=smoke、未提交实现与未冻结题库；两次均passed，共6次worker请求、4次工具调用，0辅助/压缩。旧`runs/2026-09-24T12-01-44-904Z-c105ba91-b7eb-4074-8a7d-ae37d9a17dda/`保持原样，无报告补写或成绩替换。运行输出由Git忽略，不能冒充真实baseline报告。
+
+M4整体验收范围：
+
+| 验收项 | M4结论与实际边界 |
+| --- | --- |
+| E01/E02 | baseline多重复独立工作区/Session/预算、初始hash一致、隐藏材料不进入请求；完整四组运行留后续机制实现 |
+| E03/E04 | 保护测试与独立验收、主评分/functional区分、预检真实初始失败/reference通过、空测试/提前退出/超时拒绝均回归通过 |
+| E05 | 删除失败attempt、篡改summary/report/快照/changes/测试日志/Agent计数/phase/path/taskHash/preflight及symlink均被拒；不完整journal只出诊断，verify不修复原件 |
+| E06 | baseline单组完整manifest→attempt→summary/report→verify通过，mock标签明确；手工多组统计通过，四组实际模型/机制矩阵尚未执行 |
+| E07 | 冻结manifest/全题包hash/suite/提交一致性、dirty启动拒绝、历史实现前进后仍可只读复核及错freeze提交拒绝通过；真实题库由M5交付 |
+| S01–S03/R07 | 25%/75%差50pp、失败成本、S/H分层、子集轮换、缺usage/零请求/零压缩、请求加权context、混phase/commit拒绝通过 |
+
+M4.1–M4.4全部DONE。B01–B03的S8/H4实际资产、十二题preflight与benchmark-v1提交仍待M5；F01–F04/S04真实baseline九项分析、索引/trace及Git里程碑仍待M6及后续。未实现C/O、未调用真实provider或启动付费实验。下一阶段M5创建并冻结实际题库；当前无需API Key或远程仓库地址。
+
+## 初始规划静态检查（实施前记录）
+
+规划链接、Markdown代码围栏、JSON示例、38个原有验收编号引用、S8/H4共12题、36次baseline与144次四组矩阵、共同预算/窗口一致性均已检查。没有执行运行时代码测试、题目preflight或真实模型实验。
+
+## M6门槛补充（本次仍仅规划）
+
+新增13-baseline-milestone，固定三个输出路径、九项分析内容、重复调用与增长统计口径、trace选择规则和假设ID。M6报告/索引/摘录须单独Git提交，progress记录其真实SHA后才可DONE；后续C/O提交与消融报告关联该证据。当前baselineAnalysisCommit不存在，M6仍NOT_STARTED，未创建任何完成报告。
+
+本次M6规格检查通过：固定输出路径、九项必备分析、Git门槛、报告模板和工单引用一致；40个验收ID唯一且引用有效；Markdown链接/围栏与JSON可解析。这些是规划静态检查，不代表F01/F02/F04真实里程碑已通过。
