@@ -2,7 +2,7 @@
 
 从零实现与mini-dsh规模接近的TypeScript Coding Agent Harness，保持“一切产品能力皆插件”，重点做好baseline/full比较和2×2消融。
 
-**M0–M5已完成：baseline runtime、评测器以及S8/H4共12道实际题目已验收，Benchmark v1已预检并通过本地Git提交冻结；真实模型实验尚未运行。** 实际状态与验收证据见[进度](docs/progress.md)。题库和复核命令见[Benchmark v1](benchmark/README.md)；真实baseline取得证据后才实现增强机制：
+**M0–M6已完成：S8/H4题库已冻结，DeepSeek真实baseline 36次已运行，verify与分析提交门槛通过。主成功率S20/24、H3/12、整体23/36。** 实际状态与验收证据见[进度](docs/progress.md)。题库和复核命令见[Benchmark v1](benchmark/README.md)；[baseline报告](reports/baseline-report.md)和[失败分析](reports/baseline-failure-analysis.md)已形成，下一步M7基于证据实现Context Manager：
 
 ```text
 M0 工程/接口 → M1 Plugin/Session → M2 Tools
@@ -26,7 +26,7 @@ C/O是预先选择的候选能力；baseline日志决定哪些改进假设有证
 
 [Benchmark v1 manifest](benchmark/v1.json)已收录12题：Benchmark-S保留8道小型功能题；Benchmark-H增加4道多文件/长约束任务，提供自然上下文压力与需求整理场景。S/H分表，不保证C触发，也不预设full获胜。
 
-默认M6是12×baseline×3=36次，M9是12×4×3=144次，合计180次；实现后可选12×baseline/full×2=48次快速对照，不替代四组。模型凭据/授权不足时明确停在实验门槛，不以mock替代真实baseline。当前不启动这些实验。
+默认M6是12×baseline×3=36次，M9是12×4×3=144次，合计180次；实现后可选12×baseline/full×2=48次快速对照，不替代四组。模型凭据/授权不足时明确停在实验门槛，不以mock替代真实baseline。本次M6诊断已完成；M9尚未启动。
 
 本地开发使用Node 24和npm：
 
@@ -37,7 +37,7 @@ npm run check
 
 提供`typecheck`、`test`和组合检查`check`；离线工程检查不需要API Key。HTTP模型通过环境变量`HARNESS_API_KEY`读取凭据，变量名见[环境示例](.env.example)，不要将真实密钥提交到Git。受限环境若只显示测试文件名而无具名用例，须排查子进程限制，不据此认定测试通过。
 
-DeepSeek使用[本次baseline配置](experiments/baseline-deepseek.json)：完整endpoint为`https://api.deepseek.com/chat/completions`，model为`deepseek-flash`。官方端点使用`max_tokens`并显式设置`thinking: { type: 'disabled' }`，沿用非思考模式的文本/工具消息结构；其他端点继续使用原有协议。此选择在请求日志中可核对，后续四组必须一致。参数依据：[输出额度字段](https://api-docs.deepseek.com/quick_start/agent_integrations/oh_my_pi/)、[思考模式](https://api-docs.deepseek.com/guides/thinking_mode/)。当前只完成离线协议验证，实际服务可用性尚未实测。
+DeepSeek使用[本次baseline配置](experiments/baseline-deepseek.json)：完整endpoint为`https://api.deepseek.com/chat/completions`，model为`deepseek-flash`。官方端点使用`max_tokens`并显式设置`thinking: { type: 'disabled' }`，沿用非思考模式的文本/工具消息结构；其他端点继续使用原有协议。此选择在请求日志中可核对，后续四组必须一致。参数依据：[输出额度字段](https://api-docs.deepseek.com/quick_start/agent_integrations/oh_my_pi/)、[思考模式](https://api-docs.deepseek.com/guides/thinking_mode/)。本次36次HTTP baseline已验证实际服务；具体用量、模型返回标识和失败见报告。
 
 如果Key保存在根目录`.env`，应用本身不自动加载，使用Node的`--env-file`加载。取得该次付费实验授权且配置/实现已提交、Git工作树干净后，正式M6命令为：
 
@@ -45,7 +45,7 @@ DeepSeek使用[本次baseline配置](experiments/baseline-deepseek.json)：完�
 node --env-file=.env --import tsx eval/cli.ts --config experiments/baseline-deepseek.json
 ```
 
-这条命令执行12题×3次真实baseline，会产生API费用；配置和Key就绪不等于已经运行或授权该矩阵。
+这条命令执行12题×3次真实baseline，会产生API费用。本次已按用户“开始M6”的授权完成；再次执行会创建新的付费运行，不是查看已有报告。
 
 单次执行使用[配置模板](specs/config.example.json)填写真实model/endpoint、workspace、精确可写文件列表和sessionPath，并在环境中设置HARNESS_API_KEY；CLI不自动加载.env：
 
@@ -62,7 +62,7 @@ npm run agent -- --config /path/to/runtime.json --input '修复指定文件中�
 
 [权限](src/plugins/permissions.ts)与[工具注册](src/plugins/tools.ts)已支持精确写入白名单、参数校验、统一输出上限和取消传播。[文件工具插件](src/plugins/file-tools.ts)已提供递归列表、读取、写入、唯一文本替换和删除；逐段拒绝符号链接/特殊文件，限制文件大小，并用同目录临时文件加rename执行原子替换。
 
-[共享计量](src/accounting.ts)、[HTTP模型](src/plugins/http-model.ts)和[脚本模型](src/plugins/mock-model.ts)已支持统一请求额度、共同超时、用量缺失标记及请求日志。HTTP仅通过本地假服务验证，尚未连接真实provider。
+[共享计量](src/accounting.ts)、[HTTP模型](src/plugins/http-model.ts)和[脚本模型](src/plugins/mock-model.ts)已支持统一请求额度、共同超时、用量缺失标记及请求日志。HTTP已通过离线协议检查及M6真实DeepSeek运行验证。
 
 [ContextManager](src/plugins/context-manager.ts)保留完整历史并生成上下文指标；[Agent Loop](src/plugins/agent-loop.ts)负责单次运行、顺序工具调用、预算和取消处理。[工具事件](src/tool-events.ts)与日志解析检查调用、结果及消息的关联。[Runtime](src/runtime.ts)装配插件并在finally清理，[CLI](src/cli.ts)提供单次执行入口。脚本模型与本地假HTTP的真实文件读→改→final链路已验证；尚未实现摘要或Prompt Optimizer机制。
 
@@ -98,7 +98,7 @@ npm run eval -- --config experiments/baseline-config.example.json --variants bas
 # --tasks id1,id2 可选；上述模板必须先填写真实模型配置
 ```
 
-CLI覆盖先合并校验后落盘；目前只运行baseline。HTTP模式要求干净的实现提交和已提交的题库manifest/资产，校验全部题目（包括未选题），再预检所选题；输出使用Git忽略目录或仓库外目录。每次attempt独立工作区/Session/预算；完成矩阵即退出0（可以包含评分失败），配置/环境/证据错误退出1，取消退出130。普通评测入口不接受smoke配置，请使用明确的离线入口。当前题库与实现已有本地Git提交，尚无真实模型成绩；未推送远程仓库。
+CLI覆盖先合并校验后落盘；目前只运行baseline。HTTP模式要求干净的实现提交和已提交的题库manifest/资产，校验全部题目（包括未选题），再预检所选题；输出使用Git忽略目录或仓库外目录。每次attempt独立工作区/Session/预算；完成矩阵即退出0（可以包含评分失败），配置/环境/证据错误退出1，取消退出130。普通评测入口不接受smoke配置，请使用明确的离线入口。当前题库、实现和M6真实分析均已有本地Git提交；未推送远程仓库。
 
 阅读入口：
 

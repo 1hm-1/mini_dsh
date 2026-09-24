@@ -1,6 +1,6 @@
 # 进度
 
-IMPLEMENTING。用户于2026-09-24授权开始开发，使用GPT-6 Sol（medium）子智能体实现，主智能体负责架构审阅与验收。M0.1、M0.2、M1.1、M1.2、M2.1、M2.2 DONE，M0/M1/M2完成；M3.1、M3.2、M3.3 DONE，M3完成；M4.1、M4.2、M4.3、M4.4 DONE，M4整体完成；M5.1、M5.2、M5.3、M5.4 DONE，M5整体完成；M6实验配置与DeepSeek离线协议适配已就绪，付费实验待授权；M7及以后NOT_STARTED。S8/H4共12题已完成实际资产、预检及benchmark-v1本地Git冻结；尚无真实baseline报告或消融成绩。
+IMPLEMENTING。用户于2026-09-24授权开始开发，使用GPT-6 Sol（medium）子智能体实现，主智能体负责架构审阅与验收。M0.1、M0.2、M1.1、M1.2、M2.1、M2.2 DONE，M0/M1/M2完成；M3.1、M3.2、M3.3 DONE，M3完成；M4.1、M4.2、M4.3、M4.4 DONE，M4整体完成；M5.1、M5.2、M5.3、M5.4 DONE，M5整体完成；M6.1–M6.6 DONE：DeepSeek真实baseline 36次已完整运行、verify及九项分析验收通过，独立分析提交`93d075b80ce15616ca019f71153935b5d3ad51cb`；M7及以后NOT_STARTED。S8/H4题库保持benchmark-v1；真实baseline主成功23/36（S20/24、H3/12），尚无消融成绩。
 
 ## 本次规划修订
 
@@ -537,3 +537,37 @@ M5整体DONE。下一步为M6真实baseline（默认12题×3次=36 attempts）�
 | `git diff --check` | 0 | 当前已跟踪修改无空白错误；提交前再含新增文件核对 |
 
 文档已提供显式Node `--env-file=.env`的正式命令；应用本身仍不自动加载.env。实现与用户实验配置已独立提交：`beaab9dbf97445edd3b3269414d6c8739433f530`（`git commit -m "fix: support DeepSeek non-thinking chat protocol"`退出0）。提交后Node内联脚本对实际配置执行 `loadEvaluationInputs`、`verifyFrozenInputs` 和 `buildSchedule`，退出0：工作树干净、冻结仍为 `9fd463f618edfe25e8a683a62b7f540f3e644f90`、12题/36 attempts，providerCalls=0。没有真实baseline run、分数、分析报告或baselineAnalysisCommit；本项DONE不表示M6完成。执行真实36次矩阵仍需用户明确付费授权。
+
+
+### M6.1–M6.6：真实baseline与失败分析（2026-09-24，DONE）
+
+前置：用户明确要求“开始M6”，授权执行已说明的12题×baseline×3次付费矩阵；凭据由Node `--env-file=.env`加载，不回显或保存密钥。M5冻结与前置254项工程检查已通过。按配置统一使用DeepSeek `deepseek-flash`、temperature=0、非思考模式、单次输出4096；预算16次模型/24次工具/120000ms/128000输入字符、窗口8192/0.75/4保持不变。真实运行开始时实现提交干净。
+
+- baselineRunId：`2026-09-24T13-25-30-131Z-e441166e-f602-430b-a3f8-c14c091d777b`；phase=`baseline-diagnostic`；provider=`http`。
+- baselineImplementationCommit：`8d848c165546727585878e3b6b6613b647087781`。
+- benchmarkCommit：`9fd463f618edfe25e8a683a62b7f540f3e644f90`；manifest SHA-256：`d3d3321d3347017e58be60215e00a7ceb8e75fee5d4d77a2c07b0677160165a2`。
+- **baselineAnalysisCommit：`93d075b80ce15616ca019f71153935b5d3ad51cb`**（已经产生并完成F04核验；本进度在后续独立提交记录）。
+- [数值报告](../reports/baseline-report.md)、[失败分析](../reports/baseline-failure-analysis.md)、[证据索引](../reports/evidence/2026-09-24T13-25-30-131Z-e441166e-f602-430b-a3f8-c14c091d777b/index.json)。原始`runs/2026-09-24T13-25-30-131Z-e441166e-f602-430b-a3f8-c14c091d777b/`全部315个文件保留在本地，仍由Git忽略；交付可复核材料时须同时交付该目录。
+
+GPT-6 Sol（medium）子智能体分别实现离线计量脚本、审阅原始trace与最终报告；主智能体复核口径、生成固定产物、检查哈希并完成Git门槛。没有修改运行时、评测器、模型提示、题库、配置或预算；没有重跑、删失败或增加provider调用来生成分析。原始事件保持不变。
+
+| 实际命令/操作 | 退出码 | 结果与证据 |
+| --- | --- | --- |
+| `node --env-file=.env --import tsx eval/cli.ts --config experiments/baseline-deepseek.json` | 0 | 完整36次HTTP真实运行；退出0指矩阵完成，主passed为23次 |
+| `npm run eval:verify -- --run runs/2026-09-24T13-25-30-131Z-e441166e-f602-430b-a3f8-c14c091d777b` | 0 | 独立复算passed=true/errors=[]；报告整理后再次执行仍通过，输出保存于evidence下verify.json |
+| `node --import tsx reports/evidence/2026-09-24T13-25-30-131Z-e441166e-f602-430b-a3f8-c14c091d777b/metrics.mjs runs/2026-09-24T13-25-30-131Z-e441166e-f602-430b-a3f8-c14c091d777b reports/evidence/2026-09-24T13-25-30-131Z-e441166e-f602-430b-a3f8-c14c091d777b/metrics` | 0 | 36/36完成，228条请求、13条工具错误、78条回读；新目录输出，不覆盖run |
+| `node reports/evidence/2026-09-24T13-25-30-131Z-e441166e-f602-430b-a3f8-c14c091d777b/counter.mjs runs/2026-09-24T13-25-30-131Z-e441166e-f602-430b-a3f8-c14c091d777b reports/evidence/2026-09-24T13-25-30-131Z-e441166e-f602-430b-a3f8-c14c091d777b/metrics` | 0 | 从原始result与tool_start独立汇总，matchingDerived=true |
+| `python3 /tmp/build-m6-reports.py` | 0 | 两份报告、全部36次映射和固定3例完整区间trace生成；没有模型调用 |
+| `python3 /tmp/index-m6-evidence.py` | 0 | 315个原始文件、54个派生文件逐项大小/哈希一致；3份trace事件与原journal一致；报告链接存在，凭据模式扫描无匹配 |
+| `node /tmp/mini-harness-m6-analysis/audit-reports.mjs`（子智能体） | 0 | 36行摘要/重复表/原因表、13行工具错误、首改及结束seq、文件变化与链接对照通过；额外人工复核S/H/总体数字与HYP推断边界 |
+| `git diff --cached --check` | 0 | 分析与证据提交无空白错误 |
+| `git commit -m "m6-baseline-analysis"` | 0 | 独立产生上述真实分析SHA；仅55个reports文件，无C/O代码 |
+| Python内联调用`git diff-tree`、`git cat-file -e`、`git merge-base --is-ancestor`、`git diff --exit-code <implementation> <analysis> -- src eval benchmark specs experiments` | 0 | 确认固定报告/index存在、提交仅含reports、分析为HEAD祖先、实验实现/题库/配置完全未变 |
+
+数值：S20/24（83.33%）、H3/12（25.00%）、整体23/36（63.89%）；功能两层通过30/36，7次因tool_limit不满足主评分。228次worker尝试、226次成功响应、optimizer/summary均0；410次已派发工具、13次工具错误；输入615407/output75033 token，usage完整率100%。上下文阈值13次、可压缩条件11次，仅分布4个attempt，baseline实际压缩0。
+
+九项分析覆盖全部成功与失败：cause none23/resource_limit9/missed_constraint4，其余枚举0；客观termination completed27/tool_limit7/model_error2分列，后者是h02两次finish=length输出额度。正常结束但隐藏验收失败4次，不能混为模型错误。重复调用和回读保留中间修改/可见输出差异；不得仅凭重复或上下文长断言浪费/遗忘。精确可写列表未显式注入worker的事实作为权限发现限制保留，未事后改题。代表trace固定为h01 r1、m01 r1及成功对照b01 r1。
+
+F01/F02内容与真实证据验收通过；F04已在独立分析提交后通过。S04真实日志复算及重复/上下文解释已覆盖；E05/E07沿用已通过工程检查并由本次真实verify核对完整矩阵和冻结资产。本次仅分析/文档修改，未重跑此前254项工程测试，不将未运行项目记为新通过。
+
+HYP-001（C降低长交互长度）inconclusive；HYP-002（O重述公开边界约束）supported仅表示值得检验；HYP-003（C/O直接解除固定额度）unsupported。尚未证明C/O收益。M6整体DONE；M7/M8开始前须核验上述分析提交为HEAD祖先并关联HYP，M9仍须新跑包含baseline的四组。当前未开始M7/M8/M9、未推送远程。
