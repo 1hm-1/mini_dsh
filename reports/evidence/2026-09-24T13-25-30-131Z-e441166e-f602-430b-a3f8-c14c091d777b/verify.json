@@ -1,0 +1,13 @@
+{
+  "command": [
+    "npm",
+    "run",
+    "eval:verify",
+    "--",
+    "--run",
+    "runs/2026-09-24T13-25-30-131Z-e441166e-f602-430b-a3f8-c14c091d777b"
+  ],
+  "exitCode": 0,
+  "stdout": "\n> mini-harness@0.1.0 eval:verify\n> node --import tsx eval/verify-cli.ts --run runs/2026-09-24T13-25-30-131Z-***\n\n{\"passed\":true,\"errors\":[]}\n",
+  "stderr": ""
+}

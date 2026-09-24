@@ -1,0 +1,463 @@
+[
+  {
+    "taskId": "b01-normalize",
+    "repeat": 1,
+    "cause": "none",
+    "tags": [],
+    "explanation": "Completed; integrity and both test layers passed.",
+    "evidenceSeqs": [
+      24,
+      38
+    ]
+  },
+  {
+    "taskId": "b02-counter",
+    "repeat": 1,
+    "cause": "none",
+    "tags": [],
+    "explanation": "Completed; integrity and both test layers passed.",
+    "evidenceSeqs": [
+      24,
+      31
+    ]
+  },
+  {
+    "taskId": "b03-config",
+    "repeat": 1,
+    "cause": "none",
+    "tags": [],
+    "explanation": "Completed; integrity and both test layers passed.",
+    "evidenceSeqs": [
+      24,
+      59
+    ]
+  },
+  {
+    "taskId": "f01-tags",
+    "repeat": 1,
+    "cause": "none",
+    "tags": [],
+    "explanation": "Completed; integrity and both test layers passed.",
+    "evidenceSeqs": [
+      24,
+      38
+    ]
+  },
+  {
+    "taskId": "f02-pagination",
+    "repeat": 1,
+    "cause": "none",
+    "tags": [],
+    "explanation": "Completed; integrity and both test layers passed.",
+    "evidenceSeqs": [
+      14,
+      21
+    ]
+  },
+  {
+    "taskId": "f03-ranges",
+    "repeat": 1,
+    "cause": "none",
+    "tags": [],
+    "explanation": "Completed; integrity and both test layers passed.",
+    "evidenceSeqs": [
+      24,
+      38
+    ]
+  },
+  {
+    "taskId": "h01-config-pipeline",
+    "repeat": 1,
+    "cause": "resource_limit",
+    "tags": [
+      "tool_limit",
+      "permission_denied",
+      "functional_checks_passed"
+    ],
+    "explanation": "24 tools dispatched; next tool blocked. Public 4/4 and acceptance 10/10 passed, but no final model completion. Permission denials on nonwritable paths are tags and an alternative efficiency explanation.",
+    "evidenceSeqs": [
+      62,
+      69,
+      100,
+      120,
+      121
+    ]
+  },
+  {
+    "taskId": "h02-chunk-parser",
+    "repeat": 1,
+    "cause": "resource_limit",
+    "tags": [
+      "output_length",
+      "no_changes"
+    ],
+    "explanation": "Raw model_error came from a valid finish=length response at the 4096 output-token cap; no files changed. The failing checks apply to unchanged source.",
+    "evidenceSeqs": [
+      52,
+      53
+    ]
+  },
+  {
+    "taskId": "h03-module-navigation",
+    "repeat": 1,
+    "cause": "none",
+    "tags": [],
+    "explanation": "Completed; integrity and both test layers passed.",
+    "evidenceSeqs": [
+      68,
+      119
+    ]
+  },
+  {
+    "taskId": "h04-issue-refactor",
+    "repeat": 1,
+    "cause": "resource_limit",
+    "tags": [
+      "tool_limit",
+      "functional_checks_passed"
+    ],
+    "explanation": "24 tools dispatched, next blocked; public 3/3 and acceptance 7/7 passed after five writable source changes. No context threshold reached.",
+    "evidenceSeqs": [
+      60,
+      108,
+      109
+    ]
+  },
+  {
+    "taskId": "m01-report",
+    "repeat": 1,
+    "cause": "missed_constraint",
+    "tags": [
+      "row_product_overflow",
+      "acceptance_failed"
+    ],
+    "explanation": "Completed, public 2/2, acceptance 4/5. The first overflow assertion expected parseOrders to reject a row product exceeding MAX_SAFE_INTEGER; after-state parser checks field sizes but omits row-product check. Aggregate assertion was not reached in that test.",
+    "evidenceSeqs": [
+      27,
+      30,
+      54,
+      68
+    ]
+  },
+  {
+    "taskId": "m02-options",
+    "repeat": 1,
+    "cause": "missed_constraint",
+    "tags": [
+      "precision_error_class",
+      "acceptance_failed"
+    ],
+    "explanation": "Completed, public 2/2, acceptance 3/4. Resolver throws TypeError for fractional precision 1.5; prompt requires RangeError for invalid precision. The test stops before later invalid values.",
+    "evidenceSeqs": [
+      33,
+      56
+    ]
+  },
+  {
+    "taskId": "b01-normalize",
+    "repeat": 2,
+    "cause": "none",
+    "tags": [],
+    "explanation": "Completed; integrity and both test layers passed.",
+    "evidenceSeqs": [
+      28,
+      42
+    ]
+  },
+  {
+    "taskId": "b02-counter",
+    "repeat": 2,
+    "cause": "none",
+    "tags": [],
+    "explanation": "Completed; integrity and both test layers passed.",
+    "evidenceSeqs": [
+      24,
+      31
+    ]
+  },
+  {
+    "taskId": "b03-config",
+    "repeat": 2,
+    "cause": "none",
+    "tags": [],
+    "explanation": "Completed; integrity and both test layers passed.",
+    "evidenceSeqs": [
+      28,
+      70
+    ]
+  },
+  {
+    "taskId": "f01-tags",
+    "repeat": 2,
+    "cause": "none",
+    "tags": [],
+    "explanation": "Completed; integrity and both test layers passed.",
+    "evidenceSeqs": [
+      24,
+      45
+    ]
+  },
+  {
+    "taskId": "f02-pagination",
+    "repeat": 2,
+    "cause": "none",
+    "tags": [],
+    "explanation": "Completed; integrity and both test layers passed.",
+    "evidenceSeqs": [
+      14,
+      21
+    ]
+  },
+  {
+    "taskId": "f03-ranges",
+    "repeat": 2,
+    "cause": "none",
+    "tags": [],
+    "explanation": "Completed; integrity and both test layers passed.",
+    "evidenceSeqs": [
+      24,
+      38
+    ]
+  },
+  {
+    "taskId": "h01-config-pipeline",
+    "repeat": 2,
+    "cause": "resource_limit",
+    "tags": [
+      "tool_limit",
+      "permission_denied",
+      "functional_checks_passed"
+    ],
+    "explanation": "24 tools dispatched; next tool blocked. Public 4/4 and acceptance 10/10 passed, but no final model completion. Permission denials on nonwritable paths are tags and an alternative efficiency explanation.",
+    "evidenceSeqs": [
+      62,
+      69,
+      86,
+      103,
+      124,
+      125
+    ]
+  },
+  {
+    "taskId": "h02-chunk-parser",
+    "repeat": 2,
+    "cause": "resource_limit",
+    "tags": [
+      "tool_limit",
+      "permission_denied",
+      "functional_checks_passed",
+      "context_eligible"
+    ],
+    "explanation": "24 tools dispatched, next blocked after state.mjs change; public 5/5 and acceptance 9/9 passed. Missing package.json and denied writes contributed tool cost.",
+    "evidenceSeqs": [
+      55,
+      69,
+      72,
+      86,
+      108,
+      109
+    ]
+  },
+  {
+    "taskId": "h03-module-navigation",
+    "repeat": 2,
+    "cause": "none",
+    "tags": [],
+    "explanation": "Completed; integrity and both test layers passed.",
+    "evidenceSeqs": [
+      68,
+      113
+    ]
+  },
+  {
+    "taskId": "h04-issue-refactor",
+    "repeat": 2,
+    "cause": "resource_limit",
+    "tags": [
+      "tool_limit",
+      "functional_checks_passed"
+    ],
+    "explanation": "24 tools dispatched, next blocked; public 3/3 and acceptance 7/7 passed after five writable source changes. No context threshold reached.",
+    "evidenceSeqs": [
+      60,
+      92,
+      93
+    ]
+  },
+  {
+    "taskId": "m01-report",
+    "repeat": 2,
+    "cause": "missed_constraint",
+    "tags": [
+      "row_product_overflow",
+      "acceptance_failed"
+    ],
+    "explanation": "Completed, public 2/2, acceptance 4/5. The first overflow assertion expected parseOrders to reject a row product exceeding MAX_SAFE_INTEGER; after-state parser checks field sizes but omits row-product check. Aggregate assertion was not reached in that test.",
+    "evidenceSeqs": [
+      27,
+      30,
+      47
+    ]
+  },
+  {
+    "taskId": "m02-options",
+    "repeat": 2,
+    "cause": "none",
+    "tags": [],
+    "explanation": "Completed; integrity and both test layers passed.",
+    "evidenceSeqs": [
+      30,
+      56
+    ]
+  },
+  {
+    "taskId": "b01-normalize",
+    "repeat": 3,
+    "cause": "none",
+    "tags": [],
+    "explanation": "Completed; integrity and both test layers passed.",
+    "evidenceSeqs": [
+      14,
+      28
+    ]
+  },
+  {
+    "taskId": "b02-counter",
+    "repeat": 3,
+    "cause": "none",
+    "tags": [],
+    "explanation": "Completed; integrity and both test layers passed.",
+    "evidenceSeqs": [
+      14,
+      21
+    ]
+  },
+  {
+    "taskId": "b03-config",
+    "repeat": 3,
+    "cause": "none",
+    "tags": [],
+    "explanation": "Completed; integrity and both test layers passed.",
+    "evidenceSeqs": [
+      28,
+      49
+    ]
+  },
+  {
+    "taskId": "f01-tags",
+    "repeat": 3,
+    "cause": "none",
+    "tags": [],
+    "explanation": "Completed; integrity and both test layers passed.",
+    "evidenceSeqs": [
+      24,
+      45
+    ]
+  },
+  {
+    "taskId": "f02-pagination",
+    "repeat": 3,
+    "cause": "none",
+    "tags": [],
+    "explanation": "Completed; integrity and both test layers passed.",
+    "evidenceSeqs": [
+      14,
+      28
+    ]
+  },
+  {
+    "taskId": "f03-ranges",
+    "repeat": 3,
+    "cause": "none",
+    "tags": [],
+    "explanation": "Completed; integrity and both test layers passed.",
+    "evidenceSeqs": [
+      24,
+      45
+    ]
+  },
+  {
+    "taskId": "h01-config-pipeline",
+    "repeat": 3,
+    "cause": "resource_limit",
+    "tags": [
+      "tool_limit",
+      "permission_denied",
+      "functional_checks_passed"
+    ],
+    "explanation": "24 tools dispatched; next tool blocked. Public 4/4 and acceptance 10/10 passed, but no final model completion. Permission denials on nonwritable paths are tags and an alternative efficiency explanation.",
+    "evidenceSeqs": [
+      62,
+      69,
+      86,
+      112,
+      113
+    ]
+  },
+  {
+    "taskId": "h02-chunk-parser",
+    "repeat": 3,
+    "cause": "resource_limit",
+    "tags": [
+      "output_length",
+      "no_changes"
+    ],
+    "explanation": "Raw model_error came from a valid finish=length response at the 4096 output-token cap; no files changed. The failing checks apply to unchanged source.",
+    "evidenceSeqs": [
+      52,
+      53
+    ]
+  },
+  {
+    "taskId": "h03-module-navigation",
+    "repeat": 3,
+    "cause": "none",
+    "tags": [],
+    "explanation": "Completed; integrity and both test layers passed.",
+    "evidenceSeqs": [
+      68,
+      113
+    ]
+  },
+  {
+    "taskId": "h04-issue-refactor",
+    "repeat": 3,
+    "cause": "resource_limit",
+    "tags": [
+      "tool_limit",
+      "functional_checks_passed"
+    ],
+    "explanation": "24 tools dispatched, next blocked; public 3/3 and acceptance 7/7 passed after five writable source changes. No context threshold reached.",
+    "evidenceSeqs": [
+      60,
+      108,
+      109
+    ]
+  },
+  {
+    "taskId": "m01-report",
+    "repeat": 3,
+    "cause": "missed_constraint",
+    "tags": [
+      "row_product_overflow",
+      "acceptance_failed"
+    ],
+    "explanation": "Completed, public 2/2, acceptance 4/5. The first overflow assertion expected parseOrders to reject a row product exceeding MAX_SAFE_INTEGER; after-state parser checks field sizes but omits row-product check. Aggregate assertion was not reached in that test.",
+    "evidenceSeqs": [
+      27,
+      30,
+      54
+    ]
+  },
+  {
+    "taskId": "m02-options",
+    "repeat": 3,
+    "cause": "none",
+    "tags": [],
+    "explanation": "Completed; integrity and both test layers passed.",
+    "evidenceSeqs": [
+      30,
+      63
+    ]
+  }
+]

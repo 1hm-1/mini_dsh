@@ -1,0 +1,69 @@
+{
+  "runId": "2026-09-24T13-25-30-131Z-e441166e-f602-430b-a3f8-c14c091d777b",
+  "source": "raw result.json plus journal tool_start events",
+  "analysisDir": "/home/hmli/code/mini-harness/reports/evidence/2026-09-24T13-25-30-131Z-e441166e-f602-430b-a3f8-c14c091d777b/metrics",
+  "matchingDerived": true,
+  "bySuite": {
+    "S": {
+      "attempts": 24,
+      "passed": 20,
+      "functionalPass": 20,
+      "toolStarts": 148,
+      "toolCalls": 148,
+      "toolErrors": 0,
+      "modelRequests": 129,
+      "workerRequests": 129,
+      "optimizerRequests": 0,
+      "summaryRequests": 0,
+      "inputTokens": 212350,
+      "outputTokens": 31002,
+      "knownInputTokens": 212350,
+      "knownOutputTokens": 31002,
+      "termination": {
+        "completed": 24
+      }
+    },
+    "H": {
+      "attempts": 12,
+      "passed": 3,
+      "functionalPass": 10,
+      "toolStarts": 269,
+      "toolCalls": 262,
+      "toolErrors": 13,
+      "modelRequests": 99,
+      "workerRequests": 99,
+      "optimizerRequests": 0,
+      "summaryRequests": 0,
+      "inputTokens": 403057,
+      "outputTokens": 44031,
+      "knownInputTokens": 403057,
+      "knownOutputTokens": 44031,
+      "termination": {
+        "tool_limit": 7,
+        "model_error": 2,
+        "completed": 3
+      }
+    },
+    "total": {
+      "attempts": 36,
+      "passed": 23,
+      "functionalPass": 30,
+      "toolStarts": 417,
+      "toolCalls": 410,
+      "toolErrors": 13,
+      "modelRequests": 228,
+      "workerRequests": 228,
+      "optimizerRequests": 0,
+      "summaryRequests": 0,
+      "inputTokens": 615407,
+      "outputTokens": 75033,
+      "knownInputTokens": 615407,
+      "knownOutputTokens": 75033,
+      "termination": {
+        "completed": 27,
+        "tool_limit": 7,
+        "model_error": 2
+      }
+    }
+  }
+}
