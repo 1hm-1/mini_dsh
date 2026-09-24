@@ -1,7 +1,10 @@
 import { isDeepStrictEqual } from 'node:util';
-import { parseRunConfig } from '../src/config.js';
-import type { JournalRead } from '../src/journal.js';
-import { isDeepSeekChatEndpoint } from '../src/model-protocol.js';
+import { parseRunConfig, variantFlags } from '../src/config.js';
+import { parseMessage, type JournalRead } from '../src/journal.js';
+import { encodeChatRequest, isDeepSeekChatEndpoint } from '../src/model-protocol.js';
+import { SUMMARY_PREFIX, SUMMARY_SYSTEM } from '../src/plugins/context-manager.js';
+import { BASE_SYSTEM } from '../src/runtime.js';
+import type { ContextCompactedData } from '../src/context-events.js';
 import type { ContextObservationData, RequestData, ResponseData } from '../src/model-events.js';
 import type { ToolEndData } from '../src/tool-events.js';
 import type { Message, ModelRequestKind, ModelResponse, RunConfig, RunResult } from '../src/types.js';
@@ -35,17 +38,26 @@ function object(value: unknown, label: string): Record<string, unknown> {
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error(`journal metrics: ${label} invalid`);
   return value as Record<string, unknown>;
 }
-function countRounds(messages: Message[]): number {
-  let rounds = 0;
+function completedRoundEnds(messages: Message[]): number[] {
+  const ends: number[] = [];
   let pending: Set<string> | null = null;
-  for (const message of messages) {
+  for (let index = 0; index < messages.length; index++) {
+    const message = messages[index]!;
     if (message.role === 'user') continue;
     if (message.role === 'assistant') {
-      if (message.calls.length === 0) rounds++;
+      if (message.calls.length === 0) ends.push(index + 1);
       else pending = new Set(message.calls.map(call => call.id));
-    } else if (pending?.delete(message.callId) && pending.size === 0) { rounds++; pending = null; }
+    } else if (pending?.delete(message.callId) && pending.size === 0) { ends.push(index + 1); pending = null; }
   }
-  return rounds;
+  return ends;
+}
+function projection(history: Message[], boundary: number, summary: string | null): Message[] {
+  if (summary === null) return history;
+  return [...history.slice(0, boundary).filter(message => message.role === 'user'),
+    { role: 'user', content: SUMMARY_PREFIX + summary }, ...history.slice(boundary)];
+}
+function estimate(system: string, messages: Message[], tools: unknown[]): number {
+  return Math.ceil(JSON.stringify({ system, messages, tools }).length / 4);
 }
 
 /** Independently reconstruct accounting from a parsed, complete v1 journal. */
@@ -55,6 +67,7 @@ export function inspectJournal(journal: JournalRead, config: RunConfig): Journal
   const events = journal.events;
   if (events[0]?.type !== 'run_start' || events.at(-1)?.type !== 'run_end') throw new Error('journal metrics: missing run boundaries');
   const result = (events.at(-1)!.data as { result: RunResult }).result;
+  const contextEnabled = variantFlags(settings.variant).context;
   const input = (events[0]!.data as { input: string }).input;
   const history: Message[] = [];
   const observations = new Map<number, ContextObservationData['metrics']>();
@@ -77,6 +90,29 @@ export function inspectJournal(journal: JournalRead, config: RunConfig): Journal
   let cancelled = false;
   let lastAssistant: string | null = null;
   let lastAssistantCalls = 0;
+  let boundary = 0;
+  let summary: string | null = null;
+  let compactions = 0;
+  let lastWorkerSystem: string | null = null;
+  let lastWorkerTools: { name: unknown; description: unknown; parameters: unknown }[] | null = null;
+  let pendingSummary: { requestSeq: number; responseSeq: number | null; from: number; to: number;
+    preEstimate: number; olderRounds: number; response: ModelResponse | null; error: ResponseData['error'] | null } | null = null;
+  let preAfterCompaction: { estimate: number; olderRounds: number } | null = null;
+  const candidate = () => {
+    if (!contextEnabled || lastWorkerSystem === null || lastWorkerTools === null) return null;
+    const before = projection(history, boundary, summary);
+    const preEstimate = estimate(lastWorkerSystem, before, lastWorkerTools);
+    const pendingEnds = completedRoundEnds(history).filter(end => end > boundary);
+    const olderRounds = Math.max(0, pendingEnds.length - settings.context.keepRecentRounds);
+    const threshold = preEstimate >= settings.context.estimatedWindowTokens * settings.context.triggerRatio;
+    if (!threshold || olderRounds === 0) return null;
+    const to = pendingEnds[olderRounds - 1]!;
+    const from = boundary || history.findIndex(message => message.role === 'assistant');
+    if (from < 0 || from >= to) throw new Error('journal metrics: invalid compaction boundary');
+    const messages: Message[] = [...(summary === null ? [] : [{ role: 'user' as const, content: SUMMARY_PREFIX + summary }]),
+      ...history.slice(from, to)];
+    return { from, to, messages, preEstimate, olderRounds };
+  };
   for (let index = 0; index < events.length; index++) {
     const event = events[index]!;
     if (event.seq !== index + 1 || index > 0 && event.elapsedMs < events[index - 1]!.elapsedMs) {
@@ -108,18 +144,22 @@ export function inspectJournal(journal: JournalRead, config: RunConfig): Journal
     if (event.type === 'request') {
       if (assistantDue) throw new Error('journal metrics: worker response missing assistant message');
       const data = event.data as RequestData;
+      if (pendingSummary?.responseSeq !== null && pendingSummary?.responseSeq !== undefined) {
+        throw new Error('journal metrics: summary response without compaction before next request');
+      }
       if (pending.size) throw new Error('journal metrics: concurrent request');
       const body = object(JSON.parse(data.body) as unknown, 'request body');
       equal(data.requestChars, data.body.length, 'requestChars');
       equal(body.model, settings.model.id, 'model');
       equal(body.temperature, settings.model.temperature, 'temperature');
+      const outputLimit = data.kind === 'summary' ? Math.min(512, settings.budget.maxOutputTokens) : settings.budget.maxOutputTokens;
       if (isDeepSeekChatEndpoint(settings.model.endpoint)) {
         equal(Object.keys(body).sort(), ['model', 'temperature', 'stream', 'max_tokens', 'thinking', 'messages', 'tools'].sort(), 'DeepSeek protocol fields');
-        equal(body.max_tokens, settings.budget.maxOutputTokens, 'DeepSeek max_tokens');
+        equal(body.max_tokens, outputLimit, 'DeepSeek max_tokens');
         equal(body.thinking, { type: 'disabled' }, 'DeepSeek thinking');
       } else {
         equal(Object.keys(body).sort(), ['model', 'temperature', 'stream', 'n', 'max_completion_tokens', 'messages', 'tools'].sort(), 'generic protocol fields');
-        equal(body.max_completion_tokens, settings.budget.maxOutputTokens, 'maxOutputTokens');
+        equal(body.max_completion_tokens, outputLimit, 'maxOutputTokens');
         equal(body.n, 1, 'n');
       }
       equal(body.stream, false, 'stream');
@@ -131,14 +171,14 @@ export function inspectJournal(journal: JournalRead, config: RunConfig): Journal
       const rest = messages.slice(1);
       const projected = rest.map(raw => {
         const item = object(raw, 'message');
-        if (item.role === 'user') return { role: 'user', content: item.content };
-        if (item.role === 'tool') return { role: 'tool', callId: item.tool_call_id, content: item.content };
-        if (item.role === 'assistant') return { role: 'assistant', content: item.content,
+        if (item.role === 'user') return parseMessage({ role: 'user', content: item.content });
+        if (item.role === 'tool') return parseMessage({ role: 'tool', callId: item.tool_call_id, content: item.content });
+        if (item.role === 'assistant') return parseMessage({ role: 'assistant', content: item.content,
           calls: Array.isArray(item.tool_calls) ? item.tool_calls.map(rawCall => {
             const call = object(rawCall, 'tool call');
             const fn = object(call.function, 'function');
             return { id: call.id, name: fn.name, arguments: fn.arguments };
-          }) : [] };
+          }) : [] });
         throw new Error('journal metrics: request message role invalid');
       });
       const tools = body.tools.map(raw => {
@@ -147,21 +187,45 @@ export function inspectJournal(journal: JournalRead, config: RunConfig): Journal
         equal(wrapper.type, 'function', 'tool schema type');
         return { name: fn.name, description: fn.description, parameters: fn.parameters };
       });
-      const estimate = Math.ceil(JSON.stringify({ system: system.content, messages: projected, tools }).length / 4);
-      equal(data.estimatedInputTokens, estimate, 'estimatedInputTokens');
+      const requestEstimate = estimate(system.content, projected, tools);
+      equal(data.estimatedInputTokens, requestEstimate, 'estimatedInputTokens');
       if (data.requestChars > settings.budget.maxInputChars) throw new Error('journal metrics: request exceeds maxInputChars');
       if (data.kind === 'worker') {
-        // M4 baseline projects the complete Session history. M7 compaction will
-        // require projection-aware checks once its journal event is supported.
-        equal(projected, history, 'worker history');
+        if (!variantFlags(settings.variant).optimizer) equal(system.content, BASE_SYSTEM, 'worker system');
+        const expectedBefore = projection(history, boundary, summary);
+        const preEstimate = preAfterCompaction?.estimate ?? estimate(system.content, expectedBefore, tools);
+        const olderRounds = preAfterCompaction?.olderRounds ?? Math.max(0,
+          completedRoundEnds(history).filter(end => end > boundary).length - settings.context.keepRecentRounds);
+        const threshold = preEstimate >= settings.context.estimatedWindowTokens * settings.context.triggerRatio;
+        if (contextEnabled && !preAfterCompaction && threshold && olderRounds > 0) {
+          throw new Error('journal metrics: eligible context omitted compaction');
+        }
+        equal(projected, expectedBefore, 'worker history');
         const observation = observations.get(data.observationSeq!);
         if (!observation || referenced.has(data.observationSeq!)) throw new Error('journal metrics: missing or reused context observation');
         referenced.add(data.observationSeq!);
         equal(observation.requestChars, data.requestChars, 'context requestChars');
-        equal(observation.estimatedInputTokens, estimate, 'context estimatedInputTokens');
-        equal(observation.preCompressionEstimatedTokens, estimate, 'preCompressionEstimatedTokens');
-        equal(observation.olderRounds, Math.max(0, countRounds(history) - settings.context.keepRecentRounds), 'olderRounds');
+        equal(observation.estimatedInputTokens, requestEstimate, 'context estimatedInputTokens');
+        equal(observation.preCompressionEstimatedTokens, preEstimate, 'preCompressionEstimatedTokens');
+        equal(observation.olderRounds, olderRounds, 'olderRounds');
+        equal(observation.thresholdReached, threshold, 'thresholdReached');
+        lastWorkerSystem = system.content;
+        lastWorkerTools = tools;
+        preAfterCompaction = null;
       } else if (data.observationSeq !== null) throw new Error('journal metrics: auxiliary request has observation');
+      if (data.kind === 'summary') {
+        const expected = candidate();
+        if (!expected || pendingSummary) throw new Error('journal metrics: unexpected summary request');
+        equal(projected, expected.messages, 'summary messages');
+        equal(system.content, SUMMARY_SYSTEM, 'summary system');
+        equal(tools, [], 'summary tools');
+        equal(data.body, encodeChatRequest(settings.model, {
+          kind: 'summary', system: SUMMARY_SYSTEM, messages: expected.messages, tools: [],
+          maxOutputTokens: outputLimit, signal: new AbortController().signal,
+        }), 'summary body');
+        pendingSummary = { requestSeq: event.seq, responseSeq: null, from: expected.from, to: expected.to,
+          preEstimate: expected.preEstimate, olderRounds: expected.olderRounds, response: null, error: null };
+      }
       pending.set(event.seq, data);
     }
     if (event.type === 'response') {
@@ -187,6 +251,35 @@ export function inspectJournal(journal: JournalRead, config: RunConfig): Journal
       if (data.error === 'timeout') timeout = true;
       if (data.error === 'cancelled') cancelled = true;
       if (data.kind === 'worker' && data.error === null && data.response) assistantDue = data.response;
+      if (data.kind === 'summary') {
+        if (!pendingSummary || pendingSummary.requestSeq !== data.requestSeq) throw new Error('journal metrics: untracked summary response');
+        pendingSummary.responseSeq = event.seq;
+        pendingSummary.response = data.response;
+        pendingSummary.error = data.error;
+        if (data.error === null && data.response &&
+          (data.response.finish !== 'stop' || data.response.calls.length > 0 || data.response.content.trim() === '')) {
+          modelFailure = true;
+        }
+      }
+    }
+    if (event.type === 'context_compacted') {
+      const compacted = event.data as ContextCompactedData;
+      if (!contextEnabled || !pendingSummary || pendingSummary.responseSeq === null
+        || pendingSummary.error !== null || !pendingSummary.response
+        || pendingSummary.response.finish !== 'stop' || pendingSummary.response.calls.length > 0
+        || pendingSummary.response.content.trim() === '') {
+        throw new Error('journal metrics: context_compacted without valid summary');
+      }
+      equal(compacted.fromMessageIndex, pendingSummary.from, 'compaction fromMessageIndex');
+      equal(compacted.toMessageIndex, pendingSummary.to, 'compaction toMessageIndex');
+      equal(compacted.summaryRequestSeq, pendingSummary.requestSeq, 'compaction summaryRequestSeq');
+      equal(compacted.summaryResponseSeq, pendingSummary.responseSeq, 'compaction summaryResponseSeq');
+      equal(compacted.summary, pendingSummary.response.content.trim(), 'compaction summary');
+      boundary = compacted.toMessageIndex;
+      summary = compacted.summary;
+      preAfterCompaction = { estimate: pendingSummary.preEstimate, olderRounds: pendingSummary.olderRounds };
+      pendingSummary = null;
+      compactions++;
     }
     if (event.type === 'tool_start') toolStarts.add(event.seq);
     if (event.type === 'tool_end') {
@@ -199,6 +292,20 @@ export function inspectJournal(journal: JournalRead, config: RunConfig): Journal
     }
   }
   if (history.length === 0) throw new Error('journal metrics: missing initial user message');
+  if (pendingSummary) {
+    if (pendingSummary.responseSeq === null || result.termination === 'completed') {
+      throw new Error('journal metrics: summary request lacks valid termination');
+    }
+    const response = pendingSummary.response;
+    const semanticFailure = pendingSummary.error === null && response &&
+      (response.finish !== 'stop' || response.calls.length > 0 || response.content.trim() === '');
+    const allowed = pendingSummary.error === null
+      ? semanticFailure ? ['model_error', 'timeout', 'cancelled'] : ['timeout', 'cancelled']
+      : [pendingSummary.error];
+    if (!allowed.includes(result.termination)) {
+      throw new Error('journal metrics: uncommitted summary termination mismatch');
+    }
+  }
   if (pending.size) throw new Error('journal metrics: incomplete request without response');
   if (toolStarts.size || assistantDue && result.termination === 'completed') {
     throw new Error('journal metrics: incomplete response or tool evidence');
@@ -227,7 +334,7 @@ export function inspectJournal(journal: JournalRead, config: RunConfig): Journal
     toolCalls, toolErrors,
     inputTokens: inputKnownRequests === requests.length ? knownInputTokens : null,
     outputTokens: outputKnownRequests === requests.length ? knownOutputTokens : null,
-    knownInputTokens, knownOutputTokens, contextStats, compactions: 0,
+    knownInputTokens, knownOutputTokens, contextStats, compactions,
   };
   for (const [key, value] of Object.entries(fields)) equal(result[key as keyof RunResult], value, key);
   if (result.termination === 'completed') {
@@ -240,7 +347,15 @@ export function inspectJournal(journal: JournalRead, config: RunConfig): Journal
     equal(result.error, result.termination, 'termination error');
     if (result.termination === 'request_limit' && requests.length !== settings.budget.maxModelRequests
       || result.termination === 'tool_limit' && !skippedTools
-      || result.termination === 'context_overflow' && !overflow
+      || result.termination === 'context_overflow' && !overflow && !(() => {
+        const expected = candidate();
+        if (!expected) return false;
+        const summaryBody = encodeChatRequest(settings.model, {
+          kind: 'summary', system: SUMMARY_SYSTEM, messages: expected.messages, tools: [],
+          maxOutputTokens: Math.min(512, settings.budget.maxOutputTokens), signal: new AbortController().signal,
+        });
+        return summaryBody.length > settings.budget.maxInputChars;
+      })()
       || result.termination === 'model_error' && !modelFailure) {
       throw new Error('journal metrics: termination has no supporting evidence');
     }

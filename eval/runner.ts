@@ -56,8 +56,8 @@ export async function runEvaluation(config: unknown, options: {
   const smokeTaskRoot = options.smokeTaskRoot === undefined ? undefined : resolve(options.smokeTaskRoot);
   const modelPlugin = options.modelPlugin;
   const signal = options.signal;
-  if (parsed.variants.length !== 1 || parsed.variants[0] !== 'baseline') {
-    throw new Error('eval variant: only baseline is implemented');
+  if (parsed.variants.some(variant => variant !== 'baseline' && variant !== 'context')) {
+    throw new Error('eval variant: only baseline and context are implemented');
   }
   if (parsed.phase === 'smoke' && !modelPlugin || parsed.phase !== 'smoke' && modelPlugin) {
     throw new Error('eval provider: smoke requires mock model; other phases require HTTP');

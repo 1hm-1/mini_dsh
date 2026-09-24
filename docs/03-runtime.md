@@ -10,7 +10,7 @@
 6. 有calls：保存assistant，按返回顺序串行执行；每次先检查工具预算，再记录开始、执行与结果，回到步骤3。
 7. 预算、超时、取消或模型错误返回明确termination，由Loop保存唯一run_end；已知持久化失败不再尝试写结束事件。Runtime.run在finally逆序关闭插件；独立使用Loop的调用方负责同样的清理。
 
-Loop不判断variant；仅检查可选Optimizer服务。当前runtime只装配baseline，ContextManager固定保留完整历史；M7/M8才开放增强开关。baseline可以正常读、写、修正错误和迭代。
+Loop不判断variant；仅检查可选Optimizer服务。M7已开放baseline/context：baseline完整投影，context按下述策略摘要；optimizer/full留M8。Session始终保留完整历史。baseline可以正常读、写、修正错误和迭代。
 
 ## 共同计量
 
@@ -49,6 +49,6 @@ v1只读回放：核对事件顺序、call/result、计数和结束记录。末�
 
 ## 在baseline阶段就记录长度
 
-M3的完整投影已计算02定义的contextMetrics，包括估算输入长度、当前完整轮次和潜在压缩条件；只记录，不调用summary。M6据此诊断，而不是等C实现后才补测baseline。C/O算法是候选设计，真正实现按M7/M8进行。模型长度不足以推断遗忘，分析引用具体行为和验收证据。
+M3的完整投影已计算02定义的contextMetrics，包括估算输入长度、当前完整轮次和潜在压缩条件；只记录，不调用summary。M6据此诊断，而不是等C实现后才补测baseline。C已在M7按既定算法实现，O留M8；候选能力收益仍待M9。模型长度不足以推断遗忘，分析引用具体行为和验收证据。
 
 ContextManager提供五项投影指标；模型计量包装器在每次worker投影的硬上限检查前写context_observation事件，保存02定义的长度/轮次/阈值字段；即使context_overflow导致没有HTTP请求，诊断也可看到被拒请求的长度。RunResult.contextStats只汇总实际发出的worker请求，拒绝请求作为独立失败证据，避免混淆分母。

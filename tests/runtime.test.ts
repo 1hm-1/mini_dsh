@@ -62,7 +62,9 @@ test('runtime executes a file edit, external Node test, and durable result', asy
 
 test('runtime rejects unsupported variants and missing key before journal creation', async t => {
   const f = await fixture(t);
-  await assert.rejects(createRuntime({ ...f.config, variant: 'context' }, { modelPlugin: f.modelPlugin([]) }), /variant|baseline|implemented/i);
+  for (const variant of ['optimizer', 'full'] as const) {
+    await assert.rejects(createRuntime({ ...f.config, variant }, { modelPlugin: f.modelPlugin([]) }), /variant|implemented/i);
+  }
   await assert.rejects(readFile(f.sessionPath), /ENOENT/);
   const prior = process.env.HARNESS_API_KEY;
   delete process.env.HARNESS_API_KEY;

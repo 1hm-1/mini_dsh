@@ -49,3 +49,28 @@ test('E06 attempt retains complete failed evidence and isolates hidden assets', 
   await assert.rejects(runAttempt({ task, config, entry, runId: 'test', runRoot, implementationCommit: null,
     benchmarkCommit: null, modelPlugin: ({ model, accounting }) => mockModelPlugin({ model, accounting, script: [] }) }));
 });
+
+
+test('M7.3 attempt accepts context and still rejects optimizer/full before materializing', async t => {
+  const root = await mkdtemp(path.join(tmpdir(), 'attempt-context-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const taskRoot = path.join(root, 'eval-smoke');
+  await cp(source, taskRoot, { recursive: true });
+  const task = await loadTask(taskRoot);
+  const runRoot = path.join(root, 'run');
+  const { mkdir } = await import('node:fs/promises');
+  await mkdir(runRoot);
+  const allVariants: EvalConfig = { ...config, variants: ['baseline', 'context', 'optimizer', 'full'] };
+  const options = { task, config: allVariants, runId: 'test', runRoot, implementationCommit: null, benchmarkCommit: null,
+    modelPlugin: ({ model, accounting }: Parameters<NonNullable<Parameters<typeof runAttempt>[0]['modelPlugin']>>[0]) =>
+      mockModelPlugin({ model, accounting, script: [{ content: 'No edit', calls: [], finish: 'stop',
+        usage: { inputTokens: 1, outputTokens: 1 }, actualModel: 'mock', fingerprint: null }] }) };
+  for (const variant of ['optimizer', 'full'] as const) {
+    await assert.rejects(runAttempt({ ...options, entry: { ...entry, variant } }), /variant not implemented/);
+  }
+  assert.equal((await readdir(runRoot)).length, 0);
+  const result = await runAttempt({ ...options, entry: { ...entry, variant: 'context' } });
+  assert.equal(result.variant, 'context');
+  assert.equal(result.agent.termination, 'completed');
+  assert.equal(result.agent.summaryRequests, 0);
+});

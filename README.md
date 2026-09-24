@@ -2,7 +2,7 @@
 
 从零实现与mini-dsh规模接近的TypeScript Coding Agent Harness，保持“一切产品能力皆插件”，重点做好baseline/full比较和2×2消融。
 
-**M0–M6已完成：S8/H4题库已冻结，DeepSeek真实baseline 36次已运行，verify与分析提交门槛通过。主成功率S20/24、H3/12、整体23/36。** 实际状态与验收证据见[进度](docs/progress.md)。题库和复核命令见[Benchmark v1](benchmark/README.md)；[baseline报告](reports/baseline-report.md)和[失败分析](reports/baseline-failure-analysis.md)已形成，下一步M7基于证据实现Context Manager：
+**M0–M7已完成：题库与真实baseline分析已冻结，Context Manager已实现并通过281项工程检查。M6主成功率S20/24、H3/12、整体23/36；C的真实收益尚未测量。** 实际状态与验收证据见[进度](docs/progress.md)。题库和复核命令见[Benchmark v1](benchmark/README.md)；[baseline报告](reports/baseline-report.md)和[失败分析](reports/baseline-failure-analysis.md)已形成，M7增量摘要已完成，下一步M8实现Prompt Optimizer：
 
 ```text
 M0 工程/接口 → M1 Plugin/Session → M2 Tools
@@ -54,7 +54,7 @@ npm run agent -- --config /path/to/runtime.json --input '修复指定文件中�
 # 长任务也可用 --input-file /path/to/task.txt，和 --input 互斥
 ```
 
-当前仅支持baseline；其余组明确报尚未实现。workspace与日志父目录需已存在，日志必须在workspace外且路径未被使用；相对路径按启动目录解析。运行结束输出RunResult JSON；退出码0表示completed、2表示预算/模型等运行终止、1表示配置/环境/IO或内部错误、130表示取消。读取纯JSON可用`npm run --silent agent -- ...`。CLI不执行外部验收测试，completed不等于任务评分通过。
+当前单次runtime支持baseline/context；optimizer/full尚未实现。workspace与日志父目录需已存在，日志必须在workspace外且路径未被使用；相对路径按启动目录解析。运行结束输出RunResult JSON；退出码0表示completed、2表示预算/模型等运行终止、1表示配置/环境/IO或内部错误、130表示取消。读取纯JSON可用`npm run --silent agent -- ...`。CLI不执行外部验收测试，completed不等于任务评分通过。
 
 已实现[运行配置校验](src/config.ts)、[插件接口](src/plugin.ts)、[服务接口](src/services/index.ts)及[任务/实验配置校验](eval/task.ts)。纯解析函数检查描述数据，runtime插件检查工作区/日志路径；[任务加载](eval/assets.ts)进一步校验实际资产、计算全包SHA-256并创建独立工作区副本。题库Git冻结见M5验收记录；配置通过校验不代表真实provider可用。
 
@@ -64,11 +64,11 @@ npm run agent -- --config /path/to/runtime.json --input '修复指定文件中�
 
 [共享计量](src/accounting.ts)、[HTTP模型](src/plugins/http-model.ts)和[脚本模型](src/plugins/mock-model.ts)已支持统一请求额度、共同超时、用量缺失标记及请求日志。HTTP已通过离线协议检查及M6真实DeepSeek运行验证。
 
-[ContextManager](src/plugins/context-manager.ts)保留完整历史并生成上下文指标；[Agent Loop](src/plugins/agent-loop.ts)负责单次运行、顺序工具调用、预算和取消处理。[工具事件](src/tool-events.ts)与日志解析检查调用、结果及消息的关联。[Runtime](src/runtime.ts)装配插件并在finally清理，[CLI](src/cli.ts)提供单次执行入口。脚本模型与本地假HTTP的真实文件读→改→final链路已验证；尚未实现摘要或Prompt Optimizer机制。
+[ContextManager](src/plugins/context-manager.ts)始终保留完整Session历史；context组在达到阈值且有旧完整轮次时调用同模型摘要，保留原任务与近期完整call/results，并记录增量边界；baseline继续完整投影。[Agent Loop](src/plugins/agent-loop.ts)负责单次运行、顺序工具调用、预算和取消处理。[工具事件](src/tool-events.ts)与日志解析检查调用、结果及消息的关联。[Runtime](src/runtime.ts)装配插件并在finally清理，[CLI](src/cli.ts)提供单次执行入口。脚本模型与本地假HTTP的真实文件读→改→final链路已验证；摘要调用计入共同预算，成功落盘才计compactions；Prompt Optimizer留M8实现。
 
 [快照与改动检查](eval/workspace.ts)保留文件原字节哈希和前后内容，检查非白名单文件变化及symlink/特殊项；任务副本只含workspace，隐藏验收和参考补丁留在外部。[外部判定器](eval/judge.ts)在独立检查副本使用原始测试，[测试执行器](eval/check.ts)核对真实用例与结构化完成记录，拒绝把提前退出或空测试判为通过。
 
-[Preflight](eval/preflight.ts)验证初始验收真实失败、参考补丁只改白名单且参考版本两类测试通过，保留日志和预检JSON。[eval-smoke夹具](tests/fixtures/README.md)已通过该离线工程验证，不属于S8/H4题库。[Runner](eval/runner.ts)已支持baseline串行调度、失败保留、逐次结果及报告生成；[verify](eval/verify.ts)独立复算并检查证据。
+[Preflight](eval/preflight.ts)验证初始验收真实失败、参考补丁只改白名单且参考版本两类测试通过，保留日志和预检JSON。[eval-smoke夹具](tests/fixtures/README.md)已通过该离线工程验证，不属于S8/H4题库。[Runner](eval/runner.ts)已支持baseline/context串行调度、失败保留、逐次结果及报告生成；[verify](eval/verify.ts)独立复算并检查证据。
 
 离线评测入口可立即运行，不读取API Key、不发网络请求；固定工程smoke题重复两次，执行读→改→final并外部评分，产物标记`provider=mock`：
 
@@ -80,7 +80,7 @@ npm run eval:smoke -- --output /tmp/mini-harness-smoke
 
 产物在`runs/<runId>/`：包含题目preflight证据、manifest中的实际配置和完整schedule，以及每次attempt的journal、before/after/changes、两类测试日志与result.json。失败保留、不自动重试。完成矩阵后先校验底层证据，再生成summary.json/report.md并执行verify；不完整记录只产出diagnostic.json/diagnostic.md，保留原始失败材料。
 
-报告分别展示S/H及总体成功率、全部请求与工具成本、token已知部分/完整率、Agent与验收耗时、逐请求上下文长度及终止原因。当前runner仍只执行baseline，四组统计通过手工数据验证，C/O机制与真实消融按后续里程碑推进。
+报告分别展示S/H及总体成功率、全部请求与工具成本、token已知部分/完整率、Agent与验收耗时、逐请求上下文长度及终止原因。runner已开放baseline/context，离线两组长历史矩阵验证摘要与verify；四组统计的既有手工数据不表示真实消融已完成。
 
 ```sh
 # 只读检查已完成运行；不调用模型、不重跑测试、不修复产物
@@ -98,7 +98,7 @@ npm run eval -- --config experiments/baseline-config.example.json --variants bas
 # --tasks id1,id2 可选；上述模板必须先填写真实模型配置
 ```
 
-CLI覆盖先合并校验后落盘；目前只运行baseline。HTTP模式要求干净的实现提交和已提交的题库manifest/资产，校验全部题目（包括未选题），再预检所选题；输出使用Git忽略目录或仓库外目录。每次attempt独立工作区/Session/预算；完成矩阵即退出0（可以包含评分失败），配置/环境/证据错误退出1，取消退出130。普通评测入口不接受smoke配置，请使用明确的离线入口。当前题库、实现和M6真实分析均已有本地Git提交；未推送远程仓库。
+CLI覆盖先合并校验后落盘；runtime/runner支持baseline/context，optimizer/full仍拒绝。实验phase规则不变：baseline-diagnostic仅baseline，正式四组ablation等待M8；context可用单次Agent入口或离线smoke工厂验收。HTTP模式要求干净的实现提交和已提交的题库manifest/资产，校验全部题目（包括未选题），再预检所选题；输出使用Git忽略目录或仓库外目录。每次attempt独立工作区/Session/预算；完成矩阵即退出0（可以包含评分失败），配置/环境/证据错误退出1，取消退出130。普通评测入口不接受smoke配置，请使用明确的离线入口。当前题库、实现和M6真实分析均已有本地Git提交；未推送远程仓库。
 
 阅读入口：
 
@@ -113,4 +113,4 @@ CLI覆盖先合并校验后落盘；目前只运行baseline。HTTP模式要求�
 
 执行模型遵守[AGENTS.md](AGENTS.md)，按证据门槛推进。容器平台、真实仓库大型题库、保留集、预注册、高级统计仍不属于首版，不因修正实验顺序恢复过度工程。
 
-M6固定输出：runs/<baseline-run>/、reports/baseline-report.md、reports/baseline-failure-analysis.md。两份报告及证据索引/代表trace必须先单独提交Git，M7/M8才能开始；机制提交关联分析SHA与HYP编号，最终reports/ablation-report.md再关联实现和结果。当前尚无这些实测产物。
+M6固定输出：runs/<baseline-run>/、reports/baseline-report.md、reports/baseline-failure-analysis.md。两份报告及证据索引/代表trace必须先单独提交Git，M7/M8才能开始；机制提交关联分析SHA与HYP编号，最终reports/ablation-report.md再关联实现和结果。M6这些产物已完成，baselineAnalysisCommit为`93d075b80ce15616ca019f71153935b5d3ad51cb`；M9消融产物尚无。

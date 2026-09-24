@@ -2,6 +2,8 @@ import { isDeepStrictEqual } from 'node:util';
 import { readFile } from 'node:fs/promises';
 import type { Event, Message, RunResult } from './types.js';
 import { parseModelEventData } from './model-events.js';
+import { parseContextCompactedData } from './context-events.js';
+import type { ContextCompactedData } from './context-events.js';
 import type { ContextObservationData, RequestData, ResponseData } from './model-events.js';
 import { parseToolEventData, parseToolResult } from './tool-events.js';
 import type { ToolEndData, ToolStartData } from './tool-events.js';
@@ -126,6 +128,9 @@ export function parseEvent(value: unknown): Event {
       data = { message: parseMessage(payload.message) };
       break;
     }
+    case 'context_compacted':
+      data = parseContextCompactedData(input.data);
+      break;
     case 'context_observation':
     case 'request':
     case 'response':
@@ -159,6 +164,8 @@ export async function readJournal(file: string): Promise<JournalRead> {
   const referencedObservations = new Set<number>();
   const pendingRequests = new Map<number, RequestData>();
   const answeredRequests = new Set<number>();
+  const summaryResponses = new Map<number, { requestSeq: number; response: ResponseData }>();
+  const compactedResponses = new Set<number>();
   type PendingCall = { call: ToolCall; startSeq: number | null; outcome: ToolEndData | null; messaged: boolean };
   let batch: PendingCall[] = [];
   let nextToolStart = 0;
@@ -267,6 +274,19 @@ export async function readJournal(file: string): Promise<JournalRead> {
       if (request.kind !== response.kind) throw new Error('journal: response kind mismatch');
       pendingRequests.delete(response.requestSeq);
       answeredRequests.add(response.requestSeq);
+      if (response.kind === 'summary') summaryResponses.set(item.seq, { requestSeq: response.requestSeq, response });
+    }
+    if (item.type === 'context_compacted') {
+      const compacted = item.data as ContextCompactedData;
+      const linked = summaryResponses.get(compacted.summaryResponseSeq);
+      if (!linked || linked.requestSeq !== compacted.summaryRequestSeq
+        || compactedResponses.has(compacted.summaryResponseSeq)
+        || linked.response.error !== null || linked.response.response?.finish !== 'stop'
+        || linked.response.response.calls.length !== 0
+        || linked.response.response.content.trim() !== compacted.summary) {
+        throw new Error('journal: context_compacted does not match successful summary response');
+      }
+      compactedResponses.add(compacted.summaryResponseSeq);
     }
     if (item.type === 'run_end' && (item.data as { result: RunResult }).result.termination === 'completed' && outstanding.size > 0) {
       throw new Error('journal: completed run has missing tool results');

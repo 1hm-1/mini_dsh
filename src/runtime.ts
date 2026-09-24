@@ -31,7 +31,7 @@ export async function createRuntime(config: unknown, options: RuntimeOptions = {
   // Validate and copy caller-owned input before the first asynchronous setup step.
   const parsed = parseRunConfig(config);
   const flags = variantFlags(parsed.variant);
-  if (flags.context || flags.optimizer) throw new Error(`variant ${parsed.variant} is not implemented`);
+  if (flags.optimizer) throw new Error(`variant ${parsed.variant} is not implemented`);
   if (options === null || typeof options !== 'object'
     || options.signal !== undefined && !(options.signal instanceof AbortSignal)
     || options.modelPlugin !== undefined && typeof options.modelPlugin !== 'function') {
@@ -55,7 +55,8 @@ export async function createRuntime(config: unknown, options: RuntimeOptions = {
     await context.use(toolsPlugin());
     await context.use(fileToolsPlugin(workspace));
     await context.use(modelFactory({ model: parsed.model, accounting }));
-    await context.use(contextManagerPlugin({ context: parsed.context }));
+    await context.use(contextManagerPlugin({ context: parsed.context, enabled: flags.context,
+      maxOutputTokens: parsed.budget.maxOutputTokens }));
     await context.use(agentLoopPlugin({ system: BASE_SYSTEM, accounting }));
   } catch (error) {
     try { await context.dispose(); } catch { /* preserve the startup error */ }

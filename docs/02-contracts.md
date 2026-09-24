@@ -4,7 +4,7 @@ M0已实现类型与配置/任务描述的纯校验，后续工单实现运行�
 
 源码入口：src/types.ts、src/plugin.ts、src/services/index.ts、src/config.ts、eval/contracts.ts、eval/task.ts。parseRunConfig/parseTaskSpec/parseEvalConfig接收unknown并返回新的配置对象；variant类型和能力开关来自specs/variants.json。空writable表示无写权限，计数字段不接受字符串转换；大写TEMPLATE是保留占位标记，普通template文件名合法。endpoint允许HTTPS与本地loopback HTTP，拒绝userinfo、fragment及常见凭据查询参数，错误不回显输入值；普通查询参数保留。
 
-上述配置解析函数不访问任务文件、不读取API Key或请求模型。任务资产存在性、符号链接、已知taskId/provider和冻结提交等校验由M4/M5运行前加载流程完成；M1.2的JSONL插件已检查日志真实父目录位于workspace外，M2文件工具已检查真实路径和文件类型。Event.data保留unknown边界类型，M1.2已实现run_start/message/run_end的payload校验，M3.1增加context_observation/request/response，M3.2增加tool_start/tool_end。ContextProjection与ModelRequest输入指标省略requestChars/observationSeq，由accounting包装器补齐；M3.2提供固定关闭压缩的完整历史ContextManager；尚未实现摘要。
+上述配置解析函数不访问任务文件、不读取API Key或请求模型。任务资产存在性、符号链接、已知taskId/provider和冻结提交等校验由M4/M5运行前加载流程完成；M1.2的JSONL插件已检查日志真实父目录位于workspace外，M2文件工具已检查真实路径和文件类型。Event.data保留unknown边界类型，M1.2已实现run_start/message/run_end的payload校验，M3.1增加context_observation/request/response，M3.2增加tool_start/tool_end。ContextProjection与ModelRequest输入指标省略requestChars/observationSeq，由accounting包装器补齐；M3.2提供完整历史ContextManager；M7增加可选摘要，详见文末M7扩展。
 
 ## 配置
 
@@ -93,7 +93,7 @@ completed不等于验收成功。失败也保留全部消耗。没有任何请�
 
 Event为 `{schemaVersion:1,seq:number,type:string,elapsedMs:number,data:unknown}`，按type验证payload。type至少包括run_start、request、response、tool_start、tool_end、context_compacted、context_observation、run_end。请求记录kind和真实body，响应记录usage/model/finish，run_end记录结果；不含授权header和key。
 
-M1.2实现的日志payload为run_start `{input:string}`、message `{message:Message}`、run_end `{result:RunResult}`。seq从1开始连续递增，elapsedMs不倒退；RunResult校验字段类型、非负数和null，均值/耗时允许有限小数。M3.1增加以下模型事件；M3.2增加tool_start/tool_end，context_compacted仍明确拒绝，留M7实现。逐请求用量、计数与结果的交叉核对留M3/M4。
+M1.2实现的日志payload为run_start `{input:string}`、message `{message:Message}`、run_end `{result:RunResult}`。seq从1开始连续递增，elapsedMs不倒退；RunResult校验字段类型、非负数和null，均值/耗时允许有限小数。M3.1增加以下模型事件；M3.2增加tool_start/tool_end，M7增加context_compacted及摘要请求/响应关联校验，见文末扩展。逐请求用量、计数与结果的交叉核对留M3/M4。
 
 Events.on注册同步监听器，每次注册的disposer只移除自身；每个监听器获得独立快照，抛出的同步异常不影响其他监听器或已经提交的Session历史。Session对输入、返回Event、历史快照和持久化provider分别隔离引用。写入失败后，已排队与后续写入都拒绝，不再改变内存或发布事件；run_end成功提交后同样拒绝后写。Session清理先等待已排队写入，随后由持久化插件关闭文件。
 
@@ -101,7 +101,7 @@ jsonlPersistencePlugin接收绝对workspace/sessionPath，要求workspace路径�
 
 ## M3.1 模型请求与计量
 
-Accounting由每个runtime独立创建，接收Budget及可选运行取消信号；复制并校验预算，建立覆盖全部调用的共同deadline。httpModelPlugin({model,accounting})和mockModelPlugin({model,accounting,script})均依赖Session并注册ModelService。两者复用编码和计量路径；mock脚本不读取API key。每个服务拒绝并发complete，调用输入在首个await前复制；关闭后旧引用不能继续请求。异步mock脚本须配合传入signal，取消时等待脚本结束并拒绝迟到成功，不丢弃仍运行的回调。辅助kind仅用于公共计量，目前不提供摘要或优化插件。
+Accounting由每个runtime独立创建，接收Budget及可选运行取消信号；复制并校验预算，建立覆盖全部调用的共同deadline。httpModelPlugin({model,accounting})和mockModelPlugin({model,accounting,script})均依赖Session并注册ModelService。两者复用编码和计量路径；mock脚本不读取API key。每个服务拒绝并发complete，调用输入在首个await前复制；关闭后旧引用不能继续请求。异步mock脚本须配合传入signal，取消时等待脚本结束并拒绝迟到成功，不丢弃仍运行的回调。辅助kind共用公共计量；M7摘要已接入，优化插件留M8。
 
 HTTP使用配置中的完整endpoint，不自动追加路径。首版支持非流式Chat Completions的文本/function tools子集：model、temperature、stream=false、n=1、max_completion_tokens、messages与tools。assistant.calls映射tool_calls，tool.callId映射tool_call_id；usage的prompt_tokens/completion_tokens映射内部输入/输出token。字段参考[官方Chat Completions接口](https://developers.openai.com/api/reference/cli/resources/chat/subresources/completions/methods/create)。不声称兼容所有provider或模型参数组合；真实provider在M6运行前验证，不自动改参数或重试。
 
@@ -123,7 +123,7 @@ HTTP插件setup读取HARNESS_API_KEY并保存，不写入请求日志；不自�
 
 ## M3.2 完整上下文与循环
 
-contextManagerPlugin({context})依赖session/model/tools，复制并校验ContextConfig。首版固定关闭压缩，拒绝包括enabled在内的额外选项；即使达到阈值也完整复制system、全部消息及工具schema，不请求模型或写摘要。assistant无calls自身算一完整轮；有calls时全部匹配结果齐全才算一轮，多工具算一轮，未完成尾轮不计。olderRounds=max(0,完整轮数-keepRecentRounds)，thresholdReached使用估算值>=窗口×比例，compactionEligible严格等于thresholdReached && olderRounds>0。
+contextManagerPlugin({context})依赖session/model/tools，复制并校验ContextConfig。M3.2时固定关闭压缩；M7扩展前的行为为：即使达到阈值也完整复制system、全部消息及工具schema，不请求模型或写摘要。assistant无calls自身算一完整轮；有calls时全部匹配结果齐全才算一轮，多工具算一轮，未完成尾轮不计。olderRounds=max(0,完整轮数-keepRecentRounds)，thresholdReached使用估算值>=窗口×比例，compactionEligible严格等于thresholdReached && olderRounds>0。
 
 agentLoopPlugin({system,accounting})依赖session/model/tools/contextManager/events；一个实例只接收一次run，重复、并发或关闭后的调用直接拒绝，不追加第二次run_start/run_end。Loop拥有生命周期事件与原始user消息；独立使用Loop时调用方负责dispose，M3.3的Runtime.run在finally清理。Loop仅通过可选PromptOptimizerService接口连接未来扩展，当前无Optimizer实现；若注入该服务，其非空建议单独附在系统规则后并说明优先级低于原任务，原user不替换。
 
@@ -136,7 +136,7 @@ agentLoopPlugin({system,accounting})依赖session/model/tools/contextManager/eve
 
 每次工具意图落盘后检查signal再执行；末次合法模型请求返回的工具仍可在工具预算内执行，请求额度只阻止下一次模型请求。所有工具按顺序await，取消不放任尚未结束的handler继续运行。assistant、工具事件、工具消息或模型日志任一持久化失败均以io_error结束且停止后续动作；run_end自身写失败返回io_error并清空answer，不伪造持久化成功。
 
-run_end开始保存前确定最终termination及durationMs，保存成功是run的提交点；保存期间发生的取消不改写已保存结果，返回值与run_end.result一致。正常完成error=null，其余仅保存安全的termination字符串；completed只表示模型正常结束，不是外部测试通过。compactions首版恒为0。
+run_end开始保存前确定最终termination及durationMs，保存成功是run的提交点；保存期间发生的取消不改写已保存结果，返回值与run_end.result一致。正常完成error=null，其余仅保存安全的termination字符串；completed只表示模型正常结束，不是外部测试通过。M3时compactions恒为0；M7开始Loop订阅已落盘context_compacted计数，不判断variant。
 
 readJournal对含工具事件的日志检查assistant调用顺序、串行start/end、匹配result消息、预算后缀与未完成调用；旧的纯message日志保留既有校验。完整评测verify仍须在M4核对计数和实现版本，不能用向后兼容解析代替该验证。
 
@@ -144,7 +144,7 @@ readJournal对含工具事件的日志检查assistant调用顺序、串行start/
 
 `createRuntime(config: unknown, options?: RuntimeOptions): Promise<Runtime>`位于src/runtime.ts。Runtime提供`context: Context`、`run(input: string): Promise<RunResult>`和幂等`dispose(): Promise<void>`；每实例只执行一次。RuntimeOptions接收可选signal及modelPlugin工厂，工厂入参为`{model: ModelConfig, accounting: Accounting}`，返回MiniPlugin。默认HTTP，离线测试可显式换成mock插件，Loop不变；该工厂是可信本地代码，不是CLI动态加载入口。
 
-首次await前校验并复制RunConfig、捕获signal和模型工厂。组开关读取specs/variants.json，目前只有baseline可装配，context/optimizer/full明确拒绝。默认HTTP缺HARNESS_API_KEY时在创建日志前失败；自定义模型插件不要求该凭据。配置中的workspace/sessionPath相对启动cwd解析（不是相对配置文件目录），目录须预先存在，日志位于workspace外且不能覆盖。模型不会在setup期间调用。
+首次await前校验并复制RunConfig、捕获signal和模型工厂。组开关读取specs/variants.json，M7已支持baseline/context装配，optimizer/full留M8，现明确拒绝。默认HTTP缺HARNESS_API_KEY时在创建日志前失败；自定义模型插件不要求该凭据。配置中的workspace/sessionPath相对启动cwd解析（不是相对配置文件目录），目录须预先存在，日志位于workspace外且不能覆盖。模型不会在setup期间调用。
 
 固定插件次序：JSONL persistence → events → memorySession → permissions → tools → fileTools → model → contextManager → agentLoop。每实例独立Accounting、Session、权限、工具；BASE_SYSTEM是源码内固定的简洁文件操作指令，无规划器或结束前验证门禁。启动失败清理已加载插件；run在finally逆序清理，外部dispose在运行中取消并等待在途调用结束后再清理。清理失败继续释放其余服务并拒绝调用，不改写已经保存的run_end。
 
@@ -273,3 +273,20 @@ WorkerContextMetrics类型对应上文七个字段：requestChars、estimatedInp
 EvidenceIndex格式 `{schemaVersion:1,baselineRunId,runRoot,baselineImplementationCommit,benchmarkCommit,benchmarkHash,artifacts:[{path,size,sha256}],representatives:[{taskId,repeat,journalPath,eventSeqs,excerptPath,excerptSha256,selectionReason,redactions}]}`。path相对runRoot，excerptPath相对项目根；禁止越界、重复或指向不存在文件。index不收录自身hash，避免循环。原始日志hash和脱敏摘录hash分别存，不声称脱敏副本与原日志字节相同。
 
 M6报告commit在创建后才能得到SHA：baselineAnalysisCommit记到后续progress提交，M7/M8实现记录和M9报告引用它。报告自身和index不填写自身将来commit。Git门槛是提交与历史检查，不由CLI自动commit。
+
+
+## M7 增量摘要与独立复核
+
+前置分析：baselineAnalysisCommit=`93d075b80ce15616ca019f71153935b5d3ad51cb`；关联HYP-001（存在可触发观测，但收益inconclusive）与HYP-003（不直接解除固定额度）。机制未修改题库/窗口/预算/系统任务规则；接口仍为ContextManagerService.build，不增加新服务。
+
+`contextManagerPlugin({context, enabled?:boolean, maxOutputTokens?:number})`是内部装配选项，默认enabled=false/maxOutputTokens=512；runtime按variants开关传enabled及budget.maxOutputTokens。开启时增加events依赖以捕获同一次summary请求/响应seq。辅助调用经现有ModelService共享额度、deadline、signal、输入硬上限；输出上限min(512,maxOutputTokens)。SUMMARY_SYSTEM固定在插件源码，要求只总结已有事实、改动、错误和待办，不声称未执行测试已通过。
+
+边界以完整Session.messages()的零起始下标计，to为排他上界；初次from为第一条assistant，之后from为上次to。只摘要边界后新增的旧完整轮次，最近keepRecentRounds完整轮次及不完整尾轮保留；工具calls/results不能切开。摘要输入为前摘要user（若有）+本次[from,to)消息，tools为空。worker system和原始user不替换；压缩部分的user消息仍逐条保留，随后插入`Earlier conversation summary:\n`前缀的合成user摘要，再接边界之后的原消息。合成摘要不写入Session聊天历史，所有辅助请求和响应仍记日志。
+
+新增context_compacted payload：`{fromMessageIndex,toMessageIndex,summary,summaryRequestSeq,summaryResponseSeq}`。summary必须是非空stop、无calls的规范响应文本trim结果；request/response引用同一次summary。只有事件持久化成功才推进内存边界；Loop只统计已发布的成功落盘事件。IO失败返回io_error且不伪造run_end，摘要模型错误/空输出/工具调用显式终止；取消不接受迟到成功；并发build拒绝、dispose等待在途build结束。
+
+contextMetrics里的preCompressionEstimatedTokens和olderRounds取本次build开始时的未摘要投影；estimatedInputTokens/requestChars取最终worker投影。一次build最多摘要一次，摘要后不递归压缩；summary自身或最终worker超过共同输入硬上限均context_overflow。summary占最后一次请求后，允许compactions已增加、后续worker因request_limit未发；这不是免费摘要或静默退回baseline。
+
+readJournal校验压缩事件的summary请求/响应对应及复用；eval/journal-metrics独立重建完整轮次、边界、摘要输入和worker投影，核对两种长度、触发条件和累计compactions，拒绝边界/文本/引用/次数篡改；无Optimizer的baseline/context请求还必须使用固定BASE_SYSTEM，不能通过同步修改长度和统计掩盖系统提示变化。辅助模型合法协议响应但文本为空/包含calls可支持model_error；取消/超时优先保留其终止原因。summary输入硬超限未发请求时，从历史重建应发body证明超限，不伪造已派发请求或token。baseline旧日志继续按完整历史复算。
+
+runtime、eval runner与attempt开放baseline/context；optimizer/full仍拒绝，所有phase矩阵约束保持原值。baseline-diagnostic不容混入context，正式四组ablation等待M8；本阶段的两组长历史测试必须标mock，不能作为真实收益成绩。

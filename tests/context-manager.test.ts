@@ -92,7 +92,8 @@ test('M3.2 rejects malformed call/result association without mutating Session', 
 
 test('M3.2 rejects cancellation, invalid config and calls after disposal', async () => {
   assert.throws(() => contextManagerPlugin({ context: { ...config, keepRecentRounds: 0 } }), /keepRecentRounds/);
-  assert.throws(() => contextManagerPlugin({ context: config, enabled: true } as never), /options/);
+  assert.throws(() => contextManagerPlugin({ context: config, enabled: 'yes' } as never), /enabled/);
+  assert.throws(() => contextManagerPlugin({ context: config, extra: true } as never), /options/);
   const { ctx, build } = await fixture();
   const abort = new AbortController();
   abort.abort(new Error('stopped'));

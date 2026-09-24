@@ -1,6 +1,6 @@
 # 进度
 
-IMPLEMENTING。用户于2026-09-24授权开始开发，使用GPT-6 Sol（medium）子智能体实现，主智能体负责架构审阅与验收。M0.1、M0.2、M1.1、M1.2、M2.1、M2.2 DONE，M0/M1/M2完成；M3.1、M3.2、M3.3 DONE，M3完成；M4.1、M4.2、M4.3、M4.4 DONE，M4整体完成；M5.1、M5.2、M5.3、M5.4 DONE，M5整体完成；M6.1–M6.6 DONE：DeepSeek真实baseline 36次已完整运行、verify及九项分析验收通过，独立分析提交`93d075b80ce15616ca019f71153935b5d3ad51cb`；M7及以后NOT_STARTED。S8/H4题库保持benchmark-v1；真实baseline主成功23/36（S20/24、H3/12），尚无消融成绩。
+IMPLEMENTING。用户于2026-09-24授权开始开发，使用GPT-6 Sol（medium）子智能体实现，主智能体负责架构审阅与验收。M0.1、M0.2、M1.1、M1.2、M2.1、M2.2 DONE，M0/M1/M2完成；M3.1、M3.2、M3.3 DONE，M3完成；M4.1、M4.2、M4.3、M4.4 DONE，M4整体完成；M5.1、M5.2、M5.3、M5.4 DONE，M5整体完成；M6.1–M6.6 DONE：DeepSeek真实baseline 36次已完整运行、verify及九项分析验收通过，独立分析提交`93d075b80ce15616ca019f71153935b5d3ad51cb`；M7.1–M7.3 DONE（281项工程检查、两组mock及旧baseline verify通过）；M8/M9 NOT_STARTED。S8/H4题库保持benchmark-v1；真实baseline主成功23/36（S20/24、H3/12），尚无消融成绩。
 
 ## 本次规划修订
 
@@ -571,3 +571,51 @@ GPT-6 Sol（medium）子智能体分别实现离线计量脚本、审阅原始tr
 F01/F02内容与真实证据验收通过；F04已在独立分析提交后通过。S04真实日志复算及重复/上下文解释已覆盖；E05/E07沿用已通过工程检查并由本次真实verify核对完整矩阵和冻结资产。本次仅分析/文档修改，未重跑此前254项工程测试，不将未运行项目记为新通过。
 
 HYP-001（C降低长交互长度）inconclusive；HYP-002（O重述公开边界约束）supported仅表示值得检验；HYP-003（C/O直接解除固定额度）unsupported。尚未证明C/O收益。M6整体DONE；M7/M8开始前须核验上述分析提交为HEAD祖先并关联HYP，M9仍须新跑包含baseline的四组。当前未开始M7/M8/M9、未推送远程。
+
+
+### M7.1：Context机制依据与前置核验（2026-09-24，DONE）
+
+用户要求完成M7。开始时工作树干净；已阅读README、00、10、03、08/09及M6报告。`git merge-base --is-ancestor 93d075b80ce15616ca019f71153935b5d3ad51cb HEAD`退出0；固定报告及index已在该独立分析提交，F01/F02/F04在M6完成记录中通过。`npm run eval:verify -- --run runs/2026-09-24T13-25-30-131Z-e441166e-f602-430b-a3f8-c14c091d777b`本次退出0，passed=true/errors=[]。
+
+baselineAnalysisCommit=`93d075b80ce15616ca019f71153935b5d3ad51cb`。M7主要关联HYP-001（inconclusive）：4个attempt的13次阈值/11次可压缩观测仅支持存在自然触发机会，不证明遗忘或成功率收益。HYP-003说明C不直接解除工具24/输出4096额度。按03实现同模型摘要、保留近期完整轮次与增量历史边界，summary占共享16请求；默认8192/0.75/4、题库及系统任务规则保持不变。用离线mock长历史验收工程行为，真实收益留M9；本次不启动付费实验。
+
+本项完成后按M7.2核心→M7.3接线推进，结果见下；M8/M9未开始。
+
+### M7.2：增量摘要核心（2026-09-24，DONE）
+
+前置M7.1已核验。子智能体先新增C01–C03测试，`node --import tsx --test tests/context-compaction.test.ts`退出1，4项因旧插件拒绝enabled选项失败。实现后主智能体独立运行`node --import tsx --test tests/context-manager.test.ts tests/context-compaction.test.ts`退出0，11项通过；`npm run typecheck`退出0。子智能体含Session相关回归的26项聚焦检查通过；最终整体验收随M7.3接线记录。
+
+contextManagerPlugin新增内部enabled/maxOutputTokens选项，默认关闭兼容baseline；同ModelService、每build至多一次min(512,maxOutputTokens)摘要，仅处理未压缩的旧完整轮次，保留原user/system和近期call/results。新增context_compacted严格解析及summary请求/响应引用检查；摘要落盘后推进边界，Session历史完整保留。M7.3负责开放context装配、Loop压缩计数、评测独立复算与端到端额度/失败验收。
+
+### M7.3：context组接线、独立复算与整体验收（2026-09-24，DONE）
+
+依赖M7.2聚焦验收通过后开始。baselineAnalysisCommit=`93d075b80ce15616ca019f71153935b5d3ad51cb`；机制关联HYP-001/HYP-003。GPT-6 Sol（medium）子智能体分别负责接线与评测复算，主智能体补独立边界/端到端测试，另一子智能体只读架构审阅。
+
+交付：runtime/runner/attempt支持baseline/context，optimizer/full继续拒绝，phase矩阵不改；Loop订阅成功落盘的context_compacted计数并在清理时退订。eval独立核对summary固定指令/无工具/min(512,额度)、增量完整轮次边界、请求/响应引用与文本、worker投影、压缩前后指标及compactions。新增context-events与journal校验是使摘要可持久化/复核的必要支持，未改公共服务接口、Model计量层、内核或新增策略。
+
+审阅修复：端到端测试发现attempt遗留baseline门禁；取消发生在空摘要response持久化时，必须保留cancelled而非强制model_error；同长度篡改worker system原本能躲过长度校验，现对无O的请求核对BASE_SYSTEM。没有通过弱化断言或减少验收覆盖来开放context。
+
+| 实际命令/操作 | 退出码 | 结果与证据 |
+| --- | --- | --- |
+| `node --import tsx --test tests/context-runtime.test.ts`（先红） | 1 | 旧runtime拒绝context导致2项失败，baseline兼容项通过 |
+| 上述接线后及runtime/runner/CLI聚焦检查 | 0 | 子智能体16项通过；未调用provider |
+| `node --import tsx --test tests/context-evaluation.test.ts`（主审端到端先红） | 1 | 定位eval/attempt.ts仍拒context；修复后通过完整两组运行/报告/verify |
+| `node --import tsx --test tests/attempt.test.ts`（门禁修复后） | 0 | 2项通过，context可运行、optimizer/full在物化前拒绝 |
+| `node --import tsx --test tests/context-boundaries.test.ts` | 0 | 6项通过：summary前预算耗尽、摘要后worker硬超限、摘要中取消、摘要落盘后取消、摘要事件IO失败、summary输入自身硬上限 |
+| `node --import tsx --test tests/context-journal.test.ts`（先红→修复） | 1→0 | 原worker完整历史断言拒绝合法双次压缩；独立边界/投影复算后通过，保留篡改拒绝 |
+| 同文件worker system等长篡改回归（先红→修复） | 1→0 | 旧verify漏判；固定系统规则核对后通过 |
+| `npm run typecheck`（并行接线中间检查） | 2 | 临时Message类型/可选artifact路径类型错误；显式类型与断言修复，最终检查通过 |
+| `npm run typecheck && node --import tsx --test tests/context-*.test.ts tests/journal-metrics.test.ts`（主审阶段检查） | 0 | 当时36项聚焦全部通过，后续再补system公平性回归 |
+| `npm ci --offline --ignore-scripts --no-audit --no-fund` | 0 | 按lock离线安装6包，未改依赖 |
+| `npm run check > /tmp/mini-harness-m7-check.log 2>&1` | 0 | 审阅补system断言前typecheck与280项具名测试通过 |
+| `npm run check > /tmp/mini-harness-m7-final-check.log 2>&1` | 0 | 最终typecheck与281项具名测试全部通过，0失败/跳过 |
+| `npm run eval:verify -- --run runs/2026-09-24T13-25-30-131Z-e441166e-f602-430b-a3f8-c14c091d777b` | 0 | 新实现下原M6真实日志仍passed=true/errors=[]，没有重跑模型或改原始证据 |
+| `node --import tsx /tmp/mini-harness-m7-smoke.mjs` | 0 | 使用测试中相同长历史mock策略，执行两组实际文件读/改/外部检查并verify，原始新run保留 |
+| `node --import tsx benchmark/preflight.mjs runs/m7-preflight-2026-09-24-01` | 0 | 全12题初始验收失败/参考两层通过及完整性检查通过；新目录保存证据，不改冻结资产 |
+| Python内联：Git祖先与冻结路径diff、索引315原始文件大小/SHA、src无eval依赖 | 0 | M6分析为祖先；benchmark/specs/experiments/reports未改；全部原始哈希匹配，依赖边界保持 |
+
+保留的M7工程运行：`runs/2026-09-24T14-45-06-709Z-ca780118-d0ae-4cdc-ac8a-089ce6063025/`，phase=smoke、provider=mock、dirty=true（实现提交前检查，如实保留）。固定默认8192/0.75/4，16次模型总预算：baseline 7 worker/0 summary/0 compactions；context 7 worker+2 summary=9请求/2 compactions。两次attempt都通过功能判定及verify。这只是自建smoke夹具的工程证据；长内容仅由测试脚本生成，未加入Benchmark v1，不是C提升真实模型成绩的证据。可重复工程验收代码在tests/context-evaluation.test.ts，使用新目录避免覆盖此run。
+
+C01/C02/C03/R07通过，E06覆盖本阶段baseline/context两组链路，四组E06留M8。readJournal新增摘要引用校验，eval另独立重建边界/投影；历史完整保留且摘要不进入Session消息。原任务/system规则不变；取消与失败保留已消耗summary请求/用量；summary失败不免费重试或退回baseline。当前固定system与完整历史通常令summary输入短于上一worker，不能制造不可达日志冒充超限正例：独立Context预载长历史测试证明硬上限，完整journal中伪造无证据overflow被拒。
+
+M7整体验收DONE。下一步M8关联同一baselineAnalysisCommit及HYP-002实现一次需求改写；M9再执行同版本四组真实实验。没有启动新付费实验、修改M6报告或推送远程；机制提交将关联本次分析SHA/HYP，实际contextImplementationCommit在产生后追加记录。

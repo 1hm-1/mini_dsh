@@ -60,6 +60,10 @@ export function agentLoopPlugin(options: { system: string; accounting: Accountin
     const optimizer = ctx.has('promptOptimizer') ? ctx.get('promptOptimizer') : null;
     let used = false;
     let closed = false;
+    let compactions = 0;
+    const unsubscribe = ctx.get('events').on(event => {
+      if (event.type === 'context_compacted') compactions++;
+    });
     const remove = ctx.provide('agentLoop', {
       async run(input, runOptions) {
         if (closed) throw new Error('agent loop is closed');
@@ -165,7 +169,7 @@ export function agentLoopPlugin(options: { system: string; accounting: Accountin
         const result = (kind: Termination): RunResult => ({
           schemaVersion: 1, termination: kind, answer: kind === 'completed' ? answer : null,
           ...accounting.snapshot(), toolCalls, toolErrors,
-          durationMs: Math.max(0, performance.now() - start), compactions: 0,
+          durationMs: Math.max(0, performance.now() - start), compactions,
           error: kind === 'completed' ? null : kind,
         });
         if (journalFailed || !started) return result('io_error');
@@ -175,6 +179,6 @@ export function agentLoopPlugin(options: { system: string; accounting: Accountin
         return final;
       },
     });
-    return () => { closed = true; remove(); };
+    return () => { closed = true; unsubscribe(); remove(); };
   } };
 }

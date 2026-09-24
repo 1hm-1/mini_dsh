@@ -42,7 +42,7 @@ test('runner rejects unsupported variants and bad preflight before model calls',
   let calls = 0;
   const modelPlugin = ({ model, accounting }: Parameters<NonNullable<NonNullable<Parameters<typeof runEvaluation>[1]>['modelPlugin']>>[0]) =>
     mockModelPlugin({ model, accounting, script: [() => { calls++; throw new Error('unexpected'); }] });
-  await assert.rejects(runEvaluation({ ...config('runs'), variants: ['context'] }, { projectRoot: root, smokeTaskRoot: path.join(root, 'tasks'), modelPlugin }), /not implemented|baseline/i);
+  await assert.rejects(runEvaluation({ ...config('runs'), variants: ['optimizer'] }, { projectRoot: root, smokeTaskRoot: path.join(root, 'tasks'), modelPlugin }), /not implemented|baseline|context/i);
   const { writeFile } = await import('node:fs/promises');
   await writeFile(path.join(root, 'tasks/eval-smoke/workspace/sum.mjs'), 'export const sum = (a, b) => a + b;\n');
   await assert.rejects(runEvaluation(config('runs'), { projectRoot: root, smokeTaskRoot: path.join(root, 'tasks'), modelPlugin }), /preflight/i);

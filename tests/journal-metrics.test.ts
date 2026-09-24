@@ -73,7 +73,7 @@ test('M4.4 detects altered result, context observation, body, and uncounted auxi
   request.elapsedMs = extra.events.at(-1)!.elapsedMs;
   reply.elapsedMs = request.elapsedMs;
   extra.events.push(request, reply, end);
-  assert.throws(() => inspectJournal(extra, f.config), /modelRequests|summaryRequests/);
+  assert.throws(() => inspectJournal(extra, f.config), /modelRequests|summaryRequests|unexpected summary request/);
 });
 
 test('M4.4 accepts unmatched hard overflow observation and rejects pending request evidence', async t => {
