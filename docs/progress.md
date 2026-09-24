@@ -671,3 +671,12 @@ GPT-6 Sol medium子智能体分别负责runtime/eval接线与journal复算，另
 保留的M8工程run：`runs/m8-engineering-2026-09-24-01/runs/2026-09-24T14-58-58-214Z-e589e9d6-48ed-428d-bc0a-ba1cd64ad16a/`，phase=smoke、provider=mock、dirty=true（实现提交前如实记录），夹具也保留在其上级tasks。固定默认窗口、16次总模型/24次工具预算。S每次3 worker，各组均0 compactions，O组额外1 optimizer；H每次7 worker，context/full额外2 summary及2 compactions，optimizer/full额外1 optimizer，因此H总请求baseline/context/optimizer/full分别7/9/8/10。full与baseline功能评分相同，这是工程预期，不是O有效或无效的真实实验结论。合成长历史仅存在测试夹具，未进入Benchmark v1。
 
 验收O01/O02、E06四组mock、S01/S02/S03通过：报告既有固定25%/75%对照、失败样本、未知用量、S/H分层与跨phase/commit混样拒绝均在307项全量检查中。M8 DONE；M9 NOT_STARTED，真实四组144次必须新run重新跑包括baseline在内全部组。未读取/打印密钥，未启动付费实验或推送远程。真实optimizerImplementationCommit将在机制提交生成后另行记录，不回写M6分析。
+
+### M8机制提交与后续引用
+
+- **optimizerImplementationCommit：`44116325d5a4398e0077f21b9c0db0c854cb5410`**（`feat: add one-shot prompt optimizer`）。
+- 提交正文关联baselineAnalysisCommit=`93d075b80ce15616ca019f71153935b5d3ad51cb`、contextImplementationCommit=`42427e9d5e6e11d37352ba19b3aa9b2dbcdc89ec`及HYP-002/HYP-003。`git diff --cached --check`、`git commit -F /tmp/mini-harness-m8-commit.txt`均退出0。
+- 最终实现下再次运行`npm run eval:verify -- --run runs/m8-engineering-2026-09-24-01/runs/2026-09-24T14-58-58-214Z-e589e9d6-48ed-428d-bc0a-ba1cd64ad16a`退出0，passed=true/errors=[]。
+- 机制提交后`git status --short`为空；`git merge-base --is-ancestor 93d075b80ce15616ca019f71153935b5d3ad51cb HEAD`退出0，分析先于O实现。未amend或重写分析历史。
+- 干净工作树下`node --import tsx benchmark/check-freeze.mjs`退出0，12题S8/H4、原benchmark提交和manifest hash一致，错误hash/commit拒绝，provider=null。
+- 本条在机制提交生成后独立文档提交记录真实SHA。M8 DONE，M9 NOT_STARTED；最终消融报告须关联上述分析、C/O机制提交及同一题库，使用新run完整重跑四组。
