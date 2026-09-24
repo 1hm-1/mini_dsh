@@ -22,6 +22,7 @@ preflight 逐题确认初始 acceptance 有真实断言失败、参考补丁不�
 ## 证据
 
 - `evidence/preflight-v1/index.json`：12 题的 hash、文件/测试数量、原始日志与 preflight JSON 的相对路径、字节数和 SHA-256。
+- `evidence/freeze-check.json`：真实冻结提交、manifest SHA-256和只读Git/资产核验结果。
 - `evidence/engineering/npm-check.txt`：本次 TypeScript 检查与 249 项工程测试的完整输出。
 - `evidence/extension-v2/index.json`：第 13 题的两个离线 mock 运行，prompt 相差一个字节；各自 manifest/result 保存不同 taskHash，report 通过不同 runId 关联。这个目录名是检查尝试编号，不是 benchmark-v2。
 - `evidence/extension-v1/`：保留首轮扩展检查；其 mock attempt 和 verify 已通过，但检查脚本错误地要求 Markdown 正文直接包含 taskHash，断言失败。修正为核对 report 的 runId 和关联 manifest/result 后，以全新目录重跑，没有删除或覆盖首轮结果。

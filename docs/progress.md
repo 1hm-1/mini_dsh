@@ -1,6 +1,6 @@
 # 进度
 
-IMPLEMENTING。用户于2026-09-24授权开始开发，使用GPT-6 Sol（medium）子智能体实现，主智能体负责架构审阅与验收。M0.1、M0.2、M1.1、M1.2、M2.1、M2.2 DONE，M0/M1/M2完成；M3.1、M3.2、M3.3 DONE，M3完成；M4.1、M4.2、M4.3、M4.4 DONE，M4整体完成；M5.1、M5.2、M5.3 DONE，M5.4 IN_PROGRESS；M6以后工单NOT_STARTED。12题实际资产已通过预检，正在提交benchmark-v1并核对Git冻结；尚无真实baseline报告或消融成绩。
+IMPLEMENTING。用户于2026-09-24授权开始开发，使用GPT-6 Sol（medium）子智能体实现，主智能体负责架构审阅与验收。M0.1、M0.2、M1.1、M1.2、M2.1、M2.2 DONE，M0/M1/M2完成；M3.1、M3.2、M3.3 DONE，M3完成；M4.1、M4.2、M4.3、M4.4 DONE，M4整体完成；M5.1、M5.2、M5.3、M5.4 DONE，M5整体完成；M6以后工单NOT_STARTED。S8/H4共12题已完成实际资产、预检及benchmark-v1本地Git冻结；尚无真实baseline报告或消融成绩。
 
 ## 本次规划修订
 
@@ -501,6 +501,15 @@ H01/H02各12个workspace文件；H03/H04各14个。无关模块有实际职责�
 
 验收B01/B02通过。扩展检查的b13仅是证据目录内的mock fixture，不属于v1的12题，也不是新增研究任务；extension-v2目录名不是benchmark-v2。全部日志保留原始字节和绝对生成路径，索引提供相对路径/原始hash。未运行真实provider；这些通过率不能用作M6/M9成绩。上下文8192/0.75/4、模型请求16、工具24保持不变。
 
-### M5.4：benchmark-v1 Git冻结（2026-09-24，IN_PROGRESS）
+### M5.4：benchmark-v1 Git冻结（2026-09-24，DONE）
 
-完整任务包、manifest和原始预检证据准备以提交说明 `benchmark-v1` 冻结。提交后运行只读 `benchmark/check-freeze.mjs` 检查干净Git、12题字节/suite/hash、manifest与提交归属，并以后续文档提交记录完整真实SHA，避免自引用或伪造SHA。此步骤尚未完成时不标M5 DONE。
+`git commit -m "benchmark-v1"` 退出0，完整实际任务资产、manifest、原始预检证据和离线复核脚本已提交。真实冻结提交：
+
+- **benchmarkCommit：`9fd463f618edfe25e8a683a62b7f540f3e644f90`**
+- benchmark/v1.json原始SHA-256：`d3d3321d3347017e58be60215e00a7ceb8e75fee5d4d77a2c07b0677160165a2`
+- `node --import tsx benchmark/check-freeze.mjs` 退出0：干净Git、S8/H4、全部task字节/suite/hash与冻结Git tree一致，`verifyFrozenInputs`通过；错误benchmarkHash与commit被拒绝。结果记录于 `benchmark/evidence/freeze-check.json`。
+- `git diff --cached --check -- . ':!benchmark/evidence/**' ':!benchmark/tasks/**/reference/*.diff'` 退出0：源码/测试/文档无空白错误；原始证据（含故意新增一字节的B02 fixture）与合法unified diff上下文空白不做格式清理。
+
+B01/B02/B03与E07的M5验收通过；E07的错suite、任务字节变化、脏工作区拒绝也由本次249项工程检查中的既有边界测试覆盖。全程未改变src/eval实现、variants、模型提示、预算或上下文窗口。冻结后用独立文档提交记录上述真实SHA；没有amend冻结提交或原地改题。
+
+M5整体DONE。下一步为M6真实baseline（默认12题×3次=36 attempts）；需要provider endpoint、model ID、环境变量HARNESS_API_KEY及付费实验授权后才启动。未读取密钥、未调用真实provider、未产生真实分数或baselineAnalysisCommit，M7/M8保持未开始。远程仓库地址仅在用户要求推送时需要。
