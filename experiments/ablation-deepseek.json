@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "taskIds": [
+    "b01-normalize",
+    "b02-counter",
+    "b03-config",
+    "f01-tags",
+    "f02-pagination",
+    "f03-ranges",
+    "m01-report",
+    "m02-options",
+    "h01-config-pipeline",
+    "h02-chunk-parser",
+    "h03-module-navigation",
+    "h04-issue-refactor"
+  ],
+  "variants": [
+    "baseline",
+    "context",
+    "optimizer",
+    "full"
+  ],
+  "repeats": 3,
+  "model": {
+    "endpoint": "https://api.deepseek.com/chat/completions",
+    "id": "deepseek-flash",
+    "temperature": 0
+  },
+  "budget": {
+    "maxModelRequests": 16,
+    "maxToolCalls": 24,
+    "timeoutMs": 120000,
+    "maxOutputTokens": 4096,
+    "maxInputChars": 128000
+  },
+  "context": {
+    "estimatedWindowTokens": 8192,
+    "triggerRatio": 0.75,
+    "keepRecentRounds": 4
+  },
+  "outputDir": "runs",
+  "phase": "ablation",
+  "benchmarkManifest": "benchmark/v1.json"
+}

@@ -680,3 +680,11 @@ GPT-6 Sol medium子智能体分别负责runtime/eval接线与journal复算，另
 - 机制提交后`git status --short`为空；`git merge-base --is-ancestor 93d075b80ce15616ca019f71153935b5d3ad51cb HEAD`退出0，分析先于O实现。未amend或重写分析历史。
 - 干净工作树下`node --import tsx benchmark/check-freeze.mjs`退出0，12题S8/H4、原benchmark提交和manifest hash一致，错误hash/commit拒绝，provider=null。
 - 本条在机制提交生成后独立文档提交记录真实SHA。M8 DONE，M9 NOT_STARTED；最终消融报告须关联上述分析、C/O机制提交及同一题库，使用新run完整重跑四组。
+
+### M9.1：真实四组消融准备（2026-09-24，IN_PROGRESS）
+
+用户明确将执行子智能体指定为GPT-6 Luna high并要求执行，授权本次144次真实API实验；主智能体负责审阅与验收。执行模型选择不改变实验provider：沿用deepseek-flash、非思考模式、temperature=0。固定12题×四组×3次，四组均新跑；16次总模型请求（含O/summary）、24次工具、120000ms、4096输出token、128000输入字符及8192/.75/4窗口不变。不开额外试跑，不自动重跑，不因结果中止挑样本。
+
+前置`git status --short`为空；analysis=`93d075b80ce15616ca019f71153935b5d3ad51cb`、C=`42427e9d5e6e11d37352ba19b3aa9b2dbcdc89ec`、O=`44116325d5a4398e0077f21b9c0db0c854cb5410`分别执行`git merge-base --is-ancestor <SHA> HEAD`均退出0。`npm run check > /tmp/mini-harness-m9-prerun-check.log 2>&1`退出0，typecheck及307项测试通过。新增实际配置experiments/ablation-deepseek.json，仅相对M6配置改变phase与variants；配置审阅提交后保持工作树干净运行，密钥通过Node --env-file加载，不写入配置或输出日志。
+
+本段记录开跑前固定协议，尚无M9成绩；M9.2/M9.3待前置实验完成并verify后推进。此前M8进度已推送远程main（`29a92515b85e6eb2b113e7f4eb8012901e349e20`），本次报告与最终提交另行记录。
