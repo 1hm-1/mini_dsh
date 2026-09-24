@@ -536,4 +536,4 @@ M5整体DONE。下一步为M6真实baseline（默认12题×3次=36 attempts）�
 | `npm run check > /tmp/mini-harness-deepseek-check.log 2>&1`（主智能体最终） | 0 | TypeScript检查与254项具名测试全部通过，0失败/跳过 |
 | `git diff --check` | 0 | 当前已跟踪修改无空白错误；提交前再含新增文件核对 |
 
-文档已提供显式Node `--env-file=.env`的正式命令；应用本身仍不自动加载.env。实现与用户实验配置将独立提交，便于M6按干净Git实现版本运行。没有真实baseline run、分数、分析报告或baselineAnalysisCommit；本项DONE不表示M6完成。执行真实36次矩阵仍需用户明确付费授权。
+文档已提供显式Node `--env-file=.env`的正式命令；应用本身仍不自动加载.env。实现与用户实验配置已独立提交：`beaab9dbf97445edd3b3269414d6c8739433f530`（`git commit -m "fix: support DeepSeek non-thinking chat protocol"`退出0）。提交后Node内联脚本对实际配置执行 `loadEvaluationInputs`、`verifyFrozenInputs` 和 `buildSchedule`，退出0：工作树干净、冻结仍为 `9fd463f618edfe25e8a683a62b7f540f3e644f90`、12题/36 attempts，providerCalls=0。没有真实baseline run、分数、分析报告或baselineAnalysisCommit；本项DONE不表示M6完成。执行真实36次矩阵仍需用户明确付费授权。
