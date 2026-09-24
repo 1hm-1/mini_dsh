@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "h02-chunk-parser",
+  "suite": "H",
+  "category": "multi-file",
+  "promptFile": "prompt.md",
+  "workspaceDir": "workspace",
+  "writable": ["src/state.mjs", "src/line.mjs"],
+  "publicTest": "public.test.mjs",
+  "acceptanceTest": "acceptance/check.mjs",
+  "referencePatch": "reference/patch.diff",
+  "testTimeoutMs": 5000
+}

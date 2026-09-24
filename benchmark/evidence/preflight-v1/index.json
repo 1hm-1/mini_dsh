@@ -1,0 +1,451 @@
+{
+  "schemaVersion": 1,
+  "kind": "offline-preflight",
+  "provider": null,
+  "tasks": [
+    {
+      "id": "b01-normalize",
+      "suite": "S",
+      "taskHash": "51582cc2b403500a95b2fc51937aab3be21bfd5c6ec84d79d7a0e8f56ade4054",
+      "workspaceFiles": 2,
+      "writableFiles": 1,
+      "passed": true,
+      "publicTests": 3,
+      "acceptanceTests": 5,
+      "artifacts": [
+        {
+          "path": "b01-normalize/preflight.json",
+          "bytes": 2447,
+          "sha256": "040cda079e823d38f458dcf423b716d823e3688c4ee7feacd3eb37dd7edce4a6"
+        },
+        {
+          "path": "b01-normalize/initial/public-output.txt",
+          "bytes": 11069,
+          "sha256": "7f7aca3069438e081531637605005c4d8d4d070dbf15b80f4300a2eedb8716de"
+        },
+        {
+          "path": "b01-normalize/initial/acceptance-output.txt",
+          "bytes": 11925,
+          "sha256": "da6c808b58967c38c4e76c4725fe450fbad3734446c0f1de61b14a36b6b7f2ed"
+        },
+        {
+          "path": "b01-normalize/reference/public-output.txt",
+          "bytes": 5804,
+          "sha256": "bd34dfa195711963875ee8c89675601632cd9695edcce97aeaa21b0926e45437"
+        },
+        {
+          "path": "b01-normalize/reference/acceptance-output.txt",
+          "bytes": 9030,
+          "sha256": "2a9e5ef33a941c22aefdb155c45d8d30ac8efad2f193d014b750565b6d5c32a3"
+        }
+      ]
+    },
+    {
+      "id": "b02-counter",
+      "suite": "S",
+      "taskHash": "f2e2f635965f758d16b9e6d98ca81d79f204cc802eb7f9b0945014f0ba14b64b",
+      "workspaceFiles": 2,
+      "writableFiles": 1,
+      "passed": true,
+      "publicTests": 3,
+      "acceptanceTests": 5,
+      "artifacts": [
+        {
+          "path": "b02-counter/preflight.json",
+          "bytes": 2436,
+          "sha256": "dc0f8d5f64af53dbf85b9a6fa3de74452d355bb52a02e4997f3d1b9c2aae5aa0"
+        },
+        {
+          "path": "b02-counter/initial/public-output.txt",
+          "bytes": 7973,
+          "sha256": "15cf916f4bc2134435998943f1dd0099555ed15bac194f223824a19af60e72f4"
+        },
+        {
+          "path": "b02-counter/initial/acceptance-output.txt",
+          "bytes": 15719,
+          "sha256": "ffc59029d5af5cfce2aa8c74921d94a864ebbee5f57e4fa33fcd95aa7d09610f"
+        },
+        {
+          "path": "b02-counter/reference/public-output.txt",
+          "bytes": 5848,
+          "sha256": "8049a5910cdd1acf72a8eb0175e9760ae9ffcf09522805468639ec34f89679e3"
+        },
+        {
+          "path": "b02-counter/reference/acceptance-output.txt",
+          "bytes": 9311,
+          "sha256": "c7175079f66cd6e34687b5a51d71619ef78f83e93e07284bd32c3e86345f7b31"
+        }
+      ]
+    },
+    {
+      "id": "b03-config",
+      "suite": "S",
+      "taskHash": "e462b8215b44eda8c0a58391618f582de11a2d731f5f1303cb2500ee72f88a90",
+      "workspaceFiles": 2,
+      "writableFiles": 1,
+      "passed": true,
+      "publicTests": 3,
+      "acceptanceTests": 8,
+      "artifacts": [
+        {
+          "path": "b03-config/preflight.json",
+          "bytes": 2428,
+          "sha256": "bfa8fd59fea453f08ddef6a744a047691f843a760976c76448f1c410bd70cc50"
+        },
+        {
+          "path": "b03-config/initial/public-output.txt",
+          "bytes": 8903,
+          "sha256": "2a5f2391bc048e8c31db499ddc49470831ffff6f628dbe9ca3da5740f683a4e6"
+        },
+        {
+          "path": "b03-config/initial/acceptance-output.txt",
+          "bytes": 28964,
+          "sha256": "852f3ee7ad060f29e930b314bc87efc83b788804340c649f5a56e47b8154c9b8"
+        },
+        {
+          "path": "b03-config/reference/public-output.txt",
+          "bytes": 5877,
+          "sha256": "351effcaa2d728d4427108006bd158fae942ccf6df82dce29b06b7b66ca211d3"
+        },
+        {
+          "path": "b03-config/reference/acceptance-output.txt",
+          "bytes": 14276,
+          "sha256": "23108f0bae9c22ec50b97948351398d0ac8705d5b124b7984c7ee15c236b5183"
+        }
+      ]
+    },
+    {
+      "id": "f01-tags",
+      "suite": "S",
+      "taskHash": "9f771366ccc2c14397712504c0c65b58576a4fb02f3ff0d5c934c4d1810ad090",
+      "workspaceFiles": 2,
+      "writableFiles": 1,
+      "passed": true,
+      "publicTests": 3,
+      "acceptanceTests": 5,
+      "artifacts": [
+        {
+          "path": "f01-tags/preflight.json",
+          "bytes": 2417,
+          "sha256": "c1af06ca2a5142e337699371243fd24f1d0ac734727cd03901a6bc59564375e1"
+        },
+        {
+          "path": "f01-tags/initial/public-output.txt",
+          "bytes": 11918,
+          "sha256": "d2e438887dd49cc38a54b530c2b788e93d9fa0fec1c06d785b093b97061f8a0c"
+        },
+        {
+          "path": "f01-tags/initial/acceptance-output.txt",
+          "bytes": 20460,
+          "sha256": "e9cf85b0207952a4009282550c675e44035071c5ce83c1b25272c90adda824d5"
+        },
+        {
+          "path": "f01-tags/reference/public-output.txt",
+          "bytes": 5787,
+          "sha256": "e280e112a417643c449b2e5961f96a0df7a62f7a0e10547de48c38a728d356d8"
+        },
+        {
+          "path": "f01-tags/reference/acceptance-output.txt",
+          "bytes": 9129,
+          "sha256": "ba532fa4e7c667746e831ae33dc540fe816a5dc053e8a7bbe005ed691f80797c"
+        }
+      ]
+    },
+    {
+      "id": "f02-pagination",
+      "suite": "S",
+      "taskHash": "ee8374240a225f416a4fe556344eefefd334505b6b8dfb958a23375695434957",
+      "workspaceFiles": 2,
+      "writableFiles": 1,
+      "passed": true,
+      "publicTests": 2,
+      "acceptanceTests": 4,
+      "artifacts": [
+        {
+          "path": "f02-pagination/preflight.json",
+          "bytes": 2451,
+          "sha256": "52ba9d9cd370d8608facc01c81c479e603e598ca3b73368062635fe221c54888"
+        },
+        {
+          "path": "f02-pagination/initial/public-output.txt",
+          "bytes": 10959,
+          "sha256": "a7419c9d06f753b7cc0a3643b3b8cb9535f2faf1359e543ef9e5c17fc26aac37"
+        },
+        {
+          "path": "f02-pagination/initial/acceptance-output.txt",
+          "bytes": 18700,
+          "sha256": "3b6d0eecb42db97a27e5f5ec7f11e3260995d630317665313f7b95f3e5e2e4ca"
+        },
+        {
+          "path": "f02-pagination/reference/public-output.txt",
+          "bytes": 4250,
+          "sha256": "57a75653bd89776658f13bb71f5845fb16b3d4851bf1555831665f9c3dead5bd"
+        },
+        {
+          "path": "f02-pagination/reference/acceptance-output.txt",
+          "bytes": 7627,
+          "sha256": "4deccd182776288160eb8b6f1cf83338539ac9c0a2f34d9e522870a7eac1458a"
+        }
+      ]
+    },
+    {
+      "id": "f03-ranges",
+      "suite": "S",
+      "taskHash": "2acc6f2af54be93cea0972e251d13144f01e5c7584a3cb0199c1d1d448a28704",
+      "workspaceFiles": 2,
+      "writableFiles": 1,
+      "passed": true,
+      "publicTests": 2,
+      "acceptanceTests": 5,
+      "artifacts": [
+        {
+          "path": "f03-ranges/preflight.json",
+          "bytes": 2420,
+          "sha256": "3a3e19a04714ebfb45563c680d004df74f74d2b4bc9d97ae4109afa790a96931"
+        },
+        {
+          "path": "f03-ranges/initial/public-output.txt",
+          "bytes": 7181,
+          "sha256": "486cd8499dea1ff8c7a2d4e24073355f09f8a4116cc81ecc52930a2fa781dc72"
+        },
+        {
+          "path": "f03-ranges/initial/acceptance-output.txt",
+          "bytes": 19860,
+          "sha256": "8904fabada050e8475ef3dfbebb1678e22106fd947fabb0c95e6b9dbb80fcb67"
+        },
+        {
+          "path": "f03-ranges/reference/public-output.txt",
+          "bytes": 4239,
+          "sha256": "42f0e57d8ef46748e5d4a4014ba2ce0fe5cb976e79b18de9a7ed25a2ad1144d6"
+        },
+        {
+          "path": "f03-ranges/reference/acceptance-output.txt",
+          "bytes": 9172,
+          "sha256": "cfc113dd0f07928af8fbc6daf78a93b9d4d8a88d4348e9ac42738b4a9761fbd8"
+        }
+      ]
+    },
+    {
+      "id": "m01-report",
+      "suite": "S",
+      "taskHash": "ef5bec459e21da1cb621b91d2a0eea8f86abce622e2967bae05a39ec5cbeeee8",
+      "workspaceFiles": 3,
+      "writableFiles": 2,
+      "passed": true,
+      "publicTests": 2,
+      "acceptanceTests": 5,
+      "artifacts": [
+        {
+          "path": "m01-report/preflight.json",
+          "bytes": 2452,
+          "sha256": "0df00cbe0fc00617efd8374beb7ed07b548e2244e9102f1e096fd17a024f66db"
+        },
+        {
+          "path": "m01-report/initial/public-output.txt",
+          "bytes": 14384,
+          "sha256": "4618de849f6154ffd3fa67c781fbea04080a8d48e5801821e33c142b12216493"
+        },
+        {
+          "path": "m01-report/initial/acceptance-output.txt",
+          "bytes": 23115,
+          "sha256": "3cc8f54a485dfd71e80c1548c5c777cbb3973908ee7301a66acc2e0b970dd6b2"
+        },
+        {
+          "path": "m01-report/reference/public-output.txt",
+          "bytes": 4371,
+          "sha256": "5e1112ec7ecb966eb7ee49f73db68c7f8eac3352474f5b6aacb4e85fd6cfa563"
+        },
+        {
+          "path": "m01-report/reference/acceptance-output.txt",
+          "bytes": 9330,
+          "sha256": "9875c8247e580c7f4653caca3628e5a4a9e06be6300fd85468eb1a68cf99fe49"
+        }
+      ]
+    },
+    {
+      "id": "m02-options",
+      "suite": "S",
+      "taskHash": "1e0de9d3f1f9324c8f14b13bf5ebe7db643844d3648700b968e12dba6c4a6b5f",
+      "workspaceFiles": 4,
+      "writableFiles": 3,
+      "passed": true,
+      "publicTests": 2,
+      "acceptanceTests": 4,
+      "artifacts": [
+        {
+          "path": "m02-options/preflight.json",
+          "bytes": 2483,
+          "sha256": "74a5a361fa0ea49b9fe4026433bba435e10c5cf0ca680b2a6d2856f4122ce8d3"
+        },
+        {
+          "path": "m02-options/initial/public-output.txt",
+          "bytes": 9652,
+          "sha256": "e8fef9acca071c10d26df13d425246a5f89152d2265f42ead3a2d7bf5c0166e4"
+        },
+        {
+          "path": "m02-options/initial/acceptance-output.txt",
+          "bytes": 17855,
+          "sha256": "b42ad9aea43e44e0c1e813787e8c7e159d1cc1cdfcfbaf2779071b437fb14e81"
+        },
+        {
+          "path": "m02-options/reference/public-output.txt",
+          "bytes": 4362,
+          "sha256": "7dfb93844fd9ebf3d986186528ccc2e3e695b7ed7ff164908d4747e0d33d9b1a"
+        },
+        {
+          "path": "m02-options/reference/acceptance-output.txt",
+          "bytes": 7701,
+          "sha256": "06c8cc226da8cf702c13df2c70911cfda3a02c7a4d36dfb476362b8253dab23a"
+        }
+      ]
+    },
+    {
+      "id": "h01-config-pipeline",
+      "suite": "H",
+      "taskHash": "ec700f8e3393d3bdbb296aff1bbe9045038e7c9235248b46228e5477c5c1bd8f",
+      "workspaceFiles": 12,
+      "writableFiles": 3,
+      "passed": true,
+      "publicTests": 4,
+      "acceptanceTests": 10,
+      "artifacts": [
+        {
+          "path": "h01-config-pipeline/preflight.json",
+          "bytes": 2535,
+          "sha256": "96e69dcde2936c27637ae8c35e3952d974616dc00fcda394bdcb698272029e89"
+        },
+        {
+          "path": "h01-config-pipeline/initial/public-output.txt",
+          "bytes": 12379,
+          "sha256": "23d1b9a95639c6c566a436dd200d2f74e1468c67e515c3b806644697c9d58c7b"
+        },
+        {
+          "path": "h01-config-pipeline/initial/acceptance-output.txt",
+          "bytes": 34598,
+          "sha256": "1d4ca8e04534cd6516811a4c8d9c462cb339194f5473b9243708f6c4e0c4eab2"
+        },
+        {
+          "path": "h01-config-pipeline/reference/public-output.txt",
+          "bytes": 7667,
+          "sha256": "9d4127613ce9da952eb68ab5a8e36a5e7c1f1ec6bd63a490500faf99dde86cd7"
+        },
+        {
+          "path": "h01-config-pipeline/reference/acceptance-output.txt",
+          "bytes": 18339,
+          "sha256": "6a2770b4a576dd3736bfcaf1c6e87469f12655f70fabe50de102a0bac7af7464"
+        }
+      ]
+    },
+    {
+      "id": "h02-chunk-parser",
+      "suite": "H",
+      "taskHash": "a70bd50a76142187bd625840ea1438579c9771c58dbbdfd1ebcc3bbd16af2bfe",
+      "workspaceFiles": 12,
+      "writableFiles": 2,
+      "passed": true,
+      "publicTests": 5,
+      "acceptanceTests": 9,
+      "artifacts": [
+        {
+          "path": "h02-chunk-parser/preflight.json",
+          "bytes": 2486,
+          "sha256": "2e5a11e50bfb5b71e94254352eed4c3f97946958cf2ed1c1fc46fc13175b9acc"
+        },
+        {
+          "path": "h02-chunk-parser/initial/public-output.txt",
+          "bytes": 15266,
+          "sha256": "9d9e39e1e055343cb12ee99711dcda9d758c499ac1871c6032d876fd29f4924c"
+        },
+        {
+          "path": "h02-chunk-parser/initial/acceptance-output.txt",
+          "bytes": 30115,
+          "sha256": "7011ff30243d86f0ebadbafae2f063702bfa059f6120e9b88faa8a3a75249202"
+        },
+        {
+          "path": "h02-chunk-parser/reference/public-output.txt",
+          "bytes": 9222,
+          "sha256": "e7f6f2b557d09b6cf3fbd22eb2e8ca8dd27c2e56f4554bdf7d53d525b77893f4"
+        },
+        {
+          "path": "h02-chunk-parser/reference/acceptance-output.txt",
+          "bytes": 16486,
+          "sha256": "160d629f6fbf3de65406db6b605ed7b7444e0d7a30f5c291ceb89f518011f88a"
+        }
+      ]
+    },
+    {
+      "id": "h03-module-navigation",
+      "suite": "H",
+      "taskHash": "afd98f1ab1b57b4e2df9b8cfd86506b9d63be2f60db8ea9dfdb7b565471ab2fa",
+      "workspaceFiles": 14,
+      "writableFiles": 2,
+      "passed": true,
+      "publicTests": 4,
+      "acceptanceTests": 8,
+      "artifacts": [
+        {
+          "path": "h03-module-navigation/preflight.json",
+          "bytes": 2506,
+          "sha256": "8fd49b582687dc60f5b9f52c480a5a593ca4a28171c630a6367d81e1702cefa3"
+        },
+        {
+          "path": "h03-module-navigation/initial/public-output.txt",
+          "bytes": 13977,
+          "sha256": "766cf9ab4ec9832ebbfcafc46993ef923bc205aab5bd010327510fdec87c25c2"
+        },
+        {
+          "path": "h03-module-navigation/initial/acceptance-output.txt",
+          "bytes": 24395,
+          "sha256": "174828f34d793738d3e5ba09f8d6062cffdd8f545ddf21a009370bc0e0b3648b"
+        },
+        {
+          "path": "h03-module-navigation/reference/public-output.txt",
+          "bytes": 7811,
+          "sha256": "cb164669bfbc88fe1db3c40baa156a4f987c473f921d8ce8ac0067c1cefd5e25"
+        },
+        {
+          "path": "h03-module-navigation/reference/acceptance-output.txt",
+          "bytes": 14744,
+          "sha256": "96bccdf8c97e1085d4267e51f58d4c7c6b3d2cb8bd535d370c197bc4c0812964"
+        }
+      ]
+    },
+    {
+      "id": "h04-issue-refactor",
+      "suite": "H",
+      "taskHash": "0c3daa947cc768189e317ed2a73f5342edb34a2de9e1553564711ef4c75033a0",
+      "workspaceFiles": 14,
+      "writableFiles": 5,
+      "passed": true,
+      "publicTests": 3,
+      "acceptanceTests": 7,
+      "artifacts": [
+        {
+          "path": "h04-issue-refactor/preflight.json",
+          "bytes": 2591,
+          "sha256": "7180a9ee22fda27a1302793bb29e113984523351fcd49ecb3cc522802b6c6841"
+        },
+        {
+          "path": "h04-issue-refactor/initial/public-output.txt",
+          "bytes": 15574,
+          "sha256": "7384a2e03ff56f446e1967b0717ce480e1fb286519c98dd9ebdd7efa37255354"
+        },
+        {
+          "path": "h04-issue-refactor/initial/acceptance-output.txt",
+          "bytes": 29247,
+          "sha256": "cb3adefb9a87eefb7c74d2c6e5aade8fa24a917a64dd5a3cc1a93231c32abf18"
+        },
+        {
+          "path": "h04-issue-refactor/reference/public-output.txt",
+          "bytes": 6217,
+          "sha256": "60b48b6610f255dec24d16579f3e86b058e9c47892af1cdf3a533b7543e1e78c"
+        },
+        {
+          "path": "h04-issue-refactor/reference/acceptance-output.txt",
+          "bytes": 13077,
+          "sha256": "8998b9fa54d41cc15cfaef802b557d6d972bf47499aa88a3c0ce1879e81ae204"
+        }
+      ]
+    }
+  ]
+}

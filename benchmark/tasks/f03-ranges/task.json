@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "id": "f03-ranges",
+  "suite": "S",
+  "category": "feature",
+  "promptFile": "prompt.md",
+  "workspaceDir": "workspace",
+  "writable": [
+    "ranges.mjs"
+  ],
+  "publicTest": "public.test.mjs",
+  "acceptanceTest": "acceptance/acceptance.test.mjs",
+  "referencePatch": "reference/patch.diff",
+  "testTimeoutMs": 5000
+}

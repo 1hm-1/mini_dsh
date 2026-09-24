@@ -1,0 +1,53 @@
+--- a/normalize.mjs
++++ b/normalize.mjs
+@@ -2,9 +2,7 @@
+ 
+ export function normalizeIssue(issue) {
+   assertIssue(issue);
+-  issue.id = issue.id.trim();
+-  issue.title = issue.title.trim().toLowerCase();
+-  issue.tags = [...new Set(issue.tags.map(tag => tag.trim()))];
+-  issue.assignee = issue.assignee === null ? null : issue.assignee.trim();
+-  return issue;
++  const tags = [...new Set(issue.tags.map(tag => tag.trim().toLowerCase()).filter(Boolean))];
++  const assignee = issue.assignee === null ? null : issue.assignee.trim().toLowerCase() || null;
++  return { id: issue.id.trim(), title: issue.title.trim(), tags, assignee };
+ }
+--- a/consumers/list.mjs
++++ b/consumers/list.mjs
+@@ -2,5 +2,5 @@
+ 
+ export function listIssues(issues) {
+   if (!Array.isArray(issues)) throw new TypeError('issues must be an array');
+-  return issues.sort((a, b) => a.id.localeCompare(b.id)).map(normalizeIssue);
++  return issues.map(normalizeIssue);
+ }
+--- a/consumers/search.mjs
++++ b/consumers/search.mjs
+@@ -2,5 +2,7 @@
+ 
+ export function searchIssues(issues, query) {
+   if (typeof query !== 'string') throw new TypeError('query must be a string');
+-  return listIssues(issues).filter(issue => issue.title.includes(query));
++  const needle = query.trim().toLowerCase();
++  return listIssues(issues).filter(issue => !needle || issue.title.toLowerCase().includes(needle)
++    || issue.tags.some(tag => tag.includes(needle)));
+ }
+--- a/consumers/activity.mjs
++++ b/consumers/activity.mjs
+@@ -1,3 +1,5 @@
++import { listIssues } from './list.mjs';
++
+ export function activityLines(issues) {
+-  return issues.map(issue => `${issue.id}|${issue.assignee}|${issue.tags.join(',')}`);
++  return listIssues(issues).map(issue => `${issue.id}|${issue.assignee ?? '-'}|${issue.tags.join(',')}`);
+ }
+--- a/serialize.mjs
++++ b/serialize.mjs
+@@ -1,3 +1,5 @@
++import { listIssues } from './consumers/list.mjs';
++
+ export function serializeIssues(issues) {
+-  return JSON.stringify(issues);
++  return JSON.stringify(listIssues(issues));
+ }

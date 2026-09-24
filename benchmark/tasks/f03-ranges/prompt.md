@@ -1,0 +1,3 @@
+Implement `mergeRanges(ranges)` in `ranges.mjs` for closed integer intervals.
+
+Input must be an array of pairs `[start, end]`, where both bounds are safe integers and `start <= end`; reject malformed input with `TypeError`. The input may be unsorted. Sort by start, then end, and merge intervals when they overlap or touch as adjacent integers (for example `[2,4]` and `[5,7]` become `[2,7]`). Contained intervals must not shorten the current interval. Return intervals sorted by start as fresh pair arrays inside a fresh result array. Empty input returns `[]`. Never mutate the input array or any pair. Keep the named export.

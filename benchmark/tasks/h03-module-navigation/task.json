@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "id": "h03-module-navigation",
+  "suite": "H",
+  "category": "multi-file",
+  "promptFile": "prompt.md",
+  "workspaceDir": "workspace",
+  "writable": [
+    "entry.mjs",
+    "registry.mjs"
+  ],
+  "publicTest": "public.test.mjs",
+  "acceptanceTest": "acceptance/check.mjs",
+  "referencePatch": "reference/patch.diff",
+  "testTimeoutMs": 5000
+}

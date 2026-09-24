@@ -1,0 +1,21 @@
+diff --git a/counter.mjs b/counter.mjs
+--- a/counter.mjs
++++ b/counter.mjs
+@@ -1,11 +1,12 @@
+-let current = 0;
+-
+ export function createCounter(initial = 0) {
+   if (typeof initial !== 'number' || !Number.isFinite(initial)) throw new TypeError('invalid initial');
+-  current = initial;
++  let current = initial;
++  function checkStep(step) {
++    if (typeof step !== 'number' || !Number.isFinite(step)) throw new TypeError('invalid step');
++  }
+   return {
+     value() { return current; },
+-    increment(step = 1) { current += step; return current; },
+-    decrement(step = 1) { current -= step; return current; },
++    increment(step = 1) { checkStep(step); current += step; return current; },
++    decrement(step = 1) { checkStep(step); current -= step; return current; },
+   };
+ }

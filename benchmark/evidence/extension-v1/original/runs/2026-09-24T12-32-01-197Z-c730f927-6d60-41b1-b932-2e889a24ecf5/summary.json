@@ -1,0 +1,640 @@
+{
+  "schemaVersion": 1,
+  "runId": "2026-09-24T12-32-01-197Z-c730f927-6d60-41b1-b932-2e889a24ecf5",
+  "phase": "smoke",
+  "provider": "mock",
+  "sampleCount": 1,
+  "byVariant": {
+    "baseline": {
+      "S": {
+        "success": {
+          "passed": 1,
+          "count": 1,
+          "rate": 1
+        },
+        "requests": {
+          "total": 3,
+          "worker": 3,
+          "optimizer": 0,
+          "summary": 0
+        },
+        "tools": {
+          "calls": 2,
+          "errors": 0
+        },
+        "tokens": {
+          "input": {
+            "total": 9,
+            "known": 9,
+            "knownRequests": 3,
+            "dispatchedRequests": 3,
+            "completeness": 1
+          },
+          "output": {
+            "total": 6,
+            "known": 6,
+            "knownRequests": 3,
+            "dispatchedRequests": 3,
+            "completeness": 1
+          },
+          "combined": {
+            "total": 15,
+            "known": 15,
+            "knownRequests": 3,
+            "dispatchedRequests": 3,
+            "completeness": 1
+          },
+          "completeUsageRequests": 3
+        },
+        "latencyMs": {
+          "count": 1,
+          "mean": 9.898502000000008,
+          "median": 9.898502000000008,
+          "peak": 9.898502000000008
+        },
+        "publicCheckDurationMs": {
+          "count": 1,
+          "mean": 50.042749999999955,
+          "median": 50.042749999999955,
+          "peak": 50.042749999999955,
+          "knownCount": 1,
+          "unknownCount": 0,
+          "knownSum": 50.042749999999955,
+          "sum": 50.042749999999955
+        },
+        "acceptanceCheckDurationMs": {
+          "count": 1,
+          "mean": 39.93478600000003,
+          "median": 39.93478600000003,
+          "peak": 39.93478600000003,
+          "knownCount": 1,
+          "unknownCount": 0,
+          "knownSum": 39.93478600000003,
+          "sum": 39.93478600000003
+        },
+        "context": {
+          "workerRequests": 3,
+          "requestChars": {
+            "count": 3,
+            "mean": 2524,
+            "median": 2533,
+            "peak": 2946
+          },
+          "estimatedInputTokens": {
+            "count": 3,
+            "mean": 555,
+            "median": 557,
+            "peak": 650
+          },
+          "preCompressionEstimatedTokens": {
+            "count": 3,
+            "mean": 555,
+            "median": 557,
+            "peak": 650
+          },
+          "olderRounds": {
+            "count": 3,
+            "mean": 0,
+            "median": 0,
+            "peak": 0
+          },
+          "thresholdRequests": 0,
+          "eligibleCompactionRequests": 0
+        },
+        "compactions": 0,
+        "termination": {
+          "completed": 1
+        },
+        "failureReason": {},
+        "actualModels": [
+          "offline-smoke"
+        ],
+        "fingerprints": []
+      },
+      "H": {
+        "success": {
+          "passed": 0,
+          "count": 0,
+          "rate": null
+        },
+        "requests": {
+          "total": 0,
+          "worker": 0,
+          "optimizer": 0,
+          "summary": 0
+        },
+        "tools": {
+          "calls": 0,
+          "errors": 0
+        },
+        "tokens": {
+          "input": {
+            "total": 0,
+            "known": 0,
+            "knownRequests": 0,
+            "dispatchedRequests": 0,
+            "completeness": null
+          },
+          "output": {
+            "total": 0,
+            "known": 0,
+            "knownRequests": 0,
+            "dispatchedRequests": 0,
+            "completeness": null
+          },
+          "combined": {
+            "total": 0,
+            "known": 0,
+            "knownRequests": 0,
+            "dispatchedRequests": 0,
+            "completeness": null
+          },
+          "completeUsageRequests": 0
+        },
+        "latencyMs": {
+          "count": 0,
+          "mean": null,
+          "median": null,
+          "peak": null
+        },
+        "publicCheckDurationMs": {
+          "count": 0,
+          "mean": null,
+          "median": null,
+          "peak": null,
+          "knownCount": 0,
+          "unknownCount": 0,
+          "knownSum": 0,
+          "sum": 0
+        },
+        "acceptanceCheckDurationMs": {
+          "count": 0,
+          "mean": null,
+          "median": null,
+          "peak": null,
+          "knownCount": 0,
+          "unknownCount": 0,
+          "knownSum": 0,
+          "sum": 0
+        },
+        "context": {
+          "workerRequests": 0,
+          "requestChars": {
+            "count": 0,
+            "mean": null,
+            "median": null,
+            "peak": null
+          },
+          "estimatedInputTokens": {
+            "count": 0,
+            "mean": null,
+            "median": null,
+            "peak": null
+          },
+          "preCompressionEstimatedTokens": {
+            "count": 0,
+            "mean": null,
+            "median": null,
+            "peak": null
+          },
+          "olderRounds": {
+            "count": 0,
+            "mean": null,
+            "median": null,
+            "peak": null
+          },
+          "thresholdRequests": 0,
+          "eligibleCompactionRequests": 0
+        },
+        "compactions": 0,
+        "termination": {},
+        "failureReason": {},
+        "actualModels": [],
+        "fingerprints": []
+      },
+      "overall": {
+        "success": {
+          "passed": 1,
+          "count": 1,
+          "rate": 1
+        },
+        "requests": {
+          "total": 3,
+          "worker": 3,
+          "optimizer": 0,
+          "summary": 0
+        },
+        "tools": {
+          "calls": 2,
+          "errors": 0
+        },
+        "tokens": {
+          "input": {
+            "total": 9,
+            "known": 9,
+            "knownRequests": 3,
+            "dispatchedRequests": 3,
+            "completeness": 1
+          },
+          "output": {
+            "total": 6,
+            "known": 6,
+            "knownRequests": 3,
+            "dispatchedRequests": 3,
+            "completeness": 1
+          },
+          "combined": {
+            "total": 15,
+            "known": 15,
+            "knownRequests": 3,
+            "dispatchedRequests": 3,
+            "completeness": 1
+          },
+          "completeUsageRequests": 3
+        },
+        "latencyMs": {
+          "count": 1,
+          "mean": 9.898502000000008,
+          "median": 9.898502000000008,
+          "peak": 9.898502000000008
+        },
+        "publicCheckDurationMs": {
+          "count": 1,
+          "mean": 50.042749999999955,
+          "median": 50.042749999999955,
+          "peak": 50.042749999999955,
+          "knownCount": 1,
+          "unknownCount": 0,
+          "knownSum": 50.042749999999955,
+          "sum": 50.042749999999955
+        },
+        "acceptanceCheckDurationMs": {
+          "count": 1,
+          "mean": 39.93478600000003,
+          "median": 39.93478600000003,
+          "peak": 39.93478600000003,
+          "knownCount": 1,
+          "unknownCount": 0,
+          "knownSum": 39.93478600000003,
+          "sum": 39.93478600000003
+        },
+        "context": {
+          "workerRequests": 3,
+          "requestChars": {
+            "count": 3,
+            "mean": 2524,
+            "median": 2533,
+            "peak": 2946
+          },
+          "estimatedInputTokens": {
+            "count": 3,
+            "mean": 555,
+            "median": 557,
+            "peak": 650
+          },
+          "preCompressionEstimatedTokens": {
+            "count": 3,
+            "mean": 555,
+            "median": 557,
+            "peak": 650
+          },
+          "olderRounds": {
+            "count": 3,
+            "mean": 0,
+            "median": 0,
+            "peak": 0
+          },
+          "thresholdRequests": 0,
+          "eligibleCompactionRequests": 0
+        },
+        "compactions": 0,
+        "termination": {
+          "completed": 1
+        },
+        "failureReason": {},
+        "actualModels": [
+          "offline-smoke"
+        ],
+        "fingerprints": []
+      }
+    }
+  },
+  "overall": {
+    "S": {
+      "success": {
+        "passed": 1,
+        "count": 1,
+        "rate": 1
+      },
+      "requests": {
+        "total": 3,
+        "worker": 3,
+        "optimizer": 0,
+        "summary": 0
+      },
+      "tools": {
+        "calls": 2,
+        "errors": 0
+      },
+      "tokens": {
+        "input": {
+          "total": 9,
+          "known": 9,
+          "knownRequests": 3,
+          "dispatchedRequests": 3,
+          "completeness": 1
+        },
+        "output": {
+          "total": 6,
+          "known": 6,
+          "knownRequests": 3,
+          "dispatchedRequests": 3,
+          "completeness": 1
+        },
+        "combined": {
+          "total": 15,
+          "known": 15,
+          "knownRequests": 3,
+          "dispatchedRequests": 3,
+          "completeness": 1
+        },
+        "completeUsageRequests": 3
+      },
+      "latencyMs": {
+        "count": 1,
+        "mean": 9.898502000000008,
+        "median": 9.898502000000008,
+        "peak": 9.898502000000008
+      },
+      "publicCheckDurationMs": {
+        "count": 1,
+        "mean": 50.042749999999955,
+        "median": 50.042749999999955,
+        "peak": 50.042749999999955,
+        "knownCount": 1,
+        "unknownCount": 0,
+        "knownSum": 50.042749999999955,
+        "sum": 50.042749999999955
+      },
+      "acceptanceCheckDurationMs": {
+        "count": 1,
+        "mean": 39.93478600000003,
+        "median": 39.93478600000003,
+        "peak": 39.93478600000003,
+        "knownCount": 1,
+        "unknownCount": 0,
+        "knownSum": 39.93478600000003,
+        "sum": 39.93478600000003
+      },
+      "context": {
+        "workerRequests": 3,
+        "requestChars": {
+          "count": 3,
+          "mean": 2524,
+          "median": 2533,
+          "peak": 2946
+        },
+        "estimatedInputTokens": {
+          "count": 3,
+          "mean": 555,
+          "median": 557,
+          "peak": 650
+        },
+        "preCompressionEstimatedTokens": {
+          "count": 3,
+          "mean": 555,
+          "median": 557,
+          "peak": 650
+        },
+        "olderRounds": {
+          "count": 3,
+          "mean": 0,
+          "median": 0,
+          "peak": 0
+        },
+        "thresholdRequests": 0,
+        "eligibleCompactionRequests": 0
+      },
+      "compactions": 0,
+      "termination": {
+        "completed": 1
+      },
+      "failureReason": {},
+      "actualModels": [
+        "offline-smoke"
+      ],
+      "fingerprints": []
+    },
+    "H": {
+      "success": {
+        "passed": 0,
+        "count": 0,
+        "rate": null
+      },
+      "requests": {
+        "total": 0,
+        "worker": 0,
+        "optimizer": 0,
+        "summary": 0
+      },
+      "tools": {
+        "calls": 0,
+        "errors": 0
+      },
+      "tokens": {
+        "input": {
+          "total": 0,
+          "known": 0,
+          "knownRequests": 0,
+          "dispatchedRequests": 0,
+          "completeness": null
+        },
+        "output": {
+          "total": 0,
+          "known": 0,
+          "knownRequests": 0,
+          "dispatchedRequests": 0,
+          "completeness": null
+        },
+        "combined": {
+          "total": 0,
+          "known": 0,
+          "knownRequests": 0,
+          "dispatchedRequests": 0,
+          "completeness": null
+        },
+        "completeUsageRequests": 0
+      },
+      "latencyMs": {
+        "count": 0,
+        "mean": null,
+        "median": null,
+        "peak": null
+      },
+      "publicCheckDurationMs": {
+        "count": 0,
+        "mean": null,
+        "median": null,
+        "peak": null,
+        "knownCount": 0,
+        "unknownCount": 0,
+        "knownSum": 0,
+        "sum": 0
+      },
+      "acceptanceCheckDurationMs": {
+        "count": 0,
+        "mean": null,
+        "median": null,
+        "peak": null,
+        "knownCount": 0,
+        "unknownCount": 0,
+        "knownSum": 0,
+        "sum": 0
+      },
+      "context": {
+        "workerRequests": 0,
+        "requestChars": {
+          "count": 0,
+          "mean": null,
+          "median": null,
+          "peak": null
+        },
+        "estimatedInputTokens": {
+          "count": 0,
+          "mean": null,
+          "median": null,
+          "peak": null
+        },
+        "preCompressionEstimatedTokens": {
+          "count": 0,
+          "mean": null,
+          "median": null,
+          "peak": null
+        },
+        "olderRounds": {
+          "count": 0,
+          "mean": null,
+          "median": null,
+          "peak": null
+        },
+        "thresholdRequests": 0,
+        "eligibleCompactionRequests": 0
+      },
+      "compactions": 0,
+      "termination": {},
+      "failureReason": {},
+      "actualModels": [],
+      "fingerprints": []
+    },
+    "overall": {
+      "success": {
+        "passed": 1,
+        "count": 1,
+        "rate": 1
+      },
+      "requests": {
+        "total": 3,
+        "worker": 3,
+        "optimizer": 0,
+        "summary": 0
+      },
+      "tools": {
+        "calls": 2,
+        "errors": 0
+      },
+      "tokens": {
+        "input": {
+          "total": 9,
+          "known": 9,
+          "knownRequests": 3,
+          "dispatchedRequests": 3,
+          "completeness": 1
+        },
+        "output": {
+          "total": 6,
+          "known": 6,
+          "knownRequests": 3,
+          "dispatchedRequests": 3,
+          "completeness": 1
+        },
+        "combined": {
+          "total": 15,
+          "known": 15,
+          "knownRequests": 3,
+          "dispatchedRequests": 3,
+          "completeness": 1
+        },
+        "completeUsageRequests": 3
+      },
+      "latencyMs": {
+        "count": 1,
+        "mean": 9.898502000000008,
+        "median": 9.898502000000008,
+        "peak": 9.898502000000008
+      },
+      "publicCheckDurationMs": {
+        "count": 1,
+        "mean": 50.042749999999955,
+        "median": 50.042749999999955,
+        "peak": 50.042749999999955,
+        "knownCount": 1,
+        "unknownCount": 0,
+        "knownSum": 50.042749999999955,
+        "sum": 50.042749999999955
+      },
+      "acceptanceCheckDurationMs": {
+        "count": 1,
+        "mean": 39.93478600000003,
+        "median": 39.93478600000003,
+        "peak": 39.93478600000003,
+        "knownCount": 1,
+        "unknownCount": 0,
+        "knownSum": 39.93478600000003,
+        "sum": 39.93478600000003
+      },
+      "context": {
+        "workerRequests": 3,
+        "requestChars": {
+          "count": 3,
+          "mean": 2524,
+          "median": 2533,
+          "peak": 2946
+        },
+        "estimatedInputTokens": {
+          "count": 3,
+          "mean": 555,
+          "median": 557,
+          "peak": 650
+        },
+        "preCompressionEstimatedTokens": {
+          "count": 3,
+          "mean": 555,
+          "median": 557,
+          "peak": 650
+        },
+        "olderRounds": {
+          "count": 3,
+          "mean": 0,
+          "median": 0,
+          "peak": 0
+        },
+        "thresholdRequests": 0,
+        "eligibleCompactionRequests": 0
+      },
+      "compactions": 0,
+      "termination": {
+        "completed": 1
+      },
+      "failureReason": {},
+      "actualModels": [
+        "offline-smoke"
+      ],
+      "fingerprints": []
+    }
+  },
+  "fullMinusBaselinePercentagePoints": {
+    "S": null,
+    "H": null,
+    "overall": null
+  }
+}

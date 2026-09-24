@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "runId": "2026-09-24T12-32-20-889Z-7d3b8b1f-a40a-43a8-abe6-cc2ceaae7fc4",
+  "phase": "smoke",
+  "implementationCommit": "3a508238825a9856c7cb16f20b82dd1dba0c67f0",
+  "benchmarkCommit": null,
+  "taskId": "b13-extension",
+  "suite": "S",
+  "variant": "baseline",
+  "repeat": 1,
+  "orderIndex": 0,
+  "taskHash": "6c6a8395c7127bc3cf42ca215327d5c4290736fe03c67a7cc9fe41cf5d3a8619",
+  "config": {
+    "schemaVersion": 1,
+    "variant": "baseline",
+    "model": {
+      "endpoint": "http://127.0.0.1:1/chat/completions",
+      "id": "offline-smoke",
+      "temperature": 0
+    },
+    "budget": {
+      "maxModelRequests": 5,
+      "maxToolCalls": 5,
+      "timeoutMs": 5000,
+      "maxOutputTokens": 100,
+      "maxInputChars": 20000
+    },
+    "context": {
+      "estimatedWindowTokens": 8192,
+      "triggerRatio": 0.75,
+      "keepRecentRounds": 4
+    },
+    "workspace": "/home/hmli/code/mini-harness/benchmark/evidence/extension-v2/one-byte-change/runs/2026-09-24T12-32-20-889Z-7d3b8b1f-a40a-43a8-abe6-cc2ceaae7fc4/attempts/b13-extension-baseline-1/.workspace",
+    "writable": [
+      "normalize.mjs"
+    ],
+    "sessionPath": "/home/hmli/code/mini-harness/benchmark/evidence/extension-v2/one-byte-change/runs/2026-09-24T12-32-20-889Z-7d3b8b1f-a40a-43a8-abe6-cc2ceaae7fc4/attempts/b13-extension-baseline-1/journal.jsonl"
+  },
+  "agent": {
+    "schemaVersion": 1,
+    "termination": "completed",
+    "answer": "Fixed whitespace normalization (scripted engineering check).",
+    "modelRequests": 3,
+    "workerRequests": 3,
+    "optimizerRequests": 0,
+    "summaryRequests": 0,
+    "inputTokens": 9,
+    "outputTokens": 6,
+    "knownInputTokens": 9,
+    "knownOutputTokens": 6,
+    "contextStats": {
+      "workerRequests": 3,
+      "meanEstimatedInputTokens": 555.3333333333334,
+      "peakEstimatedInputTokens": 650,
+      "peakRequestChars": 2947,
+      "thresholdRequests": 0,
+      "eligibleCompactionRequests": 0
+    },
+    "toolCalls": 2,
+    "toolErrors": 0,
+    "durationMs": 4.941016999999988,
+    "compactions": 0,
+    "error": null
+  },
+  "integrity": {
+    "passed": true,
+    "changedPaths": [
+      "normalize.mjs"
+    ],
+    "violations": []
+  },
+  "publicTest": {
+    "durationMs": 35.971336000000065,
+    "passed": true,
+    "exitCode": 0,
+    "signal": null,
+    "timedOut": false,
+    "completed": true,
+    "passedTests": 3,
+    "failedTests": 0,
+    "testCount": 3,
+    "outputPath": "/home/hmli/code/mini-harness/benchmark/evidence/extension-v2/one-byte-change/runs/2026-09-24T12-32-20-889Z-7d3b8b1f-a40a-43a8-abe6-cc2ceaae7fc4/attempts/b13-extension-baseline-1/public-output.txt",
+    "outputHash": "8528374693746dc53ccfa00ead72dada28050c3d1bdd86f70c369b58f4829eaa"
+  },
+  "acceptanceTest": {
+    "durationMs": 50.34273600000006,
+    "passed": true,
+    "exitCode": 0,
+    "signal": null,
+    "timedOut": false,
+    "completed": true,
+    "passedTests": 5,
+    "failedTests": 0,
+    "testCount": 5,
+    "outputPath": "/home/hmli/code/mini-harness/benchmark/evidence/extension-v2/one-byte-change/runs/2026-09-24T12-32-20-889Z-7d3b8b1f-a40a-43a8-abe6-cc2ceaae7fc4/attempts/b13-extension-baseline-1/acceptance-output.txt",
+    "outputHash": "0edb57b1994f46ba937fa2e86da16e43f1bfa591987080320923161f5c466e9f"
+  },
+  "passed": true,
+  "failureReason": null,
+  "artifactPaths": {
+    "before": "/home/hmli/code/mini-harness/benchmark/evidence/extension-v2/one-byte-change/runs/2026-09-24T12-32-20-889Z-7d3b8b1f-a40a-43a8-abe6-cc2ceaae7fc4/attempts/b13-extension-baseline-1/before.json",
+    "after": "/home/hmli/code/mini-harness/benchmark/evidence/extension-v2/one-byte-change/runs/2026-09-24T12-32-20-889Z-7d3b8b1f-a40a-43a8-abe6-cc2ceaae7fc4/attempts/b13-extension-baseline-1/after.json",
+    "changes": "/home/hmli/code/mini-harness/benchmark/evidence/extension-v2/one-byte-change/runs/2026-09-24T12-32-20-889Z-7d3b8b1f-a40a-43a8-abe6-cc2ceaae7fc4/attempts/b13-extension-baseline-1/changes.json",
+    "journal": "/home/hmli/code/mini-harness/benchmark/evidence/extension-v2/one-byte-change/runs/2026-09-24T12-32-20-889Z-7d3b8b1f-a40a-43a8-abe6-cc2ceaae7fc4/attempts/b13-extension-baseline-1/journal.jsonl",
+    "result": "/home/hmli/code/mini-harness/benchmark/evidence/extension-v2/one-byte-change/runs/2026-09-24T12-32-20-889Z-7d3b8b1f-a40a-43a8-abe6-cc2ceaae7fc4/attempts/b13-extension-baseline-1/result.json",
+    "publicOutput": "/home/hmli/code/mini-harness/benchmark/evidence/extension-v2/one-byte-change/runs/2026-09-24T12-32-20-889Z-7d3b8b1f-a40a-43a8-abe6-cc2ceaae7fc4/attempts/b13-extension-baseline-1/public-output.txt",
+    "acceptanceOutput": "/home/hmli/code/mini-harness/benchmark/evidence/extension-v2/one-byte-change/runs/2026-09-24T12-32-20-889Z-7d3b8b1f-a40a-43a8-abe6-cc2ceaae7fc4/attempts/b13-extension-baseline-1/acceptance-output.txt"
+  }
+}

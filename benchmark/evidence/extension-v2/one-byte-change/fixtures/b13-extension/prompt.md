@@ -1,0 +1,2 @@
+Fix `normalizeText` in `normalize.mjs` without changing its named export or the public tests. It accepts a string and returns a new string with leading and trailing JavaScript whitespace removed, every nonempty run of internal JavaScript whitespace replaced by one ASCII space, and all letters lowercased using `String.prototype.toLowerCase()`. An empty or whitespace-only input returns `''`. This includes spaces, tabs, and line breaks. For a non-string input, throw a `TypeError`.
+ 

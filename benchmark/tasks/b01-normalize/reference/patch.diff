@@ -1,0 +1,9 @@
+diff --git a/normalize.mjs b/normalize.mjs
+--- a/normalize.mjs
++++ b/normalize.mjs
+@@ -1,4 +1,4 @@
+ export function normalizeText(value) {
+   if (typeof value !== 'string') throw new TypeError('text must be a string');
+-  return value.trim().toLowerCase();
++  return value.trim().replace(/\s+/gu, ' ').toLowerCase();
+ }

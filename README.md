@@ -2,7 +2,7 @@
 
 从零实现与mini-dsh规模接近的TypeScript Coding Agent Harness，保持“一切产品能力皆插件”，重点做好baseline/full比较和2×2消融。
 
-**M0–M4已完成：baseline runtime、评测调度/CLI、外部judge/preflight、汇总报告和只读verify均已验收；冻结题库和真实模型实验尚未开始。** 实际状态与验收证据见[进度](docs/progress.md)。路线先创建并固定任务资产，真实baseline取得证据后才实现增强机制：
+**M0–M5已完成：baseline runtime、评测器以及S8/H4共12道实际题目已验收，Benchmark v1已预检并通过本地Git提交冻结；真实模型实验尚未运行。** 实际状态与验收证据见[进度](docs/progress.md)。题库和复核命令见[Benchmark v1](benchmark/README.md)；真实baseline取得证据后才实现增强机制：
 
 ```text
 M0 工程/接口 → M1 Plugin/Session → M2 Tools
@@ -24,7 +24,7 @@ C/O是预先选择的候选能力；baseline日志决定哪些改进假设有证
 
 四组共享模型、循环、工具、权限、任务和总预算。默认16次模型请求包含worker/optimizer/summary；full不会获得免费辅助调用。
 
-Benchmark v1规划12题：Benchmark-S保留8道小型功能题；Benchmark-H增加4道多文件/长约束任务，提供自然上下文压力与需求整理场景。S/H分表，不保证C触发，也不预设full获胜。
+[Benchmark v1 manifest](benchmark/v1.json)已收录12题：Benchmark-S保留8道小型功能题；Benchmark-H增加4道多文件/长约束任务，提供自然上下文压力与需求整理场景。S/H分表，不保证C触发，也不预设full获胜。
 
 默认M6是12×baseline×3=36次，M9是12×4×3=144次，合计180次；实现后可选12×baseline/full×2=48次快速对照，不替代四组。模型凭据/授权不足时明确停在实验门槛，不以mock替代真实baseline。当前不启动这些实验。
 
@@ -46,7 +46,7 @@ npm run agent -- --config /path/to/runtime.json --input '修复指定文件中�
 
 当前仅支持baseline；其余组明确报尚未实现。workspace与日志父目录需已存在，日志必须在workspace外且路径未被使用；相对路径按启动目录解析。运行结束输出RunResult JSON；退出码0表示completed、2表示预算/模型等运行终止、1表示配置/环境/IO或内部错误、130表示取消。读取纯JSON可用`npm run --silent agent -- ...`。CLI不执行外部验收测试，completed不等于任务评分通过。
 
-已实现[运行配置校验](src/config.ts)、[插件接口](src/plugin.ts)、[服务接口](src/services/index.ts)及[任务/实验配置校验](eval/task.ts)。纯解析函数检查描述数据，runtime插件检查工作区/日志路径；[任务加载](eval/assets.ts)进一步校验实际资产、计算全包SHA-256并创建独立工作区副本。题库Git冻结留M5，配置通过校验不代表真实provider可用。
+已实现[运行配置校验](src/config.ts)、[插件接口](src/plugin.ts)、[服务接口](src/services/index.ts)及[任务/实验配置校验](eval/task.ts)。纯解析函数检查描述数据，runtime插件检查工作区/日志路径；[任务加载](eval/assets.ts)进一步校验实际资产、计算全包SHA-256并创建独立工作区副本。题库Git冻结见M5验收记录；配置通过校验不代表真实provider可用。
 
 [Context](src/context.ts)现可按调用者顺序加载插件、检查服务依赖并逆序释放资源；内核不包含Agent策略。[事件](src/plugins/events.ts)、[JSONL持久化](src/plugins/jsonl-persistence.ts)和[内存Session](src/plugins/memory-session.ts)均以插件提供服务。Session统一生成事件序号，写入成功后才更新历史；[日志解析](src/journal.ts)只读检查已实现事件及模型请求/响应关联，断尾或缺少结束记录标为incomplete。
 
@@ -81,14 +81,14 @@ npm run eval:preflight -- --task tests/fixtures/eval-smoke --output /tmp/mini-ha
 
 verify核对计划样本、原任务hash、快照/changes、测试输出hash、journal计量与评分，并重算summary/report；一致退出0，否则输出诊断并退出1。它检查本地产物的内部一致性，不证明所有文件从未被整体重写。复核旧运行时需保留其原题包路径和冻结资产，原始产物不得原地更新。
 
-正式评测入口已实现，实际使用须等M5题库冻结及相应实验授权/凭据就绪后，从本项目Git根运行：
+正式评测入口已实现，M5题库已冻结，实际使用须等相应实验授权/凭据就绪后，从本项目Git根运行：
 
 ```sh
 npm run eval -- --config experiments/baseline-config.example.json --variants baseline --repeats 3
 # --tasks id1,id2 可选；上述模板必须先填写真实模型配置
 ```
 
-CLI覆盖先合并校验后落盘；目前只运行baseline。HTTP模式要求干净的实现提交和已提交的题库manifest/资产，校验全部题目（包括未选题），再预检所选题；输出使用Git忽略目录或仓库外目录。每次attempt独立工作区/Session/预算；完成矩阵即退出0（可以包含评分失败），配置/环境/证据错误退出1，取消退出130。普通评测入口不接受smoke配置，请使用明确的离线入口。当前本仓库尚未创建Git提交、M5题库或真实模型成绩。
+CLI覆盖先合并校验后落盘；目前只运行baseline。HTTP模式要求干净的实现提交和已提交的题库manifest/资产，校验全部题目（包括未选题），再预检所选题；输出使用Git忽略目录或仓库外目录。每次attempt独立工作区/Session/预算；完成矩阵即退出0（可以包含评分失败），配置/环境/证据错误退出1，取消退出130。普通评测入口不接受smoke配置，请使用明确的离线入口。当前题库与实现已有本地Git提交，尚无真实模型成绩；未推送远程仓库。
 
 阅读入口：
 

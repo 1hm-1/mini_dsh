@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "runId": "2026-09-24T12-32-20-285Z-92abf0fc-b3ce-4969-a344-7c165dd36388",
+  "phase": "smoke",
+  "implementationCommit": "3a508238825a9856c7cb16f20b82dd1dba0c67f0",
+  "benchmarkCommit": null,
+  "taskId": "b13-extension",
+  "suite": "S",
+  "variant": "baseline",
+  "repeat": 1,
+  "orderIndex": 0,
+  "taskHash": "e9c7ba6bd0942bd83014ebe1adf9b825984002b8fc0381bd243f6c76f844e065",
+  "config": {
+    "schemaVersion": 1,
+    "variant": "baseline",
+    "model": {
+      "endpoint": "http://127.0.0.1:1/chat/completions",
+      "id": "offline-smoke",
+      "temperature": 0
+    },
+    "budget": {
+      "maxModelRequests": 5,
+      "maxToolCalls": 5,
+      "timeoutMs": 5000,
+      "maxOutputTokens": 100,
+      "maxInputChars": 20000
+    },
+    "context": {
+      "estimatedWindowTokens": 8192,
+      "triggerRatio": 0.75,
+      "keepRecentRounds": 4
+    },
+    "workspace": "/home/hmli/code/mini-harness/benchmark/evidence/extension-v2/original/runs/2026-09-24T12-32-20-285Z-92abf0fc-b3ce-4969-a344-7c165dd36388/attempts/b13-extension-baseline-1/.workspace",
+    "writable": [
+      "normalize.mjs"
+    ],
+    "sessionPath": "/home/hmli/code/mini-harness/benchmark/evidence/extension-v2/original/runs/2026-09-24T12-32-20-285Z-92abf0fc-b3ce-4969-a344-7c165dd36388/attempts/b13-extension-baseline-1/journal.jsonl"
+  },
+  "agent": {
+    "schemaVersion": 1,
+    "termination": "completed",
+    "answer": "Fixed whitespace normalization (scripted engineering check).",
+    "modelRequests": 3,
+    "workerRequests": 3,
+    "optimizerRequests": 0,
+    "summaryRequests": 0,
+    "inputTokens": 9,
+    "outputTokens": 6,
+    "knownInputTokens": 9,
+    "knownOutputTokens": 6,
+    "contextStats": {
+      "workerRequests": 3,
+      "meanEstimatedInputTokens": 555,
+      "peakEstimatedInputTokens": 650,
+      "peakRequestChars": 2946,
+      "thresholdRequests": 0,
+      "eligibleCompactionRequests": 0
+    },
+    "toolCalls": 2,
+    "toolErrors": 0,
+    "durationMs": 11.583853000000033,
+    "compactions": 0,
+    "error": null
+  },
+  "integrity": {
+    "passed": true,
+    "changedPaths": [
+      "normalize.mjs"
+    ],
+    "violations": []
+  },
+  "publicTest": {
+    "durationMs": 53.37433200000004,
+    "passed": true,
+    "exitCode": 0,
+    "signal": null,
+    "timedOut": false,
+    "completed": true,
+    "passedTests": 3,
+    "failedTests": 0,
+    "testCount": 3,
+    "outputPath": "/home/hmli/code/mini-harness/benchmark/evidence/extension-v2/original/runs/2026-09-24T12-32-20-285Z-92abf0fc-b3ce-4969-a344-7c165dd36388/attempts/b13-extension-baseline-1/public-output.txt",
+    "outputHash": "0864d8b2a06616954dc7ac16f87d14a6180b3bcf054dd025facedcdbd87d8827"
+  },
+  "acceptanceTest": {
+    "durationMs": 37.88605800000005,
+    "passed": true,
+    "exitCode": 0,
+    "signal": null,
+    "timedOut": false,
+    "completed": true,
+    "passedTests": 5,
+    "failedTests": 0,
+    "testCount": 5,
+    "outputPath": "/home/hmli/code/mini-harness/benchmark/evidence/extension-v2/original/runs/2026-09-24T12-32-20-285Z-92abf0fc-b3ce-4969-a344-7c165dd36388/attempts/b13-extension-baseline-1/acceptance-output.txt",
+    "outputHash": "e40dd0c9e970961ba12cd693710c4f41fc1bfa3c14f273b4721fcde814b9d8f9"
+  },
+  "passed": true,
+  "failureReason": null,
+  "artifactPaths": {
+    "before": "/home/hmli/code/mini-harness/benchmark/evidence/extension-v2/original/runs/2026-09-24T12-32-20-285Z-92abf0fc-b3ce-4969-a344-7c165dd36388/attempts/b13-extension-baseline-1/before.json",
+    "after": "/home/hmli/code/mini-harness/benchmark/evidence/extension-v2/original/runs/2026-09-24T12-32-20-285Z-92abf0fc-b3ce-4969-a344-7c165dd36388/attempts/b13-extension-baseline-1/after.json",
+    "changes": "/home/hmli/code/mini-harness/benchmark/evidence/extension-v2/original/runs/2026-09-24T12-32-20-285Z-92abf0fc-b3ce-4969-a344-7c165dd36388/attempts/b13-extension-baseline-1/changes.json",
+    "journal": "/home/hmli/code/mini-harness/benchmark/evidence/extension-v2/original/runs/2026-09-24T12-32-20-285Z-92abf0fc-b3ce-4969-a344-7c165dd36388/attempts/b13-extension-baseline-1/journal.jsonl",
+    "result": "/home/hmli/code/mini-harness/benchmark/evidence/extension-v2/original/runs/2026-09-24T12-32-20-285Z-92abf0fc-b3ce-4969-a344-7c165dd36388/attempts/b13-extension-baseline-1/result.json",
+    "publicOutput": "/home/hmli/code/mini-harness/benchmark/evidence/extension-v2/original/runs/2026-09-24T12-32-20-285Z-92abf0fc-b3ce-4969-a344-7c165dd36388/attempts/b13-extension-baseline-1/public-output.txt",
+    "acceptanceOutput": "/home/hmli/code/mini-harness/benchmark/evidence/extension-v2/original/runs/2026-09-24T12-32-20-285Z-92abf0fc-b3ce-4969-a344-7c165dd36388/attempts/b13-extension-baseline-1/acceptance-output.txt"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "f01-tags",
+  "suite": "S",
+  "category": "feature",
+  "promptFile": "prompt.md",
+  "workspaceDir": "workspace",
+  "writable": ["tags.mjs"],
+  "publicTest": "public.test.mjs",
+  "acceptanceTest": "acceptance/check.mjs",
+  "referencePatch": "reference/patch.diff",
+  "testTimeoutMs": 5000
+}

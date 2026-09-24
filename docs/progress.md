@@ -1,6 +1,6 @@
 # 进度
 
-IMPLEMENTING。用户于2026-09-24授权开始开发，使用GPT-6 Sol（medium）子智能体实现，主智能体负责架构审阅与验收。M0.1、M0.2、M1.1、M1.2、M2.1、M2.2 DONE，M0/M1/M2完成；M3.1、M3.2、M3.3 DONE，M3完成；M4.1、M4.2、M4.3、M4.4 DONE，M4整体完成；M5.1 IN_PROGRESS，M5.2–M5.4及M6以后工单NOT_STARTED。正在创建实际Benchmark资产，尚无benchmark-v1提交、真实baseline报告或消融成绩。
+IMPLEMENTING。用户于2026-09-24授权开始开发，使用GPT-6 Sol（medium）子智能体实现，主智能体负责架构审阅与验收。M0.1、M0.2、M1.1、M1.2、M2.1、M2.2 DONE，M0/M1/M2完成；M3.1、M3.2、M3.3 DONE，M3完成；M4.1、M4.2、M4.3、M4.4 DONE，M4整体完成；M5.1、M5.2、M5.3 DONE，M5.4 IN_PROGRESS；M6以后工单NOT_STARTED。12题实际资产已通过预检，正在提交benchmark-v1并核对Git冻结；尚无真实baseline报告或消融成绩。
 
 ## 本次规划修订
 
@@ -450,3 +450,57 @@ M4.1–M4.4全部DONE。B01–B03的S8/H4实际资产、十二题preflight与ben
 新增13-baseline-milestone，固定三个输出路径、九项分析内容、重复调用与增长统计口径、trace选择规则和假设ID。M6报告/索引/摘录须单独Git提交，progress记录其真实SHA后才可DONE；后续C/O提交与消融报告关联该证据。当前baselineAnalysisCommit不存在，M6仍NOT_STARTED，未创建任何完成报告。
 
 本次M6规格检查通过：固定输出路径、九项必备分析、Git门槛、报告模板和工单引用一致；40个验收ID唯一且引用有效；Markdown链接/围栏与JSON可解析。这些是规划静态检查，不代表F01/F02/F04真实里程碑已通过。
+
+
+### M5.1：Benchmark-S 实际资产（2026-09-24，DONE）
+
+前置证据：用户要求完成M5；M0–M4已有249项工程测试和验收记录。先阅读README、00、06、08、09、10、13和AGENTS，确认不实施C/O、不运行付费实验。初始工程均未跟踪、没有Git提交；先以 `chore: record M0-M4 baseline harness` 保存既有工程，真实提交为 `3a508238825a9856c7cb16f20b82dd1dba0c67f0`（`git commit`退出0）。未配置或推送远程。
+
+两个GPT-6 Sol（medium）子智能体分工创建S8，主智能体独立审阅公开需求、验收和参考补丁。每题含task.json、prompt、初始workspace、public test、外部acceptance和严格文本reference patch。先建立测试，再生成参考解答；初始源码保留真实错误，不把参考解答写回workspace。
+
+审阅修正：b03配置合并的own `__proto__` / `constructor`键不能触发原型setter或继承字段合并；公开输入约定、增加验收并修复reference。主智能体通过Node内联脚本逐题调用 `loadTask` / `preflight`，退出0，证据 `/tmp/m5-s-review-n8i48Y/<id>/preflight.json`：S8初始acceptance均失败，reference公开/隐藏均通过。确认此前置通过后才委派M5.2。
+
+### M5.2：Benchmark-H 实际资产（2026-09-24，DONE）
+
+GPT-6 Sol（medium）子智能体分工实现H01/H02和H03/H04，主智能体逐题审阅。H01公开完整配置issue、优先级/false/0/安全整数/嵌套保留/旧格式；H02以有限文法实现引号和CRLF跨chunk场景及两个消费者；H03实际入口/新旧路由/注册表优先级；H04完整issue描述共享规范化与四个消费者、序列化和兼容API。
+
+H01/H02各12个workspace文件；H03/H04各14个。无关模块有实际职责：H01标识符/缓存键/日志级别，H02slug/checksum，H03路径/查询/响应头/统计，H04日期/分页/标签展示。可写文件分别3/2/2/5个。未加入随机文本、强制回读、search/Shell/规划器或其他运行时能力。
+
+审阅修正均发生在冻结和真实实验之前：H01统一环境变量数字语法、前导零和安全整数范围；H03公开合法records/参数名范围与同优先级顺序，补跨调用params独立性；H02增加逐字符切块与空chunk交错、doubled quote组合。H01另经第二个子智能体只读交叉审阅，未发现重要不一致。所有隐藏断言均有公开需求或已有兼容代码依据。
+
+子智能体最终 `loadTask` / `preflight` 均退出0，reference公开/隐藏通过，初始acceptance真实失败；作者证据分别位于 `/tmp/m5-h01-preflight-C51m0U/h01-config-pipeline/`、`/tmp/m5-h02-preflight-3zTzVa/h02-chunk-parser/`、`/tmp/mini-harness-m5-h03-module-navigation-review2-20260924/`、`/tmp/mini-harness-m5-h04-issue-refactor-20260924/`。最终统一证据以下一工单为准，不依赖这些临时路径交付。
+
+### M5.3：12题预检与manifest（2026-09-24，DONE）
+
+全部资产完成并审阅后，以Node内联脚本按baseline配置的12个ID调用 `loadTask`，独占创建 `benchmark/v1.json`（退出0）：每题真实suite/path/taskHash，S8/H4，没有占位hash。新增三个小型离线复核脚本位于benchmark内，调用已有eval接口；未修改src、eval、依赖或实验预算。
+
+| 实际命令/操作 | 退出码 | 证据与结论 |
+| --- | --- | --- |
+| `node --import tsx benchmark/preflight.mjs benchmark/evidence/preflight-v1` | 0 | 12/12预检通过；初始acceptance全部有真实断言失败，参考补丁仅改白名单，36项公开+75项隐藏测试全过 |
+| Node内联审计：重算12个taskHash、60个证据文件SHA/字节数、调用48次 `inspectCheck`、检查参考补丁changedPaths | 0 | `benchmark/evidence/preflight-v1/audit.json`；原始JSON和日志由index.json相对路径索引 |
+| `node --import tsx benchmark/check-extension.mjs benchmark/evidence/extension-v1` | 1 | mock attempt及verify通过；脚本误要求Markdown正文含taskHash而失败，完整首轮产物保留 |
+| `node --import tsx benchmark/check-extension.mjs benchmark/evidence/extension-v2` | 0 | 修正检查为report runId→manifest/result taskHash关联；新增第13题无需改runtime即可读/改/完成并评分，两个独立mock运行均verify通过，prompt增加1字节改变hash |
+| Node内联脚本独立调用两次 `verify` 并检查before快照 | 0 | extension-v2两报告均通过，模型工作区只有源码和public test，不含acceptance/reference |
+| `npm run check > /tmp/mini-harness-m5-check.log 2>&1` | 0 | TypeScript与249项具名工程测试通过、0失败/跳过；输出复制至 `benchmark/evidence/engineering/npm-check.txt` |
+| `node --check benchmark/preflight.mjs` / `node --check benchmark/check-extension.mjs` / `node --check benchmark/check-freeze.mjs` | 各0 | 三个离线脚本语法检查通过 |
+
+| 题目 | workspace文件 | 可写文件 | 公开测试 | 隐藏验收 |
+| --- | ---: | ---: | ---: | ---: |
+| b01-normalize | 2 | 1 | 3 | 5 |
+| b02-counter | 2 | 1 | 3 | 5 |
+| b03-config | 2 | 1 | 3 | 8 |
+| f01-tags | 2 | 1 | 3 | 5 |
+| f02-pagination | 2 | 1 | 2 | 4 |
+| f03-ranges | 2 | 1 | 2 | 5 |
+| m01-report | 3 | 2 | 2 | 5 |
+| m02-options | 4 | 3 | 2 | 4 |
+| h01-config-pipeline | 12 | 3 | 4 | 10 |
+| h02-chunk-parser | 12 | 2 | 5 | 9 |
+| h03-module-navigation | 14 | 2 | 4 | 8 |
+| h04-issue-refactor | 14 | 5 | 3 | 7 |
+
+验收B01/B02通过。扩展检查的b13仅是证据目录内的mock fixture，不属于v1的12题，也不是新增研究任务；extension-v2目录名不是benchmark-v2。全部日志保留原始字节和绝对生成路径，索引提供相对路径/原始hash。未运行真实provider；这些通过率不能用作M6/M9成绩。上下文8192/0.75/4、模型请求16、工具24保持不变。
+
+### M5.4：benchmark-v1 Git冻结（2026-09-24，IN_PROGRESS）
+
+完整任务包、manifest和原始预检证据准备以提交说明 `benchmark-v1` 冻结。提交后运行只读 `benchmark/check-freeze.mjs` 检查干净Git、12题字节/suite/hash、manifest与提交归属，并以后续文档提交记录完整真实SHA，避免自引用或伪造SHA。此步骤尚未完成时不标M5 DONE。

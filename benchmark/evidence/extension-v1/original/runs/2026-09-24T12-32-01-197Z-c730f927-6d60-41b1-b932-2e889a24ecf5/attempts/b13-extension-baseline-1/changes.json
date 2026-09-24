@@ -1,0 +1,20 @@
+[
+  {
+    "path": "normalize.mjs",
+    "kind": "modified",
+    "before": {
+      "path": "normalize.mjs",
+      "kind": "file",
+      "sha256": "702d3ec9d0de629f5482903eab60d025b3ea6409c6d0cf07a3ca4c85acf7622a",
+      "content": "export function normalizeText(value) {\n  if (typeof value !== 'string') throw new TypeError('text must be a string');\n  return value.trim().toLowerCase();\n}\n",
+      "encoding": "utf8"
+    },
+    "after": {
+      "path": "normalize.mjs",
+      "kind": "file",
+      "sha256": "d95a6b46386830551f5c7c0bc18b4664500858c8c39fd8e11023e0aafcf7a25c",
+      "content": "export function normalizeText(value) {\n  if (typeof value !== 'string') throw new TypeError('text must be a string');\n  return value.trim().replace(/\\s+/gu, ' ').toLowerCase();\n}\n",
+      "encoding": "utf8"
+    }
+  }
+]

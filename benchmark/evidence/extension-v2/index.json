@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "acceptance": "B02",
+  "note": "Engineering mock only. Not part of benchmark-v1 or real model results.",
+  "runs": [
+    {
+      "revision": "original",
+      "taskId": "b13-extension",
+      "taskHash": "e9c7ba6bd0942bd83014ebe1adf9b825984002b8fc0381bd243f6c76f844e065",
+      "runRoot": "original/runs/2026-09-24T12-32-20-285Z-92abf0fc-b3ce-4969-a344-7c165dd36388",
+      "runId": "2026-09-24T12-32-20-285Z-92abf0fc-b3ce-4969-a344-7c165dd36388",
+      "provider": "mock",
+      "passed": true,
+      "verified": true
+    },
+    {
+      "revision": "one-byte-change",
+      "taskId": "b13-extension",
+      "taskHash": "6c6a8395c7127bc3cf42ca215327d5c4290736fe03c67a7cc9fe41cf5d3a8619",
+      "runRoot": "one-byte-change/runs/2026-09-24T12-32-20-889Z-7d3b8b1f-a40a-43a8-abe6-cc2ceaae7fc4",
+      "runId": "2026-09-24T12-32-20-889Z-7d3b8b1f-a40a-43a8-abe6-cc2ceaae7fc4",
+      "provider": "mock",
+      "passed": true,
+      "verified": true
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "id": "f02-pagination",
+  "suite": "S",
+  "category": "feature",
+  "promptFile": "prompt.md",
+  "workspaceDir": "workspace",
+  "writable": [
+    "pagination.mjs"
+  ],
+  "publicTest": "public.test.mjs",
+  "acceptanceTest": "acceptance/acceptance.test.mjs",
+  "referencePatch": "reference/patch.diff",
+  "testTimeoutMs": 5000
+}

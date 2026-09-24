@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "runId": "2026-09-24T12-32-01-197Z-c730f927-6d60-41b1-b932-2e889a24ecf5",
+  "phase": "smoke",
+  "provider": "mock",
+  "startedAt": "2026-09-24T12:32:01.454Z",
+  "nodeVersion": "v24.20.0",
+  "implementationCommit": "3a508238825a9856c7cb16f20b82dd1dba0c67f0",
+  "dirty": true,
+  "benchmarkCommit": null,
+  "benchmarkHash": null,
+  "config": {
+    "schemaVersion": 1,
+    "phase": "smoke",
+    "benchmarkManifest": null,
+    "taskIds": [
+      "b13-extension"
+    ],
+    "variants": [
+      "baseline"
+    ],
+    "repeats": 1,
+    "model": {
+      "endpoint": "http://127.0.0.1:1/chat/completions",
+      "id": "offline-smoke",
+      "temperature": 0
+    },
+    "budget": {
+      "maxModelRequests": 5,
+      "maxToolCalls": 5,
+      "timeoutMs": 5000,
+      "maxOutputTokens": 100,
+      "maxInputChars": 20000
+    },
+    "context": {
+      "estimatedWindowTokens": 8192,
+      "triggerRatio": 0.75,
+      "keepRecentRounds": 4
+    },
+    "outputDir": "/home/hmli/code/mini-harness/benchmark/evidence/extension-v1/original/runs"
+  },
+  "tasks": [
+    {
+      "id": "b13-extension",
+      "suite": "S",
+      "taskHash": "e9c7ba6bd0942bd83014ebe1adf9b825984002b8fc0381bd243f6c76f844e065",
+      "root": "/home/hmli/code/mini-harness/benchmark/evidence/extension-v1/original/fixtures/b13-extension"
+    }
+  ],
+  "schedule": [
+    {
+      "taskId": "b13-extension",
+      "variant": "baseline",
+      "repeat": 1,
+      "orderIndex": 0
+    }
+  ]
+}

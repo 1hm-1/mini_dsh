@@ -1,0 +1,72 @@
+diff --git a/src/env-config.mjs b/src/env-config.mjs
+--- a/src/env-config.mjs
++++ b/src/env-config.mjs
+@@ -1,14 +1,25 @@
++function booleanValue(value, name) {
++  if (value !== 'true' && value !== 'false') throw new TypeError(`invalid ${name}`);
++  return value === 'true';
++}
++
+ export function readEnvLayer(env = {}) {
+   if (env === null || typeof env !== 'object' || Array.isArray(env)) throw new TypeError('env must be an object');
+   const network = {};
+   const ui = {};
+   const layer = {};
+-  if (env.APP_ENDPOINT) network.endpoint = env.APP_ENDPOINT;
+-  if (env.APP_RETRIES) network.retries = Number(env.APP_RETRIES);
+-  if (env.APP_THEME) ui.theme = env.APP_THEME;
+-  if (env.APP_COMPACT) ui.compact = env.APP_COMPACT === 'true';
+-  if (env.APP_ENABLED) layer.enabled = env.APP_ENABLED === 'true';
++  if (Object.hasOwn(env, 'APP_ENDPOINT')) network.endpoint = env.APP_ENDPOINT;
++  if (Object.hasOwn(env, 'APP_RETRIES')) {
++    const value = env.APP_RETRIES;
++    if (typeof value !== 'string' || !/^[0-9]+$/.test(value)) throw new TypeError('invalid APP_RETRIES');
++    const retries = Number(value);
++    if (!Number.isSafeInteger(retries)) throw new TypeError('invalid APP_RETRIES');
++    network.retries = retries;
++  }
++  if (Object.hasOwn(env, 'APP_THEME')) ui.theme = env.APP_THEME;
++  if (Object.hasOwn(env, 'APP_COMPACT')) ui.compact = booleanValue(env.APP_COMPACT, 'APP_COMPACT');
++  if (Object.hasOwn(env, 'APP_ENABLED')) layer.enabled = booleanValue(env.APP_ENABLED, 'APP_ENABLED');
+   if (Object.keys(network).length) layer.network = network;
+   if (Object.keys(ui).length) layer.ui = ui;
+   return layer;
+ }
+diff --git a/src/merge.mjs b/src/merge.mjs
+--- a/src/merge.mjs
++++ b/src/merge.mjs
+@@ -1,3 +1,16 @@
++function mergePair(left, right) {
++  if (right === undefined) return { ...left };
++  if (right === null || typeof right !== 'object' || Array.isArray(right)) return right;
++  return { ...left, ...right };
++}
++
+ export function mergeLayers(defaults, file, env) {
+-  return Object.assign(defaults, file, env);
++  const result = { ...defaults, network: { ...defaults.network }, ui: { ...defaults.ui } };
++  for (const layer of [file, env]) {
++    for (const [key, value] of Object.entries(layer)) {
++      if (key === 'network' || key === 'ui') result[key] = mergePair(result[key], value);
++      else result[key] = value;
++    }
++  }
++  return result;
+ }
+diff --git a/src/validate.mjs b/src/validate.mjs
+--- a/src/validate.mjs
++++ b/src/validate.mjs
+@@ -1,12 +1,12 @@
+ export function validateConfig(config) {
+   if (!config || typeof config !== 'object' || Array.isArray(config)
+     || !config.network || typeof config.network !== 'object' || Array.isArray(config.network)
+     || !config.ui || typeof config.ui !== 'object' || Array.isArray(config.ui)
+     || typeof config.network.endpoint !== 'string' || !config.network.endpoint
+-    || !Number.isInteger(config.network.retries) || config.network.retries < 0
++    || !Number.isSafeInteger(config.network.retries) || config.network.retries < 0
+     || typeof config.ui.theme !== 'string' || !config.ui.theme
+     || typeof config.ui.compact !== 'boolean' || typeof config.enabled !== 'boolean') {
+     throw new TypeError('invalid resolved config');
+   }
+   return config;
+ }

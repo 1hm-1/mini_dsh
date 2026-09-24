@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "h04-issue-refactor",
+  "suite": "H",
+  "category": "multi-file",
+  "promptFile": "prompt.md",
+  "workspaceDir": "workspace",
+  "writable": [
+    "normalize.mjs",
+    "consumers/list.mjs",
+    "consumers/search.mjs",
+    "consumers/activity.mjs",
+    "serialize.mjs"
+  ],
+  "publicTest": "public.test.mjs",
+  "acceptanceTest": "acceptance/check.mjs",
+  "referencePatch": "reference/patch.diff",
+  "testTimeoutMs": 5000
+}

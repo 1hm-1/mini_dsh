@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "b03-config",
+  "suite": "S",
+  "category": "bug-fix",
+  "promptFile": "prompt.md",
+  "workspaceDir": "workspace",
+  "writable": ["config.mjs"],
+  "publicTest": "public.test.mjs",
+  "acceptanceTest": "acceptance/check.mjs",
+  "referencePatch": "reference/patch.diff",
+  "testTimeoutMs": 5000
+}

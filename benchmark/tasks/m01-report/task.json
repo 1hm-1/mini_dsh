@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "id": "m01-report",
+  "suite": "S",
+  "category": "multi-file",
+  "promptFile": "prompt.md",
+  "workspaceDir": "workspace",
+  "writable": [
+    "parser.mjs",
+    "report.mjs"
+  ],
+  "publicTest": "public.test.mjs",
+  "acceptanceTest": "acceptance/acceptance.test.mjs",
+  "referencePatch": "reference/patch.diff",
+  "testTimeoutMs": 5000
+}

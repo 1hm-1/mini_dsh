@@ -1,0 +1,80 @@
+{
+  "passed": true,
+  "taskId": "b13-extension",
+  "taskHash": "e9c7ba6bd0942bd83014ebe1adf9b825984002b8fc0381bd243f6c76f844e065",
+  "initial": {
+    "integrity": {
+      "passed": true,
+      "changedPaths": [],
+      "violations": []
+    },
+    "publicTest": {
+      "durationMs": 35.474041,
+      "passed": false,
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "completed": true,
+      "passedTests": 1,
+      "failedTests": 2,
+      "testCount": 3,
+      "outputPath": "/home/hmli/code/mini-harness/benchmark/evidence/extension-v1/original/runs/2026-09-24T12-32-01-197Z-c730f927-6d60-41b1-b932-2e889a24ecf5/preflight/b13-extension/initial/public-output.txt",
+      "outputHash": "e400100c502c31a441c7b3d921155bbe70121b24843ccfdd8af7b12d49a8d425"
+    },
+    "acceptanceTest": {
+      "durationMs": 44.54047000000003,
+      "passed": false,
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "completed": true,
+      "passedTests": 4,
+      "failedTests": 1,
+      "testCount": 5,
+      "outputPath": "/home/hmli/code/mini-harness/benchmark/evidence/extension-v1/original/runs/2026-09-24T12-32-01-197Z-c730f927-6d60-41b1-b932-2e889a24ecf5/preflight/b13-extension/initial/acceptance-output.txt",
+      "outputHash": "fbca0d0b0d1b0b7c3287defe948da6fc215c378ce88e6c5979dc178a99ac8daa"
+    },
+    "functionalPass": false,
+    "passed": false,
+    "failureReason": "public_test"
+  },
+  "reference": {
+    "integrity": {
+      "passed": true,
+      "changedPaths": [
+        "normalize.mjs"
+      ],
+      "violations": []
+    },
+    "publicTest": {
+      "durationMs": 35.26145799999995,
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "completed": true,
+      "passedTests": 3,
+      "failedTests": 0,
+      "testCount": 3,
+      "outputPath": "/home/hmli/code/mini-harness/benchmark/evidence/extension-v1/original/runs/2026-09-24T12-32-01-197Z-c730f927-6d60-41b1-b932-2e889a24ecf5/preflight/b13-extension/reference/public-output.txt",
+      "outputHash": "0963e9e121a42f5a156693430e739865b7223643c896ccdff0957ef6d8aa3208"
+    },
+    "acceptanceTest": {
+      "durationMs": 37.86373299999997,
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "completed": true,
+      "passedTests": 5,
+      "failedTests": 0,
+      "testCount": 5,
+      "outputPath": "/home/hmli/code/mini-harness/benchmark/evidence/extension-v1/original/runs/2026-09-24T12-32-01-197Z-c730f927-6d60-41b1-b932-2e889a24ecf5/preflight/b13-extension/reference/acceptance-output.txt",
+      "outputHash": "ebd5cac8716a0860979b4db5efebc2247ee4b3ddf773ff2ec3d5ada6915d552f"
+    },
+    "functionalPass": true,
+    "passed": true,
+    "failureReason": null
+  },
+  "error": null
+}

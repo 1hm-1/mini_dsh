@@ -1,6 +1,6 @@
 # 06 Benchmark v1：8道基础题 + 4道Harness场景题
 
-任务仍为可信、自建、零第三方依赖的.mjs/node:test项目；运行时不增加搜索/Shell/规划器。题目规格现在确定，实际资产必须在M5完整创建、preflight并提交冻结，早于M6 baseline与M7/M8机制实现。
+任务仍为可信、自建、零第三方依赖的.mjs/node:test项目；运行时不增加搜索/Shell/规划器。M5已创建全部实际资产并逐题preflight；manifest见[benchmark/v1.json](../benchmark/v1.json)，本地Git冻结SHA与验收证据见[progress](progress.md)的M5记录。冻结早于M6 baseline与M7/M8机制实现。
 
 ## Benchmark-S：基础与功能层
 
@@ -38,7 +38,7 @@ H01/H04给完整issue式长描述，把边界放在正常的背景、示例和�
 
 作者流程：需求→源码→公开测试→独立验收→参考补丁→preflight全题。要求初始acceptance失败、reference公开/独立验收全过、补丁不越界；记录原始hash。benchmark/v1.json收录12题路径、suite、taskHash；Git提交说明benchmark-v1，记录完整SHA。
 
-这个提交发生在真实baseline之前；当前仅规划，不能把占位文件或文档提交叫已冻结Benchmark。两个文件夹副本保持同步不替代Git冻结。
+这个提交发生在真实baseline之前；只有实际资产、通过的preflight与真实Git SHA齐备才标为冻结。两个文件夹副本保持同步不替代Git冻结。
 
 ## 诊断、饱和与版本
 

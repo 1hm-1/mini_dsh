@@ -1,0 +1,28 @@
+diff --git a/config.mjs b/config.mjs
+--- a/config.mjs
++++ b/config.mjs
+@@ -1,7 +1,21 @@
++function plain(value) {
++  return value !== null && typeof value === 'object' && !Array.isArray(value)
++    && (Object.getPrototypeOf(value) === Object.prototype || Object.getPrototypeOf(value) === null);
++}
++
++function copy(value) {
++  return plain(value) ? { ...value } : value;
++}
++
+ export function mergeConfig(defaults, overrides = {}) {
+-  if (!defaults || typeof defaults !== 'object' || Array.isArray(defaults)
+-    || !overrides || typeof overrides !== 'object' || Array.isArray(overrides)) {
++  if (!plain(defaults) || !plain(overrides)) {
+     throw new TypeError('expected configuration objects');
+   }
+-  return Object.assign(defaults, overrides);
++  const entries = new Map();
++  for (const [key, value] of Object.entries(defaults)) entries.set(key, copy(value));
++  for (const [key, value] of Object.entries(overrides)) {
++    entries.set(key, plain(value) && Object.hasOwn(defaults, key) && plain(defaults[key])
++      ? { ...defaults[key], ...value } : copy(value));
++  }
++  return Object.fromEntries(entries);
+ }

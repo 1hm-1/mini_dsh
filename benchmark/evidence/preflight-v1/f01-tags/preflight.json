@@ -1,0 +1,80 @@
+{
+  "passed": true,
+  "taskId": "f01-tags",
+  "taskHash": "9f771366ccc2c14397712504c0c65b58576a4fb02f3ff0d5c934c4d1810ad090",
+  "initial": {
+    "integrity": {
+      "passed": true,
+      "changedPaths": [],
+      "violations": []
+    },
+    "publicTest": {
+      "durationMs": 38.38100499999996,
+      "passed": false,
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "completed": true,
+      "passedTests": 1,
+      "failedTests": 2,
+      "testCount": 3,
+      "outputPath": "/home/hmli/code/mini-harness/benchmark/evidence/preflight-v1/f01-tags/initial/public-output.txt",
+      "outputHash": "d2e438887dd49cc38a54b530c2b788e93d9fa0fec1c06d785b093b97061f8a0c"
+    },
+    "acceptanceTest": {
+      "durationMs": 39.16039999999998,
+      "passed": false,
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "completed": true,
+      "passedTests": 1,
+      "failedTests": 4,
+      "testCount": 5,
+      "outputPath": "/home/hmli/code/mini-harness/benchmark/evidence/preflight-v1/f01-tags/initial/acceptance-output.txt",
+      "outputHash": "e9cf85b0207952a4009282550c675e44035071c5ce83c1b25272c90adda824d5"
+    },
+    "functionalPass": false,
+    "passed": false,
+    "failureReason": "public_test"
+  },
+  "reference": {
+    "integrity": {
+      "passed": true,
+      "changedPaths": [
+        "tags.mjs"
+      ],
+      "violations": []
+    },
+    "publicTest": {
+      "durationMs": 39.208246000000145,
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "completed": true,
+      "passedTests": 3,
+      "failedTests": 0,
+      "testCount": 3,
+      "outputPath": "/home/hmli/code/mini-harness/benchmark/evidence/preflight-v1/f01-tags/reference/public-output.txt",
+      "outputHash": "e280e112a417643c449b2e5961f96a0df7a62f7a0e10547de48c38a728d356d8"
+    },
+    "acceptanceTest": {
+      "durationMs": 40.124344000000065,
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "completed": true,
+      "passedTests": 5,
+      "failedTests": 0,
+      "testCount": 5,
+      "outputPath": "/home/hmli/code/mini-harness/benchmark/evidence/preflight-v1/f01-tags/reference/acceptance-output.txt",
+      "outputHash": "ba532fa4e7c667746e831ae33dc540fe816a5dc053e8a7bbe005ed691f80797c"
+    },
+    "functionalPass": true,
+    "passed": true,
+    "failureReason": null
+  },
+  "error": null
+}

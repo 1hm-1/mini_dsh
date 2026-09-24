@@ -1,0 +1,84 @@
+{
+  "passed": true,
+  "taskId": "h04-issue-refactor",
+  "taskHash": "0c3daa947cc768189e317ed2a73f5342edb34a2de9e1553564711ef4c75033a0",
+  "initial": {
+    "integrity": {
+      "passed": true,
+      "changedPaths": [],
+      "violations": []
+    },
+    "publicTest": {
+      "durationMs": 46.06113499999992,
+      "passed": false,
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "completed": true,
+      "passedTests": 0,
+      "failedTests": 3,
+      "testCount": 3,
+      "outputPath": "/home/hmli/code/mini-harness/benchmark/evidence/preflight-v1/h04-issue-refactor/initial/public-output.txt",
+      "outputHash": "7384a2e03ff56f446e1967b0717ce480e1fb286519c98dd9ebdd7efa37255354"
+    },
+    "acceptanceTest": {
+      "durationMs": 50.22145600000022,
+      "passed": false,
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "completed": true,
+      "passedTests": 1,
+      "failedTests": 6,
+      "testCount": 7,
+      "outputPath": "/home/hmli/code/mini-harness/benchmark/evidence/preflight-v1/h04-issue-refactor/initial/acceptance-output.txt",
+      "outputHash": "cb3adefb9a87eefb7c74d2c6e5aade8fa24a917a64dd5a3cc1a93231c32abf18"
+    },
+    "functionalPass": false,
+    "passed": false,
+    "failureReason": "public_test"
+  },
+  "reference": {
+    "integrity": {
+      "passed": true,
+      "changedPaths": [
+        "consumers/activity.mjs",
+        "consumers/list.mjs",
+        "consumers/search.mjs",
+        "normalize.mjs",
+        "serialize.mjs"
+      ],
+      "violations": []
+    },
+    "publicTest": {
+      "durationMs": 37.15855899999997,
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "completed": true,
+      "passedTests": 3,
+      "failedTests": 0,
+      "testCount": 3,
+      "outputPath": "/home/hmli/code/mini-harness/benchmark/evidence/preflight-v1/h04-issue-refactor/reference/public-output.txt",
+      "outputHash": "60b48b6610f255dec24d16579f3e86b058e9c47892af1cdf3a533b7543e1e78c"
+    },
+    "acceptanceTest": {
+      "durationMs": 47.49841400000014,
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "completed": true,
+      "passedTests": 7,
+      "failedTests": 0,
+      "testCount": 7,
+      "outputPath": "/home/hmli/code/mini-harness/benchmark/evidence/preflight-v1/h04-issue-refactor/reference/acceptance-output.txt",
+      "outputHash": "8998b9fa54d41cc15cfaef802b557d6d972bf47499aa88a3c0ce1879e81ae204"
+    },
+    "functionalPass": true,
+    "passed": true,
+    "failureReason": null
+  },
+  "error": null
+}

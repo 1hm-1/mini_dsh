@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "benchmarkVersion": "v1",
+  "tasks": [
+    {
+      "id": "b01-normalize",
+      "suite": "S",
+      "path": "benchmark/tasks/b01-normalize",
+      "taskHash": "51582cc2b403500a95b2fc51937aab3be21bfd5c6ec84d79d7a0e8f56ade4054"
+    },
+    {
+      "id": "b02-counter",
+      "suite": "S",
+      "path": "benchmark/tasks/b02-counter",
+      "taskHash": "f2e2f635965f758d16b9e6d98ca81d79f204cc802eb7f9b0945014f0ba14b64b"
+    },
+    {
+      "id": "b03-config",
+      "suite": "S",
+      "path": "benchmark/tasks/b03-config",
+      "taskHash": "e462b8215b44eda8c0a58391618f582de11a2d731f5f1303cb2500ee72f88a90"
+    },
+    {
+      "id": "f01-tags",
+      "suite": "S",
+      "path": "benchmark/tasks/f01-tags",
+      "taskHash": "9f771366ccc2c14397712504c0c65b58576a4fb02f3ff0d5c934c4d1810ad090"
+    },
+    {
+      "id": "f02-pagination",
+      "suite": "S",
+      "path": "benchmark/tasks/f02-pagination",
+      "taskHash": "ee8374240a225f416a4fe556344eefefd334505b6b8dfb958a23375695434957"
+    },
+    {
+      "id": "f03-ranges",
+      "suite": "S",
+      "path": "benchmark/tasks/f03-ranges",
+      "taskHash": "2acc6f2af54be93cea0972e251d13144f01e5c7584a3cb0199c1d1d448a28704"
+    },
+    {
+      "id": "m01-report",
+      "suite": "S",
+      "path": "benchmark/tasks/m01-report",
+      "taskHash": "ef5bec459e21da1cb621b91d2a0eea8f86abce622e2967bae05a39ec5cbeeee8"
+    },
+    {
+      "id": "m02-options",
+      "suite": "S",
+      "path": "benchmark/tasks/m02-options",
+      "taskHash": "1e0de9d3f1f9324c8f14b13bf5ebe7db643844d3648700b968e12dba6c4a6b5f"
+    },
+    {
+      "id": "h01-config-pipeline",
+      "suite": "H",
+      "path": "benchmark/tasks/h01-config-pipeline",
+      "taskHash": "ec700f8e3393d3bdbb296aff1bbe9045038e7c9235248b46228e5477c5c1bd8f"
+    },
+    {
+      "id": "h02-chunk-parser",
+      "suite": "H",
+      "path": "benchmark/tasks/h02-chunk-parser",
+      "taskHash": "a70bd50a76142187bd625840ea1438579c9771c58dbbdfd1ebcc3bbd16af2bfe"
+    },
+    {
+      "id": "h03-module-navigation",
+      "suite": "H",
+      "path": "benchmark/tasks/h03-module-navigation",
+      "taskHash": "afd98f1ab1b57b4e2df9b8cfd86506b9d63be2f60db8ea9dfdb7b565471ab2fa"
+    },
+    {
+      "id": "h04-issue-refactor",
+      "suite": "H",
+      "path": "benchmark/tasks/h04-issue-refactor",
+      "taskHash": "0c3daa947cc768189e317ed2a73f5342edb34a2de9e1553564711ef4c75033a0"
+    }
+  ]
+}

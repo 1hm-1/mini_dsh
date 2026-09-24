@@ -1,0 +1,34 @@
+--- a/entry.mjs
++++ b/entry.mjs
+@@ -1,7 +1,6 @@
+-import { legacyResolve } from './legacy.mjs';
+ import { resolveFromRegistry } from './registry.mjs';
+ import { defaultRoutes } from './fixtures/routes.mjs';
+ 
+ export function dispatch(path) {
+-  return legacyResolve(path) ?? resolveFromRegistry(path, defaultRoutes);
++  return resolveFromRegistry(path, defaultRoutes);
+ }
+--- a/registry.mjs
++++ b/registry.mjs
+@@ -5,12 +5,15 @@
+ export function resolveFromRegistry(path, records) {
+   if (typeof path !== 'string' || !path.startsWith('/') || !path) throw new TypeError('path must be absolute');
+   for (const record of records) {
++    if (record.kind === 'static' && matchStatic(record.path, path)) return { route: record.route, params: {} };
++  }
++  for (const record of records) {
++    if (record.kind !== 'dynamic') continue;
++    const params = matchDynamic(record.pattern, path);
++    if (params) return { route: record.route, params };
++  }
++  for (const record of records) {
+     if (record.kind === 'fallback') return fallbackResult(record);
+-    if (record.kind === 'dynamic') {
+-      const params = matchDynamic(record.pattern, path);
+-      if (params) return { route: record.route, params };
+-    }
+-    if (record.kind === 'static' && matchStatic(record.path, path)) return { route: record.route, params: {} };
+   }
+   return null;
+ }

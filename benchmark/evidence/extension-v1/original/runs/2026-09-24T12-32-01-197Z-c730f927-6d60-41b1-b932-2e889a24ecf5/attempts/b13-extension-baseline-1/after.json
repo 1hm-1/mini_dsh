@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "path": "normalize.mjs",
+      "kind": "file",
+      "sha256": "d95a6b46386830551f5c7c0bc18b4664500858c8c39fd8e11023e0aafcf7a25c",
+      "content": "export function normalizeText(value) {\n  if (typeof value !== 'string') throw new TypeError('text must be a string');\n  return value.trim().replace(/\\s+/gu, ' ').toLowerCase();\n}\n",
+      "encoding": "utf8"
+    },
+    {
+      "path": "public.test.mjs",
+      "kind": "file",
+      "sha256": "93ca9a6b44459fd25de2f6cada798e265ae11d4e8c5de10a1de8cad3ea27f181",
+      "content": "import { test } from 'node:test';\nimport assert from 'node:assert/strict';\nimport { normalizeText } from './normalize.mjs';\n\ntest('trims outer whitespace and lowercases words', () => {\n  assert.equal(normalizeText('  HELLO World  '), 'hello world');\n});\n\ntest('collapses internal spaces', () => {\n  assert.equal(normalizeText('One   TWO    Three'), 'one two three');\n});\n\ntest('collapses tabs and line breaks', () => {\n  assert.equal(normalizeText('\\tA\\n \\t B\\r\\nC  '), 'a b c');\n});\n",
+      "encoding": "utf8"
+    }
+  ]
+}

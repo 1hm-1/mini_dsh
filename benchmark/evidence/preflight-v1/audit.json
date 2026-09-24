@@ -1,0 +1,9 @@
+{
+  "tasks": 12,
+  "artifacts": 60,
+  "checks": 48,
+  "referencePublicTests": 36,
+  "referenceAcceptanceTests": 75,
+  "passed": true,
+  "provider": null
+}

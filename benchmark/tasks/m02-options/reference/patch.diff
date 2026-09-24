@@ -1,0 +1,40 @@
+--- a/defaults.mjs
++++ b/defaults.mjs
+@@ -1 +1 @@
+-export const DEFAULT_OPTIONS = { precision: 2, prefix: '' };
++export const DEFAULT_OPTIONS = Object.freeze({ precision: 2, prefix: '', unitLabel: '' });
+--- a/resolver.mjs
++++ b/resolver.mjs
+@@ -1,6 +1,18 @@
+ import { DEFAULT_OPTIONS } from './defaults.mjs';
+ 
+ export function resolveOptions(overrides = {}) {
+-  Object.assign(DEFAULT_OPTIONS, overrides);
+-  return DEFAULT_OPTIONS;
++  if (overrides === null || typeof overrides !== 'object' || Array.isArray(overrides)) {
++    throw new TypeError('overrides must be an object');
++  }
++  for (const key of Object.keys(overrides)) {
++    if (!Object.hasOwn(DEFAULT_OPTIONS, key)) throw new TypeError('unknown option');
++  }
++  const options = { ...DEFAULT_OPTIONS, ...overrides };
++  if (!Number.isInteger(options.precision) || options.precision < 0 || options.precision > 4) {
++    throw new RangeError('precision must be 0 through 4');
++  }
++  if (typeof options.prefix !== 'string' || typeof options.unitLabel !== 'string') {
++    throw new TypeError('prefix and unitLabel must be strings');
++  }
++  return options;
+ }
+--- a/formatter.mjs
++++ b/formatter.mjs
+@@ -1,6 +1,7 @@
+ import { resolveOptions } from './resolver.mjs';
+ 
+-export function formatValue(value, overrides = {}) {
++export function formatValue(value, overrides) {
++  if (typeof value !== 'number' || !Number.isFinite(value)) throw new TypeError('value must be finite');
+   const options = resolveOptions(overrides);
+-  return options.prefix + value.toFixed(options.precision);
++  return options.prefix + value.toFixed(options.precision) + (options.unitLabel ? ` ${options.unitLabel}` : '');
+ }

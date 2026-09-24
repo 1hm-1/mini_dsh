@@ -1,0 +1,81 @@
+{
+  "passed": true,
+  "taskId": "h02-chunk-parser",
+  "taskHash": "a70bd50a76142187bd625840ea1438579c9771c58dbbdfd1ebcc3bbd16af2bfe",
+  "initial": {
+    "integrity": {
+      "passed": true,
+      "changedPaths": [],
+      "violations": []
+    },
+    "publicTest": {
+      "durationMs": 47.383260000000064,
+      "passed": false,
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "completed": true,
+      "passedTests": 3,
+      "failedTests": 2,
+      "testCount": 5,
+      "outputPath": "/home/hmli/code/mini-harness/benchmark/evidence/preflight-v1/h02-chunk-parser/initial/public-output.txt",
+      "outputHash": "9d9e39e1e055343cb12ee99711dcda9d758c499ac1871c6032d876fd29f4924c"
+    },
+    "acceptanceTest": {
+      "durationMs": 44.83005200000025,
+      "passed": false,
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "completed": true,
+      "passedTests": 4,
+      "failedTests": 5,
+      "testCount": 9,
+      "outputPath": "/home/hmli/code/mini-harness/benchmark/evidence/preflight-v1/h02-chunk-parser/initial/acceptance-output.txt",
+      "outputHash": "7011ff30243d86f0ebadbafae2f063702bfa059f6120e9b88faa8a3a75249202"
+    },
+    "functionalPass": false,
+    "passed": false,
+    "failureReason": "public_test"
+  },
+  "reference": {
+    "integrity": {
+      "passed": true,
+      "changedPaths": [
+        "src/line.mjs",
+        "src/state.mjs"
+      ],
+      "violations": []
+    },
+    "publicTest": {
+      "durationMs": 42.158652000000075,
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "completed": true,
+      "passedTests": 5,
+      "failedTests": 0,
+      "testCount": 5,
+      "outputPath": "/home/hmli/code/mini-harness/benchmark/evidence/preflight-v1/h02-chunk-parser/reference/public-output.txt",
+      "outputHash": "e7f6f2b557d09b6cf3fbd22eb2e8ca8dd27c2e56f4554bdf7d53d525b77893f4"
+    },
+    "acceptanceTest": {
+      "durationMs": 44.68746300000021,
+      "passed": true,
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "completed": true,
+      "passedTests": 9,
+      "failedTests": 0,
+      "testCount": 9,
+      "outputPath": "/home/hmli/code/mini-harness/benchmark/evidence/preflight-v1/h02-chunk-parser/reference/acceptance-output.txt",
+      "outputHash": "160d629f6fbf3de65406db6b605ed7b7444e0d7a30f5c291ceb89f518011f88a"
+    },
+    "functionalPass": true,
+    "passed": true,
+    "failureReason": null
+  },
+  "error": null
+}

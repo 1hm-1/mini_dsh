@@ -1,0 +1,22 @@
+[stdout] {"type":"test:enqueue","data":{"nesting":0,"name":"parser trims fields and handles CRLF","type":"test","testId":1,"parentId":0,"tags":[],"line":6,"column":1,"file":"/home/hmli/code/mini-harness/benchmark/evidence/preflight-v1/m01-report/reference/.public-workspace/public.test.mjs"}}
+[stdout] {"type":"test:dequeue","data":{"nesting":0,"name":"parser trims fields and handles CRLF","type":"test","testId":1,"parentId":0,"tags":[],"line":6,"column":1,"file":"/home/hmli/code/mini-harness/benchmark/evidence/preflight-v1/m01-report/reference/.public-workspace/public.test.mjs"}}
+[stdout] {"type":"test:enqueue","data":{"nesting":0,"name":"report combines duplicate SKU and computes cents","type":"test","testId":2,"parentId":0,"tags":[],"line":12,"column":1,"file":"/home/hmli/code/mini-harness/benchmark/evidence/preflight-v1/m01-report/reference/.public-workspace/public.test.mjs"}}
+[stdout] {"type":"test:complete","data":{"name":"parser trims fields and handles CRLF","nesting":0,"testNumber":1,"testId":1,"parentId":0,"details":{"duration_ms":1.204124,"type":"test","passed":true},"tags":[],"line":6,"column":1,"file":"/home/hmli/code/mini-harness/benchmark/evidence/preflight-v1/m01-report/reference/.public-workspace/public.test.mjs"}}
+[stdout] {"type":"test:start","data":{"nesting":0,"name":"parser trims fields and handles CRLF","testId":1,"parentId":0,"tags":[],"line":6,"column":1,"file":"/home/hmli/code/mini-harness/benchmark/evidence/preflight-v1/m01-report/reference/.public-workspace/public.test.mjs"}}
+[stdout] {"type":"test:pass","data":{"name":"parser trims fields and handles CRLF","nesting":0,"testNumber":1,"testId":1,"parentId":0,"details":{"duration_ms":1.204124,"type":"test"},"tags":[],"line":6,"column":1,"file":"/home/hmli/code/mini-harness/benchmark/evidence/preflight-v1/m01-report/reference/.public-workspace/public.test.mjs"}}
+[stdout] {"type":"test:dequeue","data":{"nesting":0,"name":"report combines duplicate SKU and computes cents","type":"test","testId":2,"parentId":0,"tags":[],"line":12,"column":1,"file":"/home/hmli/code/mini-harness/benchmark/evidence/preflight-v1/m01-report/reference/.public-workspace/public.test.mjs"}}
+[stdout] {"type":"test:complete","data":{"name":"report combines duplicate SKU and computes cents","nesting":0,"testNumber":2,"testId":2,"parentId":0,"details":{"duration_ms":0.294575,"type":"test","passed":true},"tags":[],"line":12,"column":1,"file":"/home/hmli/code/mini-harness/benchmark/evidence/preflight-v1/m01-report/reference/.public-workspace/public.test.mjs"}}
+[stdout] {"type":"test:start","data":{"nesting":0,"name":"report combines duplicate SKU and computes cents","testId":2,"parentId":0,"tags":[],"line":12,"column":1,"file":"/home/hmli/code/mini-harness/benchmark/evidence/preflight-v1/m01-report/reference/.public-workspace/public.test.mjs"}}
+[stdout] {"type":"test:pass","data":{"name":"report combines duplicate SKU and computes cents","nesting":0,"testNumber":2,"testId":2,"parentId":0,"details":{"duration_ms":0.294575,"type":"test"},"tags":[],"line":12,"column":1,"file":"/home/hmli/code/mini-harness/benchmark/evidence/preflight-v1/m01-report/reference/.public-workspace/public.test.mjs"}}
+[stdout] {"type":"test:plan","data":{"nesting":0,"count":2}}
+[stdout] {"type":"test:diagnostic","data":{"nesting":0,"message":"tests 2","level":"info"}}
+[stdout] {"type":"test:diagnostic","data":{"nesting":0,"message":"suites 0","level":"info"}}
+[stdout] {"type":"test:diagnostic","data":{"nesting":0,"message":"pass 2","level":"info"}}
+{"type":"test:diagnostic","data":{"nesting":0,"message":"fail 0","level":"info"}}
+{"type":"test:diagnostic","data":{"nesting":0,"message":"cancelled 0","level":"info"}}
+[stdout] {"type":"test:diagnostic","data":{"nesting":0,"message":"skipped 0","level":"info"}}
+[stdout] {"type":"test:diagnostic","data":{"nesting":0,"message":"todo 0","level":"info"}}
+{"type":"test:diagnostic","data":{"nesting":0,"message":"duration_ms 7.489697","level":"info"}}
+[stdout] {"type":"test:summary","data":{"success":true,"counts":{"tests":2,"failed":0,"passed":2,"cancelled":0,"skipped":0,"todo":0,"topLevel":2,"suites":0},"duration_ms":7.489697}}
+
+[check-result] {"exitCode":0,"signal":null,"timedOut":false,"completed":true,"summary":{"success":true,"counts":{"tests":2,"passed":2,"failed":0,"cancelled":0,"skipped":0,"todo":0}},"durationMs":36.18626100000006}

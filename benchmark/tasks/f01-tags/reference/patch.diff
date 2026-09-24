@@ -1,0 +1,18 @@
+diff --git a/tags.mjs b/tags.mjs
+--- a/tags.mjs
++++ b/tags.mjs
+@@ -1,4 +1,13 @@
+ export function parseTags(input) {
+   if (typeof input !== 'string') throw new TypeError('tags must be a string');
+-  return input.split(',').map(part => part.trim());
++  const result = [];
++  const seen = new Set();
++  for (const part of input.split(',')) {
++    const tag = part.trim().replace(/\s+/gu, ' ').toLowerCase();
++    if (tag && !seen.has(tag)) {
++      seen.add(tag);
++      result.push(tag);
++    }
++  }
++  return result;
+ }

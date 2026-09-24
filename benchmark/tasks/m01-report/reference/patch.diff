@@ -1,0 +1,58 @@
+--- a/parser.mjs
++++ b/parser.mjs
+@@ -1,6 +1,19 @@
+ export function parseOrders(text) {
+-  return text.split('\n').filter(Boolean).map(line => {
+-    const [sku, quantity, unitPriceCents] = line.split(',');
+-    return { sku, quantity: Number(quantity), unitPriceCents: Number(unitPriceCents) };
+-  });
++  if (typeof text !== 'string') throw new TypeError('text must be a string');
++  const rows = [];
++  for (const line of text.split(/\r?\n/)) {
++    if (!line.trim()) continue;
++    const fields = line.split(',').map(field => field.trim());
++    if (fields.length !== 3 || !/^[A-Z][A-Z0-9-]*$/.test(fields[0])
++      || !/^[0-9]+$/.test(fields[1]) || !/^[0-9]+$/.test(fields[2])) {
++      throw new Error('invalid order row');
++    }
++    const quantity = Number(fields[1]);
++    const unitPriceCents = Number(fields[2]);
++    if (!Number.isSafeInteger(quantity) || !Number.isSafeInteger(unitPriceCents)) throw new RangeError('order field exceeds safe integer');
++    if (quantity === 0) throw new Error('quantity must be positive');
++    if (!Number.isSafeInteger(quantity * unitPriceCents)) throw new RangeError('row total exceeds safe integer');
++    rows.push({ sku: fields[0], quantity, unitPriceCents });
++  }
++  return rows;
+ }
+--- a/report.mjs
++++ b/report.mjs
+@@ -1,10 +1,24 @@
+ import { parseOrders } from './parser.mjs';
++
++function safeAdd(a, b) {
++  const sum = a + b;
++  if (!Number.isSafeInteger(sum)) throw new RangeError('report total exceeds safe integer');
++  return sum;
++}
+ 
+ export function buildReport(text) {
+   const rows = parseOrders(text);
+-  return {
+-    items: rows.map(row => ({ sku: row.sku, quantity: row.quantity, totalCents: row.unitPriceCents })),
+-    totalUnits: rows.length,
+-    totalCents: rows.reduce((sum, row) => sum + row.unitPriceCents, 0),
+-  };
++  const bySku = new Map();
++  let totalUnits = 0;
++  let totalCents = 0;
++  for (const row of rows) {
++    const cents = row.quantity * row.unitPriceCents;
++    const prior = bySku.get(row.sku) ?? { sku: row.sku, quantity: 0, totalCents: 0 };
++    prior.quantity = safeAdd(prior.quantity, row.quantity);
++    prior.totalCents = safeAdd(prior.totalCents, cents);
++    bySku.set(row.sku, prior);
++    totalUnits = safeAdd(totalUnits, row.quantity);
++    totalCents = safeAdd(totalCents, cents);
++  }
++  return { items: [...bySku.values()].sort((a, b) => a.sku < b.sku ? -1 : a.sku > b.sku ? 1 : 0), totalUnits, totalCents };
+ }

@@ -1,0 +1,18 @@
+--- a/pagination.mjs
++++ b/pagination.mjs
+@@ -1,8 +1,12 @@
+ export function paginate(items, page, pageSize) {
+-  const start = page * pageSize;
++  if (!Array.isArray(items)) throw new TypeError('items must be an array');
++  if (!Number.isSafeInteger(page) || page < 1) throw new RangeError('page must be a positive safe integer');
++  if (!Number.isSafeInteger(pageSize) || pageSize < 1) throw new RangeError('pageSize must be a positive safe integer');
++  const totalPages = Math.ceil(items.length / pageSize);
++  const start = (page - 1) * pageSize;
+   return {
+     items: items.slice(start, start + pageSize),
+-    totalPages: Math.floor(items.length / pageSize),
+-    nextPage: page + 1,
++    totalPages,
++    nextPage: page < totalPages ? page + 1 : null,
+   };
+ }

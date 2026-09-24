@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "m02-options",
+  "suite": "S",
+  "category": "multi-file",
+  "promptFile": "prompt.md",
+  "workspaceDir": "workspace",
+  "writable": [
+    "defaults.mjs",
+    "resolver.mjs",
+    "formatter.mjs"
+  ],
+  "publicTest": "public.test.mjs",
+  "acceptanceTest": "acceptance/acceptance.test.mjs",
+  "referencePatch": "reference/patch.diff",
+  "testTimeoutMs": 5000
+}

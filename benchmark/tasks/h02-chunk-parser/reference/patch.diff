@@ -1,0 +1,74 @@
+diff --git a/src/line.mjs b/src/line.mjs
+--- a/src/line.mjs
++++ b/src/line.mjs
+@@ -1,9 +1,14 @@
+ import { finishRecord } from './assembler.mjs';
++import { syntax } from './escape.mjs';
+ 
+ export function consumeLine(state, char) {
+-  if (char === '\r' || char === '\n') {
++  if (state.pendingCR) {
++    state.pendingCR = false;
++    if (char !== '\n') throw syntax('BARE_CR');
+     finishRecord(state);
+     return true;
+   }
++  if (char === '\r') { state.pendingCR = true; return true; }
++  if (char === '\n') { finishRecord(state); return true; }
+   return false;
+ }
+diff --git a/src/state.mjs b/src/state.mjs
+--- a/src/state.mjs
++++ b/src/state.mjs
+@@ -1,46 +1,50 @@
+ import { finishField, finishRecord, drainRows } from './assembler.mjs';
+ import { syntax } from './escape.mjs';
+ import { consumeLine } from './line.mjs';
+ 
+ export function createState() {
+   return { field: '', fields: [], rows: [], mode: 'plain', atFieldStart: true, pendingCR: false, touched: false };
+ }
+ 
+ export function feedChar(state, char) {
+   if (state.pendingCR) {
+     consumeLine(state, char);
+     return;
+   }
+   if (state.mode === 'quoted') {
+     if (char === '"') state.mode = 'afterQuote';
+     else state.field += char;
+     return;
+   }
+   if (state.mode === 'afterQuote') {
+-    if (char === '"') throw syntax('INVALID_QUOTE');
++    if (char === '"') {
++      state.field += '"';
++      state.mode = 'quoted';
++      return;
++    }
+     if (char === ',') { finishField(state); state.mode = 'plain'; state.touched = true; return; }
+     if (char === '\r' || char === '\n') {
+       finishField(state); state.mode = 'plain'; consumeLine(state, char); return;
+     }
+     throw syntax('INVALID_QUOTE');
+   }
+   if (char === ',') { finishField(state); state.touched = true; return; }
+   if (char === '\r' || char === '\n') { finishField(state); consumeLine(state, char); return; }
+   if (char === '"') {
+     if (!state.atFieldStart) throw syntax('INVALID_QUOTE');
+     state.mode = 'quoted'; state.touched = true; return;
+   }
+   state.field += char;
+   state.atFieldStart = false;
+   state.touched = true;
+ }
+ 
+ export function finishState(state) {
+   if (state.pendingCR) throw syntax('BARE_CR');
+   if (state.mode === 'quoted') throw syntax('UNTERMINATED_QUOTE');
+   if (state.touched || state.fields.length > 0 || state.field !== '') {
+     finishField(state);
+     finishRecord(state);
+   }
+   return drainRows(state);
+ }
