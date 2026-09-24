@@ -1,0 +1,102 @@
+[
+  {
+    "stem": "m01-report-optimizer-1",
+    "taskId": "m01-report",
+    "variant": "optimizer",
+    "repeat": 1,
+    "passed": false,
+    "termination": "completed",
+    "failedAcceptanceAssertions": [
+      {
+        "name": "overflow in row and aggregate is rejected",
+        "testId": 4,
+        "message": "Missing expected exception (RangeError).",
+        "code": "ERR_TEST_FAILURE"
+      }
+    ],
+    "sourceArtifact": "runs/2026-09-24T15-18-52-983Z-c2434904-189f-4143-891b-f516dc9b67e3/attempts/m01-report-optimizer-1/after.json",
+    "afterSourceExcerpts": [
+      {
+        "path": "parser.mjs",
+        "sha256": "d1e23799f64cc94162adb9bce1b2b8c06708e31d61171286b439d34b3637e515",
+        "content": "const SKU_PATTERN = /^[A-Z][A-Z0-9-]*$/;\nconst DIGITS_PATTERN = /^[0-9]+$/;\n\nfunction parseSafeInteger(field, label, { allowZero }) {\n  if (!DIGITS_PATTERN.test(field)) {\n    throw new Error(`Invalid ${label}: ${JSON.stringify(field)}`);\n  }\n  const value = Number(field);\n  if (!Number.isSafeInteger(value)) {\n    throw new RangeError(`${label} exceeds Number.MAX_SAFE_INTEGER`);\n  }\n  if (!allowZero && value === 0) {\n    throw new Error(`Invalid ${label}: must be positive`);\n  }\n  return value;\n}\n\nexport function parseOrders(text) {\n  if (typeof text !== 'string') {\n    throw new TypeError('text must be a string');\n  }\n\n  const orders = [];\n  const lines = text.split('\\n');\n\n  for (const rawLine of lines) {\n    const line = rawLine.replace(/\\r$/, '');\n    if (line.trim() === '') {\n      continue;\n    }\n\n    const fields = line.split(',');\n    if (fields.length !== 3) {\n      throw new Error(`Malformed row: ${JSON.stringify(line)}`);\n    }\n\n    const sku = fields[0].trim();\n    const quantityField = fields[1].trim();\n    const unitPriceField = fields[2].trim();\n\n    if (!SKU_PATTERN.test(sku)) {\n      throw new Error(`Invalid SKU: ${JSON.stringify(sku)}`);\n    }\n\n    const quantity = parseSafeInteger(quantityField, 'quantity', { allowZero: false });\n    const unitPriceCents = parseSafeInteger(unitPriceField, 'unitPriceCents', { allowZero: true });\n\n    orders.push({ sku, quantity, unitPriceCents });\n  }\n\n  return orders;\n}\n"
+      }
+    ],
+    "optimizerTracePath": "traces/selected/m01-report-optimizer-1.json"
+  },
+  {
+    "stem": "m01-report-full-1",
+    "taskId": "m01-report",
+    "variant": "full",
+    "repeat": 1,
+    "passed": false,
+    "termination": "completed",
+    "failedAcceptanceAssertions": [
+      {
+        "name": "overflow in row and aggregate is rejected",
+        "testId": 4,
+        "message": "Missing expected exception (RangeError).",
+        "code": "ERR_TEST_FAILURE"
+      }
+    ],
+    "sourceArtifact": "runs/2026-09-24T15-18-52-983Z-c2434904-189f-4143-891b-f516dc9b67e3/attempts/m01-report-full-1/after.json",
+    "afterSourceExcerpts": [
+      {
+        "path": "parser.mjs",
+        "sha256": "2bfc49b4df67ae06e6123c3a1d2e5a683e3a0bb1d7f4d255913c98c108915628",
+        "content": "const SKU_PATTERN = /^[A-Z][A-Z0-9-]*$/;\nconst DIGITS_PATTERN = /^[0-9]+$/;\n\nfunction parseSafeInteger(field, label, { positive }) {\n  if (!DIGITS_PATTERN.test(field)) {\n    throw new Error(`Invalid ${label}: ${JSON.stringify(field)}`);\n  }\n  const value = Number(field);\n  if (!Number.isSafeInteger(value)) {\n    throw new RangeError(`${label} exceeds Number.MAX_SAFE_INTEGER`);\n  }\n  if (positive && value <= 0) {\n    throw new Error(`Invalid ${label}: must be a positive integer`);\n  }\n  return value;\n}\n\nexport function parseOrders(text) {\n  if (typeof text !== 'string') {\n    throw new TypeError('parseOrders expects a string');\n  }\n\n  const orders = [];\n  const lines = text.split('\\n');\n\n  for (const rawLine of lines) {\n    const line = rawLine.endsWith('\\r') ? rawLine.slice(0, -1) : rawLine;\n    if (line.trim() === '') {\n      continue;\n    }\n\n    const fields = line.split(',');\n    if (fields.length !== 3) {\n      throw new Error(`Malformed row: ${JSON.stringify(line)}`);\n    }\n\n    const sku = fields[0].trim();\n    const quantityField = fields[1].trim();\n    const unitPriceField = fields[2].trim();\n\n    if (!SKU_PATTERN.test(sku)) {\n      throw new Error(`Invalid SKU: ${JSON.stringify(sku)}`);\n    }\n\n    const quantity = parseSafeInteger(quantityField, 'quantity', { positive: true });\n    const unitPriceCents = parseSafeInteger(unitPriceField, 'unitPriceCents', { positive: false });\n\n    orders.push({ sku, quantity, unitPriceCents });\n  }\n\n  return orders;\n}\n"
+      }
+    ],
+    "optimizerTracePath": "traces/selected/m01-report-full-1.json"
+  },
+  {
+    "stem": "m02-options-context-1",
+    "taskId": "m02-options",
+    "variant": "context",
+    "repeat": 1,
+    "passed": false,
+    "termination": "completed",
+    "failedAcceptanceAssertions": [
+      {
+        "name": "invalid overrides and values use specified errors",
+        "testId": 4,
+        "message": "The error is expected to be an instance of \"RangeError\". Received \"TypeError\"\n\nError message:\n\nprecision must be an integer",
+        "code": "ERR_TEST_FAILURE"
+      }
+    ],
+    "sourceArtifact": "runs/2026-09-24T15-18-52-983Z-c2434904-189f-4143-891b-f516dc9b67e3/attempts/m02-options-context-1/after.json",
+    "afterSourceExcerpts": [
+      {
+        "path": "resolver.mjs",
+        "sha256": "662b436624f390025a102a1893067f67596a4429d99e6bb8a02705e6be934aca",
+        "content": "import { DEFAULT_OPTIONS } from './defaults.mjs';\n\nconst ALLOWED_KEYS = ['precision', 'prefix', 'unitLabel'];\n\nexport function resolveOptions(overrides = undefined) {\n  if (overrides === undefined) {\n    return { ...DEFAULT_OPTIONS };\n  }\n\n  if (overrides === null || typeof overrides !== 'object' || Array.isArray(overrides)) {\n    throw new TypeError('overrides must be a plain object');\n  }\n\n  for (const key of Object.keys(overrides)) {\n    if (!ALLOWED_KEYS.includes(key)) {\n      throw new TypeError(`unknown option: ${key}`);\n    }\n  }\n\n  const resolved = { ...DEFAULT_OPTIONS };\n\n  if (Object.prototype.hasOwnProperty.call(overrides, 'precision')) {\n    const precision = overrides.precision;\n    if (typeof precision !== 'number' || !Number.isInteger(precision)) {\n      throw new TypeError('precision must be an integer');\n    }\n    if (precision < 0 || precision > 4) {\n      throw new RangeError('precision must be between 0 and 4');\n    }\n    resolved.precision = precision;\n  }\n\n  if (Object.prototype.hasOwnProperty.call(overrides, 'prefix')) {\n    if (typeof overrides.prefix !== 'string') {\n      throw new TypeError('prefix must be a string');\n    }\n    resolved.prefix = overrides.prefix;\n  }\n\n  if (Object.prototype.hasOwnProperty.call(overrides, 'unitLabel')) {\n    if (typeof overrides.unitLabel !== 'string') {\n      throw new TypeError('unitLabel must be a string');\n    }\n    resolved.unitLabel = overrides.unitLabel;\n  }\n\n  return resolved;\n}\n"
+      }
+    ],
+    "optimizerTracePath": "traces/selected/m02-options-context-1.json"
+  },
+  {
+    "stem": "m02-options-full-3",
+    "taskId": "m02-options",
+    "variant": "full",
+    "repeat": 3,
+    "passed": false,
+    "termination": "completed",
+    "failedAcceptanceAssertions": [
+      {
+        "name": "invalid overrides and values use specified errors",
+        "testId": 4,
+        "message": "The error is expected to be an instance of \"RangeError\". Received \"TypeError\"\n\nError message:\n\nprecision must be an integer",
+        "code": "ERR_TEST_FAILURE"
+      }
+    ],
+    "sourceArtifact": "runs/2026-09-24T15-18-52-983Z-c2434904-189f-4143-891b-f516dc9b67e3/attempts/m02-options-full-3/after.json",
+    "afterSourceExcerpts": [
+      {
+        "path": "resolver.mjs",
+        "sha256": "e10514d7ab7b5c66c1c04346016efc5b403e7a170b17d6d7246642e970dc72d3",
+        "content": "import { DEFAULT_OPTIONS } from './defaults.mjs';\n\nconst KNOWN_KEYS = ['precision', 'prefix', 'unitLabel'];\n\nexport function resolveOptions(overrides = {}) {\n  if (overrides === undefined) {\n    overrides = {};\n  }\n\n  if (overrides === null || typeof overrides !== 'object' || Array.isArray(overrides)) {\n    throw new TypeError('overrides must be a plain object');\n  }\n\n  for (const key of Object.keys(overrides)) {\n    if (!KNOWN_KEYS.includes(key)) {\n      throw new TypeError(`Unknown option: ${key}`);\n    }\n  }\n\n  const resolved = {\n    precision: DEFAULT_OPTIONS.precision,\n    prefix: DEFAULT_OPTIONS.prefix,\n    unitLabel: DEFAULT_OPTIONS.unitLabel,\n  };\n\n  if (Object.prototype.hasOwnProperty.call(overrides, 'precision')) {\n    const precision = overrides.precision;\n    if (typeof precision !== 'number' || !Number.isInteger(precision)) {\n      throw new TypeError('precision must be an integer');\n    }\n    if (precision < 0 || precision > 4) {\n      throw new RangeError('precision must be between 0 and 4');\n    }\n    resolved.precision = precision;\n  }\n\n  if (Object.prototype.hasOwnProperty.call(overrides, 'prefix')) {\n    const prefix = overrides.prefix;\n    if (typeof prefix !== 'string') {\n      throw new TypeError('prefix must be a string');\n    }\n    resolved.prefix = prefix;\n  }\n\n  if (Object.prototype.hasOwnProperty.call(overrides, 'unitLabel')) {\n    const unitLabel = overrides.unitLabel;\n    if (typeof unitLabel !== 'string') {\n      throw new TypeError('unitLabel must be a string');\n    }\n    resolved.unitLabel = unitLabel;\n  }\n\n  return resolved;\n}\n"
+      }
+    ],
+    "optimizerTracePath": "traces/selected/m02-options-full-3.json"
+  }
+]

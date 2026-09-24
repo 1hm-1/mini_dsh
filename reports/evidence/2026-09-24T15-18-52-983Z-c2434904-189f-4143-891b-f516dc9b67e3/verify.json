@@ -1,0 +1,51 @@
+{
+  "runId": "2026-09-24T15-18-52-983Z-c2434904-189f-4143-891b-f516dc9b67e3",
+  "phase": "ablation",
+  "provider": "http",
+  "sampleCount": 144,
+  "commands": [
+    {
+      "command": "node --env-file=.env --import tsx eval/cli.ts --config experiments/ablation-deepseek.json",
+      "exitCode": 0,
+      "result": "144 scheduled attempts completed and summary/report were written"
+    },
+    {
+      "command": "npm run eval:verify -- --run runs/2026-09-24T15-18-52-983Z-c2434904-189f-4143-891b-f516dc9b67e3",
+      "exitCode": 0,
+      "result": { "passed": true, "errors": [] }
+    },
+    {
+      "command": "node --import tsx reports/evidence/2026-09-24T15-18-52-983Z-c2434904-189f-4143-891b-f516dc9b67e3/metrics.mjs runs/2026-09-24T15-18-52-983Z-c2434904-189f-4143-891b-f516dc9b67e3 reports/evidence/2026-09-24T15-18-52-983Z-c2434904-189f-4143-891b-f516dc9b67e3/metrics",
+      "exitCode": 0,
+      "result": { "processed": 144, "missing": 0, "requests": 1065, "toolErrors": 47, "failures": 51, "compactions": 14, "optimizerOutputs": 72 }
+    },
+    {
+      "command": "node reports/evidence/2026-09-24T15-18-52-983Z-c2434904-189f-4143-891b-f516dc9b67e3/counter.mjs runs/2026-09-24T15-18-52-983Z-c2434904-189f-4143-891b-f516dc9b67e3 reports/evidence/2026-09-24T15-18-52-983Z-c2434904-189f-4143-891b-f516dc9b67e3/metrics",
+      "exitCode": 0,
+      "result": { "attempts": 144, "matchingDerived": true, "matchingOfficialSummary": true, "partitions": ["variant", "suite"] }
+    },
+    {
+      "command": "node reports/evidence/2026-09-24T15-18-52-983Z-c2434904-189f-4143-891b-f516dc9b67e3/build-evidence.mjs runs/2026-09-24T15-18-52-983Z-c2434904-189f-4143-891b-f516dc9b67e3 reports/evidence/2026-09-24T15-18-52-983Z-c2434904-189f-4143-891b-f516dc9b67e3",
+      "exitCode": 0,
+      "result": { "summaryRows": 12, "contrasts": 15, "taskRows": 12, "triggerAttempts": 11, "compactions": 14, "DSMLSummaries": 12, "optimizerOutputs": 72, "selectedTraces": 16 }
+    },
+    {
+      "command": "node reports/evidence/2026-09-24T15-18-52-983Z-c2434904-189f-4143-891b-f516dc9b67e3/extract-traces.mjs runs/2026-09-24T15-18-52-983Z-c2434904-189f-4143-891b-f516dc9b67e3 reports/evidence/2026-09-24T15-18-52-983Z-c2434904-189f-4143-891b-f516dc9b67e3",
+      "exitCode": 0,
+      "result": { "selectedTraces": 16, "extractedEvents": 166, "constraintCases": 4 }
+    },
+    {
+      "command": "node reports/evidence/2026-09-24T15-18-52-983Z-c2434904-189f-4143-891b-f516dc9b67e3/hash-index.mjs runs/2026-09-24T15-18-52-983Z-c2434904-189f-4143-891b-f516dc9b67e3 reports/evidence/2026-09-24T15-18-52-983Z-c2434904-189f-4143-891b-f516dc9b67e3 reports/ablation-report.md",
+      "exitCode": 0,
+      "result": { "rawRunFileCount": 1071, "evidenceFileCount": 191 }
+    }
+  ],
+  "review": {
+    "runSummaryComparedWithRawResults": true,
+    "metricsComparedWithAllAttemptResults": true,
+    "reviewNote": "The root reviewer independently reran the M9 extractor and counter, confirmed 157 generated metric files byte-identical, checked task/variant/repeat isolation in repeated calls, read-backs, and errors, and verified all 1,071 original-run file hashes."
+  },
+  "modelCallsDuringEvidenceWork": 0,
+  "secretScan": { "exitCode": 0, "scope": ["reports/ablation-report.md", "this evidence directory"],
+    "result": "no key/token patterns matched; scanner output did not include file contents" }
+}

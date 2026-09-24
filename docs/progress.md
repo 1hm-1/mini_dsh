@@ -1,6 +1,6 @@
 # 进度
 
-IMPLEMENTING。用户于2026-09-24授权开始开发，使用GPT-6 Sol（medium）子智能体实现，主智能体负责架构审阅与验收。M0.1、M0.2、M1.1、M1.2、M2.1、M2.2 DONE，M0/M1/M2完成；M3.1、M3.2、M3.3 DONE，M3完成；M4.1、M4.2、M4.3、M4.4 DONE，M4整体完成；M5.1、M5.2、M5.3、M5.4 DONE，M5整体完成；M6.1–M6.6 DONE：DeepSeek真实baseline 36次已完整运行、verify及九项分析验收通过，独立分析提交`93d075b80ce15616ca019f71153935b5d3ad51cb`；M7.1–M7.3 DONE（281项工程检查、两组mock及旧baseline verify通过）；M8.1–M8.3 DONE（307项工程检查、四组mock及旧baseline verify通过）；M9 NOT_STARTED。S8/H4题库保持benchmark-v1；真实baseline主成功23/36（S20/24、H3/12），尚无消融成绩。
+IMPLEMENTING。用户于2026-09-24授权开始开发，M0–M8使用GPT-6 Sol（medium）子智能体实现，M9按最新授权改为GPT-6 Luna high，主智能体负责架构审阅与验收。M0–M5 DONE；M6.1–M6.6 DONE：DeepSeek真实baseline诊断36次已完整运行、verify及九项分析验收通过，独立分析提交`93d075b80ce15616ca019f71153935b5d3ad51cb`；M7.1–M7.3 DONE；M8.1–M8.3 DONE；M9.1 DONE，M9.2/M9.3收尾中。S8/H4题库保持benchmark-v1；最终144次消融已完整重跑四组并verify通过，baseline/context/optimizer/full分别25/36、23/36、24/36、21/36。M6诊断23/36不混入最终主表。历史分阶段状态按当时记录保留，最新结论见本文末尾与[消融报告](../reports/ablation-report.md)。
 
 ## 本次规划修订
 
@@ -688,3 +688,48 @@ GPT-6 Sol medium子智能体分别负责runtime/eval接线与journal复算，另
 前置`git status --short`为空；analysis=`93d075b80ce15616ca019f71153935b5d3ad51cb`、C=`42427e9d5e6e11d37352ba19b3aa9b2dbcdc89ec`、O=`44116325d5a4398e0077f21b9c0db0c854cb5410`分别执行`git merge-base --is-ancestor <SHA> HEAD`均退出0。`npm run check > /tmp/mini-harness-m9-prerun-check.log 2>&1`退出0，typecheck及307项测试通过。新增实际配置experiments/ablation-deepseek.json，仅相对M6配置改变phase与variants；配置审阅提交后保持工作树干净运行，密钥通过Node --env-file加载，不写入配置或输出日志。
 
 本段记录开跑前固定协议，尚无M9成绩；M9.2/M9.3待前置实验完成并verify后推进。此前M8进度已推送远程main（`29a92515b85e6eb2b113e7f4eb8012901e349e20`），本次报告与最终提交另行记录。
+
+### M9.1：运行与复核完成（2026-09-24，DONE）
+
+配置解析、HARNESS_API_KEY布尔存在性检查及主审逐字段比较均退出0，仅phase/variants区别于M6。提交`6f779ba9712d88fafac76fd6c43df8dbb38e8442`固定配置与执行授权；干净工作树运行`node --import tsx benchmark/check-freeze.mjs`退出0，原题库hash/commit一致。
+
+GPT-6 Luna high执行唯一一次`node --env-file=.env --import tsx eval/cli.ts --config experiments/ablation-deepseek.json`，退出0，144/144；run=`2026-09-24T15-18-52-983Z-c2434904-189f-4143-891b-f516dc9b67e3`，HTTP/ablation、dirty=false，implementationCommit=上述配置提交。runner自带全12题preflight、完整报告及verify通过；另执行`npm run eval:verify -- --run runs/2026-09-24T15-18-52-983Z-c2434904-189f-4143-891b-f516dc9b67e3`退出0，passed=true/errors=[]。control stdout/stderr保留`runs/m9-control-20260924-01/`，stdout最终包含runId/provider/144，stderr为空。未修改运行期tracked文件、未自动重跑/挑选结果。
+
+主审直接核对manifest/summary/144个result与失败断言：baseline S21/24 H4/12 总25/36；context S20/24 H3/12 总23/36；optimizer S21/24 H3/12 总24/36；full S19/24 H2/12 总21/36。full相对baseline为-11.11百分点；所有1065次调用usage完整，总input=2801788/output=314343，14次压缩与72次optimizer计入共享额度；实际model/fingerprint均一致。此处仅记实际结果，归因和限制由M9.2报告审阅；M6原报告不修改。
+
+### M9.2：消融报告与证据审阅（2026-09-25，DONE）
+
+GPT-6 Luna high负责报告、离线提取与代表trace，主智能体独立复算并审阅。`reports/ablation-report.md`关联M6分析、C/O机制、M9实际运行提交及同一benchmark；S/H/总体三层分别给出四个因素对照与full-baseline，保留全部144次结果。原M6诊断独立列示，不混入最终主表。总体25/23/24/21成功，full比baseline低11.11百分点且token高17.5%；不宣称C/O改善能力，也不因负结果调参重跑。
+
+实际1065次请求=979 worker+72 optimizer+14 summary，usage全部完整，总3116131 token；11次attempt发生14次压缩，下一worker长度均下降，但12份摘要含DSML工具标记，不能等同语义保真或直接认定失败原因。51个严格失败（27 tool_limit、14 acceptance_test、9 model_error、1 request_limit）完整保留；9个model_error均为h02输出length，不是网络失败。m01公开溢出约束与m02异常类型仍有遗漏，报告按HYP-001/002/003分别解释结果及边界。
+
+证据目录为`reports/evidence/2026-09-24T15-18-52-983Z-c2434904-189f-4143-891b-f516dc9b67e3/`。派生脚本仅离线读取：`metrics.mjs`、`counter.mjs`、`build-evidence.mjs`、`extract-traces.mjs`的实际参数/退出码见该目录verify.json，均退出0。M9提取器将variant加入重复调用/回读/错误的身份分组，未修改旧M6脚本或材料。代表trace按记录的orderIndex/失败类型/机制触发规则及约束反例选取，保留原始事件与序号、快照节选；完整raw run仍本地保留并以SHA索引关联，未将完整工作区提交Git。
+
+| 主审实际检查 | 退出码 | 证据 |
+| --- | --- | --- |
+| `node --import tsx reports/evidence/<M9run>/metrics.mjs runs/<M9run> /tmp/mini-harness-m9-metrics-review` | 0 | 144 attempts、1065请求、47工具错误、51失败、14压缩、72 O输出 |
+| `node reports/evidence/<M9run>/counter.mjs runs/<M9run> /tmp/mini-harness-m9-metrics-review` | 0 | 分variant/suite核对原结果、派生JSON及官方summary一致 |
+| Python：比较独立生成目录及嵌套身份 | 0 | 157份metric文件逐字节一致；重复调用/回读/错误的taskId、variant、repeat无串组 |
+| Python：原始journal事件独立计数并与summary比较 | 0 | 四组请求种类、token、工具/错误、compactions一致；审计输出`/tmp/mini-harness-m9-main-audit.json` |
+| Python：本轮开始后保存的原始文件索引逐文件复核 | 0 | 1071份M9文件无新增/删除/大小或SHA变化；此前315份M6原始文件也已复核一致 |
+| Python：selected原始事件和constraint快照核对 | 0 | 16份trace所有选中事件逐seq与原journal一致，源journal SHA一致；约束源代码与after快照一致 |
+| Python：受保护路径diff、benchmark manifest、报告链接 | 0 | src/eval/题库/实验公平配置/M6报告证据不变；原manifest SHA一致；本地报告链接存在 |
+| Python：新增报告/证据凭据模式扫描；`git diff --check` | 0 | 无匹配、无密钥内容输出；无空白错误 |
+
+F03与最终S01–S03通过；E01–E07的工程覆盖由下项307项检查和真实verify共同核验。M9.3仅补交付文档/离线CI，不再调用模型。
+
+### M9.3：复现文档与离线CI（2026-09-25，验收中）
+
+GPT-6 Luna high负责根README与`.github/workflows/ci.yml`；主审运行同等本地命令。CI只安装依赖、执行工程检查、mock smoke/verify和题库预检/冻结检查，不读取provider凭据或启动付费实验。README区分已有报告的离线复核和新run的付费重跑，明确原始runs本地保留、Git提交报告/派生证据、负结果与研究局限。
+
+| 实际本地命令 | 退出码 | 结果 |
+| --- | --- | --- |
+| `npm ci --ignore-scripts --no-audit --no-fund` | 0 | lockfile安装6包，无依赖变更 |
+| `npm run check > /tmp/mini-harness-m9-final-check.log 2>&1` | 0 | typecheck与307项具名测试通过，0失败/跳过 |
+| `npm run eval:smoke -- --output runs/ci-smoke` | 0 | 2次mock完成；runId=`2026-09-24T16-03-53-208Z-5b74ce37-9a00-434d-bb49-3693edb22afa` |
+| `for run in runs/ci-smoke/*; do npm run eval:verify -- --run "$run" || exit; done` | 0 | 上述smoke passed=true/errors=[] |
+| `node --import tsx benchmark/preflight.mjs runs/ci-preflight` | 0 | 全12题初始验收失败、参考版本两类测试通过，原资产未改 |
+| 最终Python：原生trace与SHA索引逐条核对 | 0 | 16份trace/166事件、4份约束快照节选全部与原始证据一致；1071原文件+191证据文件+report共1263项hash一致 |
+| `node reports/evidence/<M9run>/hash-index.mjs runs/<M9run> reports/evidence/<M9run> reports/ablation-report.md` | 0 | 校正选择规则/节选说明后重建派生索引，未改raw run |
+
+提交后的干净工作树冻结检查与最终Git信息另行记录。此时仅本地等价CI命令通过，尚未宣称GitHub Actions远程运行通过。

@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  offline-checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out full history
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      - name: Typecheck and tests
+        run: npm run check
+
+      - name: Run fixed offline smoke
+        run: npm run eval:smoke -- --output runs/ci-smoke
+
+      - name: Verify every smoke run
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          runs=(runs/ci-smoke/*)
+          if (( ${#runs[@]} == 0 )); then
+            echo "No smoke run directories were produced" >&2
+            exit 1
+          fi
+          for run_dir in "${runs[@]}"; do
+            if [[ -d "$run_dir" ]]; then
+              npm run eval:verify -- --run "$run_dir"
+            fi
+          done
+
+      - name: Preflight all frozen benchmark tasks offline
+        run: node --import tsx benchmark/preflight.mjs runs/ci-preflight
+
+      - name: Verify frozen benchmark commit and assets
+        run: node --import tsx benchmark/check-freeze.mjs

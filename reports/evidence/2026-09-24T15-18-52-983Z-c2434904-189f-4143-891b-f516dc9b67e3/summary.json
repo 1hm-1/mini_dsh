@@ -1,0 +1,1359 @@
+{
+  "runId": "2026-09-24T15-18-52-983Z-c2434904-189f-4143-891b-f516dc9b67e3",
+  "sampleCount": 144,
+  "byVariant": {
+    "baseline": {
+      "S": {
+        "success": {
+          "passed": 21,
+          "count": 24,
+          "rate": 0.875
+        },
+        "requests": {
+          "total": 136,
+          "worker": 136,
+          "optimizer": 0,
+          "summary": 0
+        },
+        "tools": {
+          "calls": 152,
+          "errors": 1
+        },
+        "tokens": {
+          "input": {
+            "total": 229955,
+            "known": 229955,
+            "knownRequests": 136,
+            "dispatchedRequests": 136,
+            "completeness": 1
+          },
+          "output": {
+            "total": 32737,
+            "known": 32737,
+            "knownRequests": 136,
+            "dispatchedRequests": 136,
+            "completeness": 1
+          },
+          "combined": {
+            "total": 262692,
+            "known": 262692,
+            "knownRequests": 136,
+            "dispatchedRequests": 136,
+            "completeness": 1
+          },
+          "completeUsageRequests": 136
+        },
+        "latencyMs": {
+          "count": 24,
+          "mean": 6602.725871166673,
+          "median": 5908.266527499989,
+          "peak": 17986.421799000003
+        },
+        "publicCheckDurationMs": {
+          "count": 24,
+          "mean": 41.49916487499752,
+          "median": 40.697083500061126,
+          "peak": 58.74284000007901,
+          "knownCount": 24,
+          "unknownCount": 0,
+          "knownSum": 995.9799569999404,
+          "sum": 995.9799569999404
+        },
+        "acceptanceCheckDurationMs": {
+          "count": 24,
+          "mean": 44.183599749990854,
+          "median": 42.16627599997446,
+          "peak": 75.05128599982709,
+          "knownCount": 24,
+          "unknownCount": 0,
+          "knownSum": 1060.4063939997804,
+          "sum": 1060.4063939997804
+        },
+        "context": {
+          "workerRequests": 136,
+          "requestChars": {
+            "count": 136,
+            "mean": 6195.845588235294,
+            "median": 4537.5,
+            "peak": 24216
+          },
+          "estimatedInputTokens": {
+            "count": 136,
+            "mean": 1443.4632352941176,
+            "median": 1034,
+            "peak": 5880
+          },
+          "preCompressionEstimatedTokens": {
+            "count": 136,
+            "mean": 1443.4632352941176,
+            "median": 1034,
+            "peak": 5880
+          },
+          "olderRounds": {
+            "count": 136,
+            "mean": 0.35294117647058826,
+            "median": 0,
+            "peak": 6
+          },
+          "thresholdRequests": 0,
+          "eligibleCompactionRequests": 0
+        },
+        "compactions": 0,
+        "termination": {
+          "completed": 24
+        },
+        "failureReason": {
+          "acceptance_test": 3
+        },
+        "actualModels": [
+          "deepseek-flash"
+        ],
+        "fingerprints": [
+          "aeb56401ca74e127821c4f9126dcb669"
+        ]
+      },
+      "H": {
+        "success": {
+          "passed": 4,
+          "count": 12,
+          "rate": 0.3333333333333333
+        },
+        "requests": {
+          "total": 102,
+          "worker": 102,
+          "optimizer": 0,
+          "summary": 0
+        },
+        "tools": {
+          "calls": 259,
+          "errors": 8
+        },
+        "tokens": {
+          "input": {
+            "total": 422869,
+            "known": 422869,
+            "knownRequests": 102,
+            "dispatchedRequests": 102,
+            "completeness": 1
+          },
+          "output": {
+            "total": 41993,
+            "known": 41993,
+            "knownRequests": 102,
+            "dispatchedRequests": 102,
+            "completeness": 1
+          },
+          "combined": {
+            "total": 464862,
+            "known": 464862,
+            "knownRequests": 102,
+            "dispatchedRequests": 102,
+            "completeness": 1
+          },
+          "completeUsageRequests": 102
+        },
+        "latencyMs": {
+          "count": 12,
+          "mean": 14435.389475583355,
+          "median": 14955.248673500028,
+          "peak": 25764.909203000017
+        },
+        "publicCheckDurationMs": {
+          "count": 12,
+          "mean": 49.62459025001832,
+          "median": 46.2120415000536,
+          "peak": 71.26439899997786,
+          "knownCount": 12,
+          "unknownCount": 0,
+          "knownSum": 595.4950830002199,
+          "sum": 595.4950830002199
+        },
+        "acceptanceCheckDurationMs": {
+          "count": 12,
+          "mean": 48.094693333337396,
+          "median": 46.08802500000456,
+          "peak": 68.25113399978727,
+          "knownCount": 12,
+          "unknownCount": 0,
+          "knownSum": 577.1363200000487,
+          "sum": 577.1363200000487
+        },
+        "context": {
+          "workerRequests": 102,
+          "requestChars": {
+            "count": 102,
+            "mean": 16019.676470588236,
+            "median": 16151,
+            "peak": 41655
+          },
+          "estimatedInputTokens": {
+            "count": 102,
+            "mean": 3811.294117647059,
+            "median": 3810.5,
+            "peak": 10130
+          },
+          "preCompressionEstimatedTokens": {
+            "count": 102,
+            "mean": 3811.294117647059,
+            "median": 3810.5,
+            "peak": 10130
+          },
+          "olderRounds": {
+            "count": 102,
+            "mean": 1.5196078431372548,
+            "median": 0,
+            "peak": 8
+          },
+          "thresholdRequests": 14,
+          "eligibleCompactionRequests": 12
+        },
+        "compactions": 0,
+        "termination": {
+          "completed": 4,
+          "model_error": 2,
+          "tool_limit": 6
+        },
+        "failureReason": {
+          "model_error": 2,
+          "tool_limit": 6
+        },
+        "actualModels": [
+          "deepseek-flash"
+        ],
+        "fingerprints": [
+          "aeb56401ca74e127821c4f9126dcb669"
+        ]
+      },
+      "overall": {
+        "success": {
+          "passed": 25,
+          "count": 36,
+          "rate": 0.6944444444444444
+        },
+        "requests": {
+          "total": 238,
+          "worker": 238,
+          "optimizer": 0,
+          "summary": 0
+        },
+        "tools": {
+          "calls": 411,
+          "errors": 9
+        },
+        "tokens": {
+          "input": {
+            "total": 652824,
+            "known": 652824,
+            "knownRequests": 238,
+            "dispatchedRequests": 238,
+            "completeness": 1
+          },
+          "output": {
+            "total": 74730,
+            "known": 74730,
+            "knownRequests": 238,
+            "dispatchedRequests": 238,
+            "completeness": 1
+          },
+          "combined": {
+            "total": 727554,
+            "known": 727554,
+            "knownRequests": 238,
+            "dispatchedRequests": 238,
+            "completeness": 1
+          },
+          "completeUsageRequests": 238
+        },
+        "latencyMs": {
+          "count": 36,
+          "mean": 9213.613739305567,
+          "median": 7746.168843000021,
+          "peak": 25764.909203000017
+        },
+        "publicCheckDurationMs": {
+          "count": 36,
+          "mean": 44.20764000000445,
+          "median": 42.08544699999038,
+          "peak": 71.26439899997786,
+          "knownCount": 36,
+          "unknownCount": 0,
+          "knownSum": 1591.4750400001603,
+          "sum": 1591.4750400001603
+        },
+        "acceptanceCheckDurationMs": {
+          "count": 36,
+          "mean": 45.487297611106364,
+          "median": 44.29584749996866,
+          "peak": 75.05128599982709,
+          "knownCount": 36,
+          "unknownCount": 0,
+          "knownSum": 1637.5427139998292,
+          "sum": 1637.5427139998292
+        },
+        "context": {
+          "workerRequests": 238,
+          "requestChars": {
+            "count": 238,
+            "mean": 10406.058823529413,
+            "median": 6274,
+            "peak": 41655
+          },
+          "estimatedInputTokens": {
+            "count": 238,
+            "mean": 2458.247899159664,
+            "median": 1437,
+            "peak": 10130
+          },
+          "preCompressionEstimatedTokens": {
+            "count": 238,
+            "mean": 2458.247899159664,
+            "median": 1437,
+            "peak": 10130
+          },
+          "olderRounds": {
+            "count": 238,
+            "mean": 0.8529411764705882,
+            "median": 0,
+            "peak": 8
+          },
+          "thresholdRequests": 14,
+          "eligibleCompactionRequests": 12
+        },
+        "compactions": 0,
+        "termination": {
+          "completed": 28,
+          "model_error": 2,
+          "tool_limit": 6
+        },
+        "failureReason": {
+          "acceptance_test": 3,
+          "model_error": 2,
+          "tool_limit": 6
+        },
+        "actualModels": [
+          "deepseek-flash"
+        ],
+        "fingerprints": [
+          "aeb56401ca74e127821c4f9126dcb669"
+        ]
+      }
+    },
+    "context": {
+      "S": {
+        "success": {
+          "passed": 20,
+          "count": 24,
+          "rate": 0.8333333333333334
+        },
+        "requests": {
+          "total": 140,
+          "worker": 140,
+          "optimizer": 0,
+          "summary": 0
+        },
+        "tools": {
+          "calls": 158,
+          "errors": 2
+        },
+        "tokens": {
+          "input": {
+            "total": 248937,
+            "known": 248937,
+            "knownRequests": 140,
+            "dispatchedRequests": 140,
+            "completeness": 1
+          },
+          "output": {
+            "total": 32641,
+            "known": 32641,
+            "knownRequests": 140,
+            "dispatchedRequests": 140,
+            "completeness": 1
+          },
+          "combined": {
+            "total": 281578,
+            "known": 281578,
+            "knownRequests": 140,
+            "dispatchedRequests": 140,
+            "completeness": 1
+          },
+          "completeUsageRequests": 140
+        },
+        "latencyMs": {
+          "count": 24,
+          "mean": 6725.29107325002,
+          "median": 5211.36848450001,
+          "peak": 15140.788113000104
+        },
+        "publicCheckDurationMs": {
+          "count": 24,
+          "mean": 41.446198291682016,
+          "median": 39.61628149996977,
+          "peak": 53.18241499993019,
+          "knownCount": 24,
+          "unknownCount": 0,
+          "knownSum": 994.7087590003684,
+          "sum": 994.7087590003684
+        },
+        "acceptanceCheckDurationMs": {
+          "count": 24,
+          "mean": 45.66049287499701,
+          "median": 42.21498350001639,
+          "peak": 71.11650000000373,
+          "knownCount": 24,
+          "unknownCount": 0,
+          "knownSum": 1095.8518289999283,
+          "sum": 1095.8518289999283
+        },
+        "context": {
+          "workerRequests": 140,
+          "requestChars": {
+            "count": 140,
+            "mean": 6495.142857142857,
+            "median": 4795.5,
+            "peak": 21949
+          },
+          "estimatedInputTokens": {
+            "count": 140,
+            "mean": 1515.9,
+            "median": 1092,
+            "peak": 5323
+          },
+          "preCompressionEstimatedTokens": {
+            "count": 140,
+            "mean": 1515.9,
+            "median": 1092,
+            "peak": 5323
+          },
+          "olderRounds": {
+            "count": 140,
+            "mean": 0.42142857142857143,
+            "median": 0,
+            "peak": 5
+          },
+          "thresholdRequests": 0,
+          "eligibleCompactionRequests": 0
+        },
+        "compactions": 0,
+        "termination": {
+          "completed": 24
+        },
+        "failureReason": {
+          "acceptance_test": 4
+        },
+        "actualModels": [
+          "deepseek-flash"
+        ],
+        "fingerprints": [
+          "aeb56401ca74e127821c4f9126dcb669"
+        ]
+      },
+      "H": {
+        "success": {
+          "passed": 3,
+          "count": 12,
+          "rate": 0.25
+        },
+        "requests": {
+          "total": 98,
+          "worker": 93,
+          "optimizer": 0,
+          "summary": 5
+        },
+        "tools": {
+          "calls": 261,
+          "errors": 7
+        },
+        "tokens": {
+          "input": {
+            "total": 356541,
+            "known": 356541,
+            "knownRequests": 98,
+            "dispatchedRequests": 98,
+            "completeness": 1
+          },
+          "output": {
+            "total": 38577,
+            "known": 38577,
+            "knownRequests": 98,
+            "dispatchedRequests": 98,
+            "completeness": 1
+          },
+          "combined": {
+            "total": 395118,
+            "known": 395118,
+            "knownRequests": 98,
+            "dispatchedRequests": 98,
+            "completeness": 1
+          },
+          "completeUsageRequests": 98
+        },
+        "latencyMs": {
+          "count": 12,
+          "mean": 13558.979815916655,
+          "median": 13684.226814000052,
+          "peak": 22577.5652999999
+        },
+        "publicCheckDurationMs": {
+          "count": 12,
+          "mean": 44.10257475000011,
+          "median": 43.292883999994956,
+          "peak": 57.44727400015108,
+          "knownCount": 12,
+          "unknownCount": 0,
+          "knownSum": 529.2308970000013,
+          "sum": 529.2308970000013
+        },
+        "acceptanceCheckDurationMs": {
+          "count": 12,
+          "mean": 50.43722949998968,
+          "median": 48.73007749993121,
+          "peak": 71.3330540000461,
+          "knownCount": 12,
+          "unknownCount": 0,
+          "knownSum": 605.2467539998761,
+          "sum": 605.2467539998761
+        },
+        "context": {
+          "workerRequests": 93,
+          "requestChars": {
+            "count": 93,
+            "mean": 14358.129032258064,
+            "median": 15325,
+            "peak": 31984
+          },
+          "estimatedInputTokens": {
+            "count": 93,
+            "mean": 3410.2473118279568,
+            "median": 3629,
+            "peak": 7783
+          },
+          "preCompressionEstimatedTokens": {
+            "count": 93,
+            "mean": 3530.2043010752686,
+            "median": 3768,
+            "peak": 7897
+          },
+          "olderRounds": {
+            "count": 93,
+            "mean": 1.086021505376344,
+            "median": 0,
+            "peak": 6
+          },
+          "thresholdRequests": 7,
+          "eligibleCompactionRequests": 5
+        },
+        "compactions": 5,
+        "termination": {
+          "completed": 3,
+          "model_error": 2,
+          "tool_limit": 7
+        },
+        "failureReason": {
+          "model_error": 2,
+          "tool_limit": 7
+        },
+        "actualModels": [
+          "deepseek-flash"
+        ],
+        "fingerprints": [
+          "aeb56401ca74e127821c4f9126dcb669"
+        ]
+      },
+      "overall": {
+        "success": {
+          "passed": 23,
+          "count": 36,
+          "rate": 0.6388888888888888
+        },
+        "requests": {
+          "total": 238,
+          "worker": 233,
+          "optimizer": 0,
+          "summary": 5
+        },
+        "tools": {
+          "calls": 419,
+          "errors": 9
+        },
+        "tokens": {
+          "input": {
+            "total": 605478,
+            "known": 605478,
+            "knownRequests": 238,
+            "dispatchedRequests": 238,
+            "completeness": 1
+          },
+          "output": {
+            "total": 71218,
+            "known": 71218,
+            "knownRequests": 238,
+            "dispatchedRequests": 238,
+            "completeness": 1
+          },
+          "combined": {
+            "total": 676696,
+            "known": 676696,
+            "knownRequests": 238,
+            "dispatchedRequests": 238,
+            "completeness": 1
+          },
+          "completeUsageRequests": 238
+        },
+        "latencyMs": {
+          "count": 36,
+          "mean": 9003.187320805566,
+          "median": 7490.594328999927,
+          "peak": 22577.5652999999
+        },
+        "publicCheckDurationMs": {
+          "count": 36,
+          "mean": 42.33165711112138,
+          "median": 40.94544099998893,
+          "peak": 57.44727400015108,
+          "knownCount": 36,
+          "unknownCount": 0,
+          "knownSum": 1523.9396560003697,
+          "sum": 1523.9396560003697
+        },
+        "acceptanceCheckDurationMs": {
+          "count": 36,
+          "mean": 47.25273841666123,
+          "median": 46.43389250000473,
+          "peak": 71.3330540000461,
+          "knownCount": 36,
+          "unknownCount": 0,
+          "knownSum": 1701.0985829998044,
+          "sum": 1701.0985829998044
+        },
+        "context": {
+          "workerRequests": 233,
+          "requestChars": {
+            "count": 233,
+            "mean": 9633.587982832618,
+            "median": 6290,
+            "peak": 31984
+          },
+          "estimatedInputTokens": {
+            "count": 233,
+            "mean": 2272.012875536481,
+            "median": 1493,
+            "peak": 7783
+          },
+          "preCompressionEstimatedTokens": {
+            "count": 233,
+            "mean": 2319.892703862661,
+            "median": 1493,
+            "peak": 7897
+          },
+          "olderRounds": {
+            "count": 233,
+            "mean": 0.6866952789699571,
+            "median": 0,
+            "peak": 6
+          },
+          "thresholdRequests": 7,
+          "eligibleCompactionRequests": 5
+        },
+        "compactions": 5,
+        "termination": {
+          "completed": 27,
+          "model_error": 2,
+          "tool_limit": 7
+        },
+        "failureReason": {
+          "acceptance_test": 4,
+          "model_error": 2,
+          "tool_limit": 7
+        },
+        "actualModels": [
+          "deepseek-flash"
+        ],
+        "fingerprints": [
+          "aeb56401ca74e127821c4f9126dcb669"
+        ]
+      }
+    },
+    "optimizer": {
+      "S": {
+        "success": {
+          "passed": 21,
+          "count": 24,
+          "rate": 0.875
+        },
+        "requests": {
+          "total": 164,
+          "worker": 140,
+          "optimizer": 24,
+          "summary": 0
+        },
+        "tools": {
+          "calls": 163,
+          "errors": 7
+        },
+        "tokens": {
+          "input": {
+            "total": 313048,
+            "known": 313048,
+            "knownRequests": 164,
+            "dispatchedRequests": 164,
+            "completeness": 1
+          },
+          "output": {
+            "total": 40064,
+            "known": 40064,
+            "knownRequests": 164,
+            "dispatchedRequests": 164,
+            "completeness": 1
+          },
+          "combined": {
+            "total": 353112,
+            "known": 353112,
+            "knownRequests": 164,
+            "dispatchedRequests": 164,
+            "completeness": 1
+          },
+          "completeUsageRequests": 164
+        },
+        "latencyMs": {
+          "count": 24,
+          "mean": 7948.235948999992,
+          "median": 5405.300648500037,
+          "peak": 24692.551880000043
+        },
+        "publicCheckDurationMs": {
+          "count": 24,
+          "mean": 41.261748875000116,
+          "median": 39.784836499980884,
+          "peak": 59.9266799998004,
+          "knownCount": 24,
+          "unknownCount": 0,
+          "knownSum": 990.2819730000028,
+          "sum": 990.2819730000028
+        },
+        "acceptanceCheckDurationMs": {
+          "count": 24,
+          "mean": 43.38358212497193,
+          "median": 41.63499849994696,
+          "peak": 56.77840799999831,
+          "knownCount": 24,
+          "unknownCount": 0,
+          "knownSum": 1041.2059709993264,
+          "sum": 1041.2059709993264
+        },
+        "context": {
+          "workerRequests": 140,
+          "requestChars": {
+            "count": 140,
+            "mean": 8207.107142857143,
+            "median": 5732,
+            "peak": 32700
+          },
+          "estimatedInputTokens": {
+            "count": 140,
+            "mean": 1941.2142857142858,
+            "median": 1328,
+            "peak": 7981
+          },
+          "preCompressionEstimatedTokens": {
+            "count": 140,
+            "mean": 1941.2142857142858,
+            "median": 1328,
+            "peak": 7981
+          },
+          "olderRounds": {
+            "count": 140,
+            "mean": 0.5857142857142857,
+            "median": 0,
+            "peak": 7
+          },
+          "thresholdRequests": 4,
+          "eligibleCompactionRequests": 4
+        },
+        "compactions": 0,
+        "termination": {
+          "completed": 24
+        },
+        "failureReason": {
+          "acceptance_test": 3
+        },
+        "actualModels": [
+          "deepseek-flash"
+        ],
+        "fingerprints": [
+          "aeb56401ca74e127821c4f9126dcb669"
+        ]
+      },
+      "H": {
+        "success": {
+          "passed": 3,
+          "count": 12,
+          "rate": 0.25
+        },
+        "requests": {
+          "total": 120,
+          "worker": 108,
+          "optimizer": 12,
+          "summary": 0
+        },
+        "tools": {
+          "calls": 247,
+          "errors": 10
+        },
+        "tokens": {
+          "input": {
+            "total": 457315,
+            "known": 457315,
+            "knownRequests": 120,
+            "dispatchedRequests": 120,
+            "completeness": 1
+          },
+          "output": {
+            "total": 46556,
+            "known": 46556,
+            "knownRequests": 120,
+            "dispatchedRequests": 120,
+            "completeness": 1
+          },
+          "combined": {
+            "total": 503871,
+            "known": 503871,
+            "knownRequests": 120,
+            "dispatchedRequests": 120,
+            "completeness": 1
+          },
+          "completeUsageRequests": 120
+        },
+        "latencyMs": {
+          "count": 12,
+          "mean": 16471.209577916667,
+          "median": 17956.488688500045,
+          "peak": 24324.835911000002
+        },
+        "publicCheckDurationMs": {
+          "count": 12,
+          "mean": 48.672003916670896,
+          "median": 46.581129000056535,
+          "peak": 71.0238820000086,
+          "knownCount": 12,
+          "unknownCount": 0,
+          "knownSum": 584.0640470000508,
+          "sum": 584.0640470000508
+        },
+        "acceptanceCheckDurationMs": {
+          "count": 12,
+          "mean": 49.54294866667866,
+          "median": 47.37926599997445,
+          "peak": 73.33227499999339,
+          "knownCount": 12,
+          "unknownCount": 0,
+          "knownSum": 594.515384000144,
+          "sum": 594.515384000144
+        },
+        "context": {
+          "workerRequests": 108,
+          "requestChars": {
+            "count": 108,
+            "mean": 16320.87037037037,
+            "median": 15642.5,
+            "peak": 38991
+          },
+          "estimatedInputTokens": {
+            "count": 108,
+            "mean": 3893.472222222222,
+            "median": 3708,
+            "peak": 9448
+          },
+          "preCompressionEstimatedTokens": {
+            "count": 108,
+            "mean": 3893.472222222222,
+            "median": 3708,
+            "peak": 9448
+          },
+          "olderRounds": {
+            "count": 108,
+            "mean": 1.8796296296296295,
+            "median": 0,
+            "peak": 10
+          },
+          "thresholdRequests": 15,
+          "eligibleCompactionRequests": 15
+        },
+        "compactions": 0,
+        "termination": {
+          "completed": 3,
+          "model_error": 3,
+          "tool_limit": 6
+        },
+        "failureReason": {
+          "model_error": 3,
+          "tool_limit": 6
+        },
+        "actualModels": [
+          "deepseek-flash"
+        ],
+        "fingerprints": [
+          "aeb56401ca74e127821c4f9126dcb669"
+        ]
+      },
+      "overall": {
+        "success": {
+          "passed": 24,
+          "count": 36,
+          "rate": 0.6666666666666666
+        },
+        "requests": {
+          "total": 284,
+          "worker": 248,
+          "optimizer": 36,
+          "summary": 0
+        },
+        "tools": {
+          "calls": 410,
+          "errors": 17
+        },
+        "tokens": {
+          "input": {
+            "total": 770363,
+            "known": 770363,
+            "knownRequests": 284,
+            "dispatchedRequests": 284,
+            "completeness": 1
+          },
+          "output": {
+            "total": 86620,
+            "known": 86620,
+            "knownRequests": 284,
+            "dispatchedRequests": 284,
+            "completeness": 1
+          },
+          "combined": {
+            "total": 856983,
+            "known": 856983,
+            "knownRequests": 284,
+            "dispatchedRequests": 284,
+            "completeness": 1
+          },
+          "completeUsageRequests": 284
+        },
+        "latencyMs": {
+          "count": 36,
+          "mean": 10789.227158638885,
+          "median": 9082.14412100002,
+          "peak": 24692.551880000043
+        },
+        "publicCheckDurationMs": {
+          "count": 36,
+          "mean": 43.73183388889038,
+          "median": 41.004008999996586,
+          "peak": 71.0238820000086,
+          "knownCount": 36,
+          "unknownCount": 0,
+          "knownSum": 1574.3460200000536,
+          "sum": 1574.3460200000536
+        },
+        "acceptanceCheckDurationMs": {
+          "count": 36,
+          "mean": 45.43670430554084,
+          "median": 44.23656299995855,
+          "peak": 73.33227499999339,
+          "knownCount": 36,
+          "unknownCount": 0,
+          "knownSum": 1635.7213549994703,
+          "sum": 1635.7213549994703
+        },
+        "context": {
+          "workerRequests": 248,
+          "requestChars": {
+            "count": 248,
+            "mean": 11740.520161290322,
+            "median": 8809.5,
+            "peak": 38991
+          },
+          "estimatedInputTokens": {
+            "count": 248,
+            "mean": 2791.391129032258,
+            "median": 2082,
+            "peak": 9448
+          },
+          "preCompressionEstimatedTokens": {
+            "count": 248,
+            "mean": 2791.391129032258,
+            "median": 2082,
+            "peak": 9448
+          },
+          "olderRounds": {
+            "count": 248,
+            "mean": 1.1491935483870968,
+            "median": 0,
+            "peak": 10
+          },
+          "thresholdRequests": 19,
+          "eligibleCompactionRequests": 19
+        },
+        "compactions": 0,
+        "termination": {
+          "completed": 27,
+          "model_error": 3,
+          "tool_limit": 6
+        },
+        "failureReason": {
+          "acceptance_test": 3,
+          "model_error": 3,
+          "tool_limit": 6
+        },
+        "actualModels": [
+          "deepseek-flash"
+        ],
+        "fingerprints": [
+          "aeb56401ca74e127821c4f9126dcb669"
+        ]
+      }
+    },
+    "full": {
+      "S": {
+        "success": {
+          "passed": 19,
+          "count": 24,
+          "rate": 0.7916666666666666
+        },
+        "requests": {
+          "total": 177,
+          "worker": 151,
+          "optimizer": 24,
+          "summary": 2
+        },
+        "tools": {
+          "calls": 172,
+          "errors": 10
+        },
+        "tokens": {
+          "input": {
+            "total": 351413,
+            "known": 351413,
+            "knownRequests": 177,
+            "dispatchedRequests": 177,
+            "completeness": 1
+          },
+          "output": {
+            "total": 41393,
+            "known": 41393,
+            "knownRequests": 177,
+            "dispatchedRequests": 177,
+            "completeness": 1
+          },
+          "combined": {
+            "total": 392806,
+            "known": 392806,
+            "knownRequests": 177,
+            "dispatchedRequests": 177,
+            "completeness": 1
+          },
+          "completeUsageRequests": 177
+        },
+        "latencyMs": {
+          "count": 24,
+          "mean": 8309.787981041669,
+          "median": 5736.315516999981,
+          "peak": 20488.34044499992
+        },
+        "publicCheckDurationMs": {
+          "count": 24,
+          "mean": 42.73411466667236,
+          "median": 38.366262499990626,
+          "peak": 88.54095799988136,
+          "knownCount": 24,
+          "unknownCount": 0,
+          "knownSum": 1025.6187520001367,
+          "sum": 1025.6187520001367
+        },
+        "acceptanceCheckDurationMs": {
+          "count": 24,
+          "mean": 41.79864866667003,
+          "median": 40.234682999967845,
+          "peak": 62.87961499998346,
+          "knownCount": 24,
+          "unknownCount": 0,
+          "knownSum": 1003.1675680000808,
+          "sum": 1003.1675680000808
+        },
+        "context": {
+          "workerRequests": 151,
+          "requestChars": {
+            "count": 151,
+            "mean": 8396.423841059603,
+            "median": 6171,
+            "peak": 24417
+          },
+          "estimatedInputTokens": {
+            "count": 151,
+            "mean": 1986.291390728477,
+            "median": 1433,
+            "peak": 5921
+          },
+          "preCompressionEstimatedTokens": {
+            "count": 151,
+            "mean": 2026.9602649006622,
+            "median": 1433,
+            "peak": 6680
+          },
+          "olderRounds": {
+            "count": 151,
+            "mean": 0.7483443708609272,
+            "median": 0,
+            "peak": 8
+          },
+          "thresholdRequests": 2,
+          "eligibleCompactionRequests": 2
+        },
+        "compactions": 2,
+        "termination": {
+          "completed": 23,
+          "request_limit": 1
+        },
+        "failureReason": {
+          "acceptance_test": 4,
+          "request_limit": 1
+        },
+        "actualModels": [
+          "deepseek-flash"
+        ],
+        "fingerprints": [
+          "aeb56401ca74e127821c4f9126dcb669"
+        ]
+      },
+      "H": {
+        "success": {
+          "passed": 2,
+          "count": 12,
+          "rate": 0.16666666666666666
+        },
+        "requests": {
+          "total": 128,
+          "worker": 109,
+          "optimizer": 12,
+          "summary": 7
+        },
+        "tools": {
+          "calls": 257,
+          "errors": 2
+        },
+        "tokens": {
+          "input": {
+            "total": 421710,
+            "known": 421710,
+            "knownRequests": 128,
+            "dispatchedRequests": 128,
+            "completeness": 1
+          },
+          "output": {
+            "total": 40382,
+            "known": 40382,
+            "knownRequests": 128,
+            "dispatchedRequests": 128,
+            "completeness": 1
+          },
+          "combined": {
+            "total": 462092,
+            "known": 462092,
+            "knownRequests": 128,
+            "dispatchedRequests": 128,
+            "completeness": 1
+          },
+          "completeUsageRequests": 128
+        },
+        "latencyMs": {
+          "count": 12,
+          "mean": 15309.927889416655,
+          "median": 15282.464970500034,
+          "peak": 30078.750238000008
+        },
+        "publicCheckDurationMs": {
+          "count": 12,
+          "mean": 42.846452000036756,
+          "median": 42.54534650006099,
+          "peak": 48.22487600008026,
+          "knownCount": 12,
+          "unknownCount": 0,
+          "knownSum": 514.1574240004411,
+          "sum": 514.1574240004411
+        },
+        "acceptanceCheckDurationMs": {
+          "count": 12,
+          "mean": 51.44018108333694,
+          "median": 48.12559150002198,
+          "peak": 72.210715000052,
+          "knownCount": 12,
+          "unknownCount": 0,
+          "knownSum": 617.2821730000433,
+          "sum": 617.2821730000433
+        },
+        "context": {
+          "workerRequests": 109,
+          "requestChars": {
+            "count": 109,
+            "mean": 14084.11009174312,
+            "median": 14787,
+            "peak": 25626
+          },
+          "estimatedInputTokens": {
+            "count": 109,
+            "mean": 3350.853211009174,
+            "median": 3486,
+            "peak": 6122
+          },
+          "preCompressionEstimatedTokens": {
+            "count": 109,
+            "mean": 3514.1743119266057,
+            "median": 3545,
+            "peak": 7705
+          },
+          "olderRounds": {
+            "count": 109,
+            "mean": 1.3577981651376148,
+            "median": 0,
+            "peak": 7
+          },
+          "thresholdRequests": 7,
+          "eligibleCompactionRequests": 7
+        },
+        "compactions": 7,
+        "termination": {
+          "completed": 2,
+          "model_error": 2,
+          "tool_limit": 8
+        },
+        "failureReason": {
+          "model_error": 2,
+          "tool_limit": 8
+        },
+        "actualModels": [
+          "deepseek-flash"
+        ],
+        "fingerprints": [
+          "aeb56401ca74e127821c4f9126dcb669"
+        ]
+      },
+      "overall": {
+        "success": {
+          "passed": 21,
+          "count": 36,
+          "rate": 0.5833333333333334
+        },
+        "requests": {
+          "total": 305,
+          "worker": 260,
+          "optimizer": 36,
+          "summary": 9
+        },
+        "tools": {
+          "calls": 429,
+          "errors": 12
+        },
+        "tokens": {
+          "input": {
+            "total": 773123,
+            "known": 773123,
+            "knownRequests": 305,
+            "dispatchedRequests": 305,
+            "completeness": 1
+          },
+          "output": {
+            "total": 81775,
+            "known": 81775,
+            "knownRequests": 305,
+            "dispatchedRequests": 305,
+            "completeness": 1
+          },
+          "combined": {
+            "total": 854898,
+            "known": 854898,
+            "knownRequests": 305,
+            "dispatchedRequests": 305,
+            "completeness": 1
+          },
+          "completeUsageRequests": 305
+        },
+        "latencyMs": {
+          "count": 36,
+          "mean": 10643.167950499997,
+          "median": 9698.399168499993,
+          "peak": 30078.750238000008
+        },
+        "publicCheckDurationMs": {
+          "count": 36,
+          "mean": 42.7715604444605,
+          "median": 41.34982949998812,
+          "peak": 88.54095799988136,
+          "knownCount": 36,
+          "unknownCount": 0,
+          "knownSum": 1539.7761760005778,
+          "sum": 1539.7761760005778
+        },
+        "acceptanceCheckDurationMs": {
+          "count": 36,
+          "mean": 45.012492805559,
+          "median": 42.7656324999989,
+          "peak": 72.210715000052,
+          "knownCount": 36,
+          "unknownCount": 0,
+          "knownSum": 1620.449741000124,
+          "sum": 1620.449741000124
+        },
+        "context": {
+          "workerRequests": 260,
+          "requestChars": {
+            "count": 260,
+            "mean": 10780.876923076923,
+            "median": 9579,
+            "peak": 25626
+          },
+          "estimatedInputTokens": {
+            "count": 260,
+            "mean": 2558.357692307692,
+            "median": 2281,
+            "peak": 6122
+          },
+          "preCompressionEstimatedTokens": {
+            "count": 260,
+            "mean": 2650.4461538461537,
+            "median": 2281,
+            "peak": 7705
+          },
+          "olderRounds": {
+            "count": 260,
+            "mean": 1.0038461538461538,
+            "median": 0,
+            "peak": 8
+          },
+          "thresholdRequests": 9,
+          "eligibleCompactionRequests": 9
+        },
+        "compactions": 9,
+        "termination": {
+          "completed": 25,
+          "model_error": 2,
+          "request_limit": 1,
+          "tool_limit": 8
+        },
+        "failureReason": {
+          "acceptance_test": 4,
+          "model_error": 2,
+          "request_limit": 1,
+          "tool_limit": 8
+        },
+        "actualModels": [
+          "deepseek-flash"
+        ],
+        "fingerprints": [
+          "aeb56401ca74e127821c4f9126dcb669"
+        ]
+      }
+    }
+  },
+  "fullMinusBaselinePercentagePoints": {
+    "S": -8.333333333333337,
+    "H": -16.666666666666664,
+    "overall": -11.111111111111105
+  }
+}

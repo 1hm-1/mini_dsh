@@ -1,0 +1,12 @@
+{
+  "outputs": 72,
+  "dispatched": 72,
+  "withText": 72,
+  "responseErrors": 0,
+  "byVariant": {
+    "baseline": 0,
+    "context": 0,
+    "optimizer": 36,
+    "full": 36
+  }
+}

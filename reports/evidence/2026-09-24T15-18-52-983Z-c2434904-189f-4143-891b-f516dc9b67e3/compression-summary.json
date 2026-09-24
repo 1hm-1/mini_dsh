@@ -1,0 +1,32 @@
+{
+  "totalCompactions": 14,
+  "triggerAttempts": 11,
+  "withDSMLCalls": 12,
+  "withoutDSMLCalls": 2,
+  "byVariant": {
+    "baseline": {
+      "attempts": 0,
+      "compactions": 0,
+      "withDSMLCalls": 0
+    },
+    "context": {
+      "attempts": 4,
+      "compactions": 5,
+      "withDSMLCalls": 4
+    },
+    "optimizer": {
+      "attempts": 0,
+      "compactions": 0,
+      "withDSMLCalls": 0
+    },
+    "full": {
+      "attempts": 7,
+      "compactions": 9,
+      "withDSMLCalls": 8
+    }
+  },
+  "reductions": {
+    "minimum": 60,
+    "maximum": 3440
+  }
+}

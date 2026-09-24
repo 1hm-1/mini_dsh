@@ -1,0 +1,266 @@
+{
+  "rule": "Select the earliest orderIndex for each strict failureReason; first realized C compaction in context and full; first O output in optimizer and full; earliest orderIndex for m01/m02 in each variant; every full request_limit; every full h03 failure; m02 full repeat 3 as the constraint/advice counterexample. Deduplicate attempt files while preserving every reason.",
+  "count": 16,
+  "selected": [
+    {
+      "stem": "b01-normalize-optimizer-1",
+      "taskId": "b01-normalize",
+      "suite": "S",
+      "variant": "optimizer",
+      "repeat": 1,
+      "orderIndex": 2,
+      "passed": true,
+      "failureReason": null,
+      "termination": "completed",
+      "journalPath": "attempts/b01-normalize-optimizer-1/journal.jsonl",
+      "attemptJson": "metrics/attempts/b01-normalize-optimizer-1.json",
+      "reasons": [
+        "first-optimizer-output:optimizer"
+      ]
+    },
+    {
+      "stem": "b01-normalize-full-1",
+      "taskId": "b01-normalize",
+      "suite": "S",
+      "variant": "full",
+      "repeat": 1,
+      "orderIndex": 3,
+      "passed": true,
+      "failureReason": null,
+      "termination": "completed",
+      "journalPath": "attempts/b01-normalize-full-1/journal.jsonl",
+      "attemptJson": "metrics/attempts/b01-normalize-full-1.json",
+      "reasons": [
+        "first-optimizer-output:full"
+      ]
+    },
+    {
+      "stem": "b03-config-full-1",
+      "taskId": "b03-config",
+      "suite": "S",
+      "variant": "full",
+      "repeat": 1,
+      "orderIndex": 9,
+      "passed": false,
+      "failureReason": "request_limit",
+      "termination": "request_limit",
+      "journalPath": "attempts/b03-config-full-1/journal.jsonl",
+      "attemptJson": "metrics/attempts/b03-config-full-1.json",
+      "reasons": [
+        "earliest-failure:request_limit",
+        "first-context-compaction:full",
+        "first-full-context-compaction",
+        "full-request-limit"
+      ]
+    },
+    {
+      "stem": "h01-config-pipeline-optimizer-1",
+      "taskId": "h01-config-pipeline",
+      "suite": "H",
+      "variant": "optimizer",
+      "repeat": 1,
+      "orderIndex": 24,
+      "passed": false,
+      "failureReason": "tool_limit",
+      "termination": "tool_limit",
+      "journalPath": "attempts/h01-config-pipeline-optimizer-1/journal.jsonl",
+      "attemptJson": "metrics/attempts/h01-config-pipeline-optimizer-1.json",
+      "reasons": [
+        "earliest-failure:tool_limit"
+      ]
+    },
+    {
+      "stem": "h01-config-pipeline-context-1",
+      "taskId": "h01-config-pipeline",
+      "suite": "H",
+      "variant": "context",
+      "repeat": 1,
+      "orderIndex": 27,
+      "passed": false,
+      "failureReason": "tool_limit",
+      "termination": "tool_limit",
+      "journalPath": "attempts/h01-config-pipeline-context-1/journal.jsonl",
+      "attemptJson": "metrics/attempts/h01-config-pipeline-context-1.json",
+      "reasons": [
+        "first-context-compaction:context"
+      ]
+    },
+    {
+      "stem": "h02-chunk-parser-baseline-1",
+      "taskId": "h02-chunk-parser",
+      "suite": "H",
+      "variant": "baseline",
+      "repeat": 1,
+      "orderIndex": 29,
+      "passed": false,
+      "failureReason": "model_error",
+      "termination": "model_error",
+      "journalPath": "attempts/h02-chunk-parser-baseline-1/journal.jsonl",
+      "attemptJson": "metrics/attempts/h02-chunk-parser-baseline-1.json",
+      "reasons": [
+        "earliest-failure:model_error"
+      ]
+    },
+    {
+      "stem": "h03-module-navigation-full-1",
+      "taskId": "h03-module-navigation",
+      "suite": "H",
+      "variant": "full",
+      "repeat": 1,
+      "orderIndex": 35,
+      "passed": false,
+      "failureReason": "tool_limit",
+      "termination": "tool_limit",
+      "journalPath": "attempts/h03-module-navigation-full-1/journal.jsonl",
+      "attemptJson": "metrics/attempts/h03-module-navigation-full-1.json",
+      "reasons": [
+        "full-h03-failure"
+      ]
+    },
+    {
+      "stem": "m01-report-optimizer-1",
+      "taskId": "m01-report",
+      "suite": "S",
+      "variant": "optimizer",
+      "repeat": 1,
+      "orderIndex": 40,
+      "passed": false,
+      "failureReason": "acceptance_test",
+      "termination": "completed",
+      "journalPath": "attempts/m01-report-optimizer-1/journal.jsonl",
+      "attemptJson": "metrics/attempts/m01-report-optimizer-1.json",
+      "reasons": [
+        "earliest-failure:acceptance_test",
+        "earliest-m01-report-optimizer"
+      ]
+    },
+    {
+      "stem": "m01-report-full-1",
+      "taskId": "m01-report",
+      "suite": "S",
+      "variant": "full",
+      "repeat": 1,
+      "orderIndex": 41,
+      "passed": false,
+      "failureReason": "acceptance_test",
+      "termination": "completed",
+      "journalPath": "attempts/m01-report-full-1/journal.jsonl",
+      "attemptJson": "metrics/attempts/m01-report-full-1.json",
+      "reasons": [
+        "earliest-m01-report-full"
+      ]
+    },
+    {
+      "stem": "m01-report-baseline-1",
+      "taskId": "m01-report",
+      "suite": "S",
+      "variant": "baseline",
+      "repeat": 1,
+      "orderIndex": 42,
+      "passed": false,
+      "failureReason": "acceptance_test",
+      "termination": "completed",
+      "journalPath": "attempts/m01-report-baseline-1/journal.jsonl",
+      "attemptJson": "metrics/attempts/m01-report-baseline-1.json",
+      "reasons": [
+        "earliest-m01-report-baseline"
+      ]
+    },
+    {
+      "stem": "m01-report-context-1",
+      "taskId": "m01-report",
+      "suite": "S",
+      "variant": "context",
+      "repeat": 1,
+      "orderIndex": 43,
+      "passed": false,
+      "failureReason": "acceptance_test",
+      "termination": "completed",
+      "journalPath": "attempts/m01-report-context-1/journal.jsonl",
+      "attemptJson": "metrics/attempts/m01-report-context-1.json",
+      "reasons": [
+        "earliest-m01-report-context"
+      ]
+    },
+    {
+      "stem": "m02-options-full-1",
+      "taskId": "m02-options",
+      "suite": "S",
+      "variant": "full",
+      "repeat": 1,
+      "orderIndex": 44,
+      "passed": true,
+      "failureReason": null,
+      "termination": "completed",
+      "journalPath": "attempts/m02-options-full-1/journal.jsonl",
+      "attemptJson": "metrics/attempts/m02-options-full-1.json",
+      "reasons": [
+        "earliest-m02-options-full"
+      ]
+    },
+    {
+      "stem": "m02-options-baseline-1",
+      "taskId": "m02-options",
+      "suite": "S",
+      "variant": "baseline",
+      "repeat": 1,
+      "orderIndex": 45,
+      "passed": true,
+      "failureReason": null,
+      "termination": "completed",
+      "journalPath": "attempts/m02-options-baseline-1/journal.jsonl",
+      "attemptJson": "metrics/attempts/m02-options-baseline-1.json",
+      "reasons": [
+        "earliest-m02-options-baseline"
+      ]
+    },
+    {
+      "stem": "m02-options-context-1",
+      "taskId": "m02-options",
+      "suite": "S",
+      "variant": "context",
+      "repeat": 1,
+      "orderIndex": 46,
+      "passed": false,
+      "failureReason": "acceptance_test",
+      "termination": "completed",
+      "journalPath": "attempts/m02-options-context-1/journal.jsonl",
+      "attemptJson": "metrics/attempts/m02-options-context-1.json",
+      "reasons": [
+        "earliest-m02-options-context"
+      ]
+    },
+    {
+      "stem": "m02-options-optimizer-1",
+      "taskId": "m02-options",
+      "suite": "S",
+      "variant": "optimizer",
+      "repeat": 1,
+      "orderIndex": 47,
+      "passed": true,
+      "failureReason": null,
+      "termination": "completed",
+      "journalPath": "attempts/m02-options-optimizer-1/journal.jsonl",
+      "attemptJson": "metrics/attempts/m02-options-optimizer-1.json",
+      "reasons": [
+        "earliest-m02-options-optimizer"
+      ]
+    },
+    {
+      "stem": "m02-options-full-3",
+      "taskId": "m02-options",
+      "suite": "S",
+      "variant": "full",
+      "repeat": 3,
+      "orderIndex": 142,
+      "passed": false,
+      "failureReason": "acceptance_test",
+      "termination": "completed",
+      "journalPath": "attempts/m02-options-full-3/journal.jsonl",
+      "attemptJson": "metrics/attempts/m02-options-full-3.json",
+      "reasons": [
+        "m02-full-r3-O-mentions-RangeError-but-after-source-still-throws-TypeError"
+      ]
+    }
+  ]
+}
