@@ -105,6 +105,10 @@ Accounting由每个runtime独立创建，接收Budget及可选运行取消信号
 
 HTTP使用配置中的完整endpoint，不自动追加路径。首版支持非流式Chat Completions的文本/function tools子集：model、temperature、stream=false、n=1、max_completion_tokens、messages与tools。assistant.calls映射tool_calls，tool.callId映射tool_call_id；usage的prompt_tokens/completion_tokens映射内部输入/输出token。字段参考[官方Chat Completions接口](https://developers.openai.com/api/reference/cli/resources/chat/subresources/completions/methods/create)。不声称兼容所有provider或模型参数组合；真实provider在M6运行前验证，不自动改参数或重试。
 
+M6前补齐DeepSeek官方端点协议：配置仍为endpoint/id/temperature，不增加provider框架或新的公共配置字段。仅匹配`https://api.deepseek.com`官方origin及`/chat/completions`或`/v1/chat/completions`路径（允许普通查询参数），发送`max_tokens`而非`max_completion_tokens`、不发送`n`，并固定`thinking: { type: 'disabled' }`；messages/tools及usage映射不变。依据：[DeepSeek输出参数](https://api-docs.deepseek.com/quick_start/agent_integrations/oh_my_pi/)、[默认思考模式及工具消息要求](https://api-docs.deepseek.com/guides/thinking_mode/)。当前不支持思考模式的reasoning_content历史回传；不把推理内容静默混入普通baseline。通用端点维持原协议，模型名称相似或相似域名不触发适配。
+
+协议选择在共享模型计量层编码body时完成；HTTP插件直接发送该body，保证requestChars、请求日志、硬输入上限与实际请求一致。eval的journal核验按相同端点选择规则校验额度字段和非思考设置，拒绝混用额度字段、缺少或启用thinking的DeepSeek证据。不能在发送阶段临时改body而绕过计量。
+
 HTTP插件setup读取HARNESS_API_KEY并保存，不写入请求日志；不自动跟随重定向或重试。响应必须是单个assistant choice，call ID非空且唯一，stop与tool_calls须匹配是否含调用。length/其他结束原因是model_error。普通HTTP/解析异常不回显供应商错误正文；可验证usage即使响应结构非法也保留。结构非法时response为null，不保留未验证的content/finish；合法length/other响应保留规范化内容和finish供诊断。缺失用量按输入/输出分别记null，known计数继续累计。
 
 新增事件数据：

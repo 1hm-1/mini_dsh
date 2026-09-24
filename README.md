@@ -37,6 +37,16 @@ npm run check
 
 提供`typecheck`、`test`和组合检查`check`；离线工程检查不需要API Key。HTTP模型通过环境变量`HARNESS_API_KEY`读取凭据，变量名见[环境示例](.env.example)，不要将真实密钥提交到Git。受限环境若只显示测试文件名而无具名用例，须排查子进程限制，不据此认定测试通过。
 
+DeepSeek使用[本次baseline配置](experiments/baseline-deepseek.json)：完整endpoint为`https://api.deepseek.com/chat/completions`，model为`deepseek-flash`。官方端点使用`max_tokens`并显式设置`thinking: { type: 'disabled' }`，沿用非思考模式的文本/工具消息结构；其他端点继续使用原有协议。此选择在请求日志中可核对，后续四组必须一致。参数依据：[输出额度字段](https://api-docs.deepseek.com/quick_start/agent_integrations/oh_my_pi/)、[思考模式](https://api-docs.deepseek.com/guides/thinking_mode/)。当前只完成离线协议验证，实际服务可用性尚未实测。
+
+如果Key保存在根目录`.env`，应用本身不自动加载，使用Node的`--env-file`加载。取得该次付费实验授权且配置/实现已提交、Git工作树干净后，正式M6命令为：
+
+```sh
+node --env-file=.env --import tsx eval/cli.ts --config experiments/baseline-deepseek.json
+```
+
+这条命令执行12题×3次真实baseline，会产生API费用；配置和Key就绪不等于已经运行或授权该矩阵。
+
 单次执行使用[配置模板](specs/config.example.json)填写真实model/endpoint、workspace、精确可写文件列表和sessionPath，并在环境中设置HARNESS_API_KEY；CLI不自动加载.env：
 
 ```sh

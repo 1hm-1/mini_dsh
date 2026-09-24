@@ -21,14 +21,26 @@ export function extractChatUsage(value: unknown): ModelResponse['usage'] {
   return { inputTokens: valid(data.prompt_tokens), outputTokens: valid(data.completion_tokens) };
 }
 
+/** Only the official DeepSeek Chat Completions routes select its wire format. */
+export function isDeepSeekChatEndpoint(endpoint?: string): boolean {
+  if (typeof endpoint !== 'string') return false;
+  try {
+    const url = new URL(endpoint);
+    return url.origin === 'https://api.deepseek.com'
+      && (url.pathname === '/chat/completions' || url.pathname === '/v1/chat/completions');
+  } catch { return false; }
+}
+
 /** Encode the exact body sent to a chat/completions endpoint. */
-export function encodeChatRequest(model: { id: string; temperature: number }, request: ModelRequest): string {
+export function encodeChatRequest(model: { id: string; temperature: number; endpoint?: string }, request: ModelRequest): string {
+  const deepSeek = isDeepSeekChatEndpoint(model.endpoint);
   return JSON.stringify({
     model: model.id,
     temperature: model.temperature,
     stream: false,
-    n: 1,
-    max_completion_tokens: request.maxOutputTokens,
+    ...(deepSeek
+      ? { max_tokens: request.maxOutputTokens, thinking: { type: 'disabled' } }
+      : { n: 1, max_completion_tokens: request.maxOutputTokens }),
     messages: [
       { role: 'system', content: request.system },
       ...request.messages.map(message => {

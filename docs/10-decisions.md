@@ -16,6 +16,7 @@
 | ADR-010 | M6 baseline诊断与M9最终对照分开 | 最终同一版本重新跑四组，不拼不同时期主表 |
 | ADR-011 | 失败/长度/终止原因在M3/M4就记录 | 从真实journal分析，不凭总token猜上下文或遗忘 |
 | ADR-012 | 框架、题库、baseline证据、机制、消融分别报告完成度 | mock不可替代真实baseline门槛，缺凭据则停依赖部分 |
+| ADR-013 | DeepSeek官方端点使用max_tokens并固定非思考模式 | M6前基础协议适配；保持配置字段、预算和Loop，四组沿用同一协议；不实现reasoning_content回传 |
 
 ## 规模
 
@@ -23,7 +24,7 @@
 
 ## 题库冻结的含义
 
-M5实际资产和preflight完成后提交benchmark-v1，记录SHA及taskHash。当前只有规格，所以现在没有这个提交。冻结后任务修正使用v2并重新先跑baseline，保留v1结果；不能只换掉不利题。
+M5实际资产和preflight已完成，benchmark-v1提交及taskHash见progress的M5记录。冻结后任务修正使用v2并重新先跑baseline，保留v1结果；不能只换掉不利题。
 
 增加H场景是为检验能力提供对象，不承诺必然更难或触发C。M6如果全成功/没有压力，也如实记录。可以对“机制有效”假设标unsupported/inconclusive后实现通用能力并测试，不能伪称已有改进证据。
 

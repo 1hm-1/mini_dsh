@@ -1,6 +1,6 @@
 # 进度
 
-IMPLEMENTING。用户于2026-09-24授权开始开发，使用GPT-6 Sol（medium）子智能体实现，主智能体负责架构审阅与验收。M0.1、M0.2、M1.1、M1.2、M2.1、M2.2 DONE，M0/M1/M2完成；M3.1、M3.2、M3.3 DONE，M3完成；M4.1、M4.2、M4.3、M4.4 DONE，M4整体完成；M5.1、M5.2、M5.3、M5.4 DONE，M5整体完成；M6以后工单NOT_STARTED。S8/H4共12题已完成实际资产、预检及benchmark-v1本地Git冻结；尚无真实baseline报告或消融成绩。
+IMPLEMENTING。用户于2026-09-24授权开始开发，使用GPT-6 Sol（medium）子智能体实现，主智能体负责架构审阅与验收。M0.1、M0.2、M1.1、M1.2、M2.1、M2.2 DONE，M0/M1/M2完成；M3.1、M3.2、M3.3 DONE，M3完成；M4.1、M4.2、M4.3、M4.4 DONE，M4整体完成；M5.1、M5.2、M5.3、M5.4 DONE，M5整体完成；M6实验配置与DeepSeek离线协议适配已就绪，付费实验待授权；M7及以后NOT_STARTED。S8/H4共12题已完成实际资产、预检及benchmark-v1本地Git冻结；尚无真实baseline报告或消融成绩。
 
 ## 本次规划修订
 
@@ -513,3 +513,27 @@ H01/H02各12个workspace文件；H03/H04各14个。无关模块有实际职责�
 B01/B02/B03与E07的M5验收通过；E07的错suite、任务字节变化、脏工作区拒绝也由本次249项工程检查中的既有边界测试覆盖。全程未改变src/eval实现、variants、模型提示、预算或上下文窗口。冻结后用独立文档提交记录上述真实SHA；没有amend冻结提交或原地改题。
 
 M5整体DONE。下一步为M6真实baseline（默认12题×3次=36 attempts）；需要provider endpoint、model ID、环境变量HARNESS_API_KEY及付费实验授权后才启动。未读取密钥、未调用真实provider、未产生真实分数或baselineAnalysisCommit，M7/M8保持未开始。远程仓库地址仅在用户要求推送时需要。
+
+
+### M6前置工程：DeepSeek协议适配（2026-09-24，DONE；真实实验待授权）
+
+用户已创建 `experiments/baseline-deepseek.json` 并确认本地 `.env` Key可加载。初始 `git status --short` 仅显示该实验配置未跟踪；保留其全部原字节。主智能体解析并比较模板：仅model改变，endpoint=`https://api.deepseek.com/chat/completions`、id=`deepseek-flash`、temperature=0；12题×3次=36 attempts，预算与上下文设置不变。此轮没有加载/读取 `.env`、输出密钥或调用真实provider。
+
+按先前提供的非思考模式接入方案完成基础协议修复：GPT-6 Sol（medium）先写4项回归测试观察失败，再修改 `src/model-protocol.ts` 和 `eval/journal-metrics.ts`；主智能体审阅并独立增加 `tests/deepseek-http.test.ts`。不新增公共配置字段/依赖/插件框架，不修改Agent策略、C/O或冻结题库。
+
+官方endpoint匹配限定HTTPS origin `https://api.deepseek.com`及`/chat/completions`、`/v1/chat/completions`路径。该协议发送 `max_tokens` 和显式 `thinking: {type: 'disabled'}`，不发送n/max_completion_tokens；其他端点继续旧协议。共享计量层先编码再记录/发送，HTTP插件不改body。verify按端点独立检查请求字段、额度和思考模式，拒绝混用额度字段、启用/漏记thinking、额外reasoning_effort。既有普通端点的日志仍可核验。该选择已记录ADR-013，后续四组必须一致；当前不支持reasoning_content回传。
+
+依据：[DeepSeek API参数](https://api-docs.deepseek.com/api/create-chat-completion/)、[输出额度兼容说明](https://api-docs.deepseek.com/quick_start/agent_integrations/oh_my_pi/)。官方协议说明不等于真实服务已验证；Key、余额、实际模型可用性及线上兼容性仍未通过本项目调用确认。
+
+| 实际命令/操作 | 退出码 | 结果与证据 |
+| --- | --- | --- |
+| Node内联脚本 `parseEvalConfig` + 与模板除model外逐字段比较 | 0 | 用户配置合法，计划36 attempts；没有载入Key或发送请求 |
+| `node --import tsx --test tests/deepseek-protocol.test.ts`（子智能体先写测试） | 1 | 实现前4项失败，暴露字段/verify不兼容 |
+| 同上（实现后） | 0 | 4/4通过，含精确端点、工具消息、日志/发送一致与协议篡改拒绝 |
+| `npm run typecheck` / `npm test`（子智能体首轮） | 各0 | strict检查与253项测试通过 |
+| `node --import tsx --test tests/deepseek-http.test.ts`（主智能体独立验收） | 0 | 全程拦截fetch、仅临时假Key；真实HTTP插件完成读→改→final，3次请求/2次工具，wire body与日志/长度一致，usage复算和verify计量一致，Key不落日志 |
+| Node内联脚本对 `benchmark/evidence/extension-v2/index.json` 的两个历史mock运行执行verify | 0 | 两份旧报告保持通过，未修改或重跑历史产物 |
+| `npm run check > /tmp/mini-harness-deepseek-check.log 2>&1`（主智能体最终） | 0 | TypeScript检查与254项具名测试全部通过，0失败/跳过 |
+| `git diff --check` | 0 | 当前已跟踪修改无空白错误；提交前再含新增文件核对 |
+
+文档已提供显式Node `--env-file=.env`的正式命令；应用本身仍不自动加载.env。实现与用户实验配置将独立提交，便于M6按干净Git实现版本运行。没有真实baseline run、分数、分析报告或baselineAnalysisCommit；本项DONE不表示M6完成。执行真实36次矩阵仍需用户明确付费授权。

@@ -1,6 +1,7 @@
 import { isDeepStrictEqual } from 'node:util';
 import { parseRunConfig } from '../src/config.js';
 import type { JournalRead } from '../src/journal.js';
+import { isDeepSeekChatEndpoint } from '../src/model-protocol.js';
 import type { ContextObservationData, RequestData, ResponseData } from '../src/model-events.js';
 import type { ToolEndData } from '../src/tool-events.js';
 import type { Message, ModelRequestKind, ModelResponse, RunConfig, RunResult } from '../src/types.js';
@@ -112,9 +113,16 @@ export function inspectJournal(journal: JournalRead, config: RunConfig): Journal
       equal(data.requestChars, data.body.length, 'requestChars');
       equal(body.model, settings.model.id, 'model');
       equal(body.temperature, settings.model.temperature, 'temperature');
-      equal(body.max_completion_tokens, settings.budget.maxOutputTokens, 'maxOutputTokens');
+      if (isDeepSeekChatEndpoint(settings.model.endpoint)) {
+        equal(Object.keys(body).sort(), ['model', 'temperature', 'stream', 'max_tokens', 'thinking', 'messages', 'tools'].sort(), 'DeepSeek protocol fields');
+        equal(body.max_tokens, settings.budget.maxOutputTokens, 'DeepSeek max_tokens');
+        equal(body.thinking, { type: 'disabled' }, 'DeepSeek thinking');
+      } else {
+        equal(Object.keys(body).sort(), ['model', 'temperature', 'stream', 'n', 'max_completion_tokens', 'messages', 'tools'].sort(), 'generic protocol fields');
+        equal(body.max_completion_tokens, settings.budget.maxOutputTokens, 'maxOutputTokens');
+        equal(body.n, 1, 'n');
+      }
       equal(body.stream, false, 'stream');
-      equal(body.n, 1, 'n');
       const messages = body.messages;
       if (!Array.isArray(messages) || !Array.isArray(body.tools) || !messages.length) throw new Error('journal metrics: request body messages/tools invalid');
       const system = object(messages[0], 'system message');
