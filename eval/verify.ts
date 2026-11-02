@@ -230,7 +230,7 @@ export async function inspectRun(runDir: string): Promise<{ manifest: EvalManife
         equal(raw.failureReason, score.failureReason, 'attempt: failure reason mismatch');
         await ordinary(paths.journal, 'file');
         const journal = await readJournal(paths.journal);
-        equal(journal.events[0]?.data, { input: task.prompt }, 'journal: task input mismatch');
+        equal((journal.events[0]?.data as { input: string }).input, task.prompt, 'journal: task input mismatch');
         const measured = inspectJournal(journal, config);
         equal(measured.result, agent, 'journal: result mismatch');
         metrics.push(measured);

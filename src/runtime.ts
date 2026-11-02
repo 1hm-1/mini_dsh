@@ -58,7 +58,7 @@ export async function createRuntime(config: unknown, options: RuntimeOptions = {
     await context.use(contextManagerPlugin({ context: parsed.context, enabled: flags.context,
       maxOutputTokens: parsed.budget.maxOutputTokens }));
     if (flags.optimizer) await context.use(promptOptimizerPlugin({ maxOutputTokens: parsed.budget.maxOutputTokens }));
-    await context.use(agentLoopPlugin({ system: BASE_SYSTEM, accounting }));
+    await context.use(agentLoopPlugin({ system: BASE_SYSTEM, accounting, prompt: { writable: parsed.writable } }));
   } catch (error) {
     try { await context.dispose(); } catch { /* preserve the startup error */ }
     throw error;

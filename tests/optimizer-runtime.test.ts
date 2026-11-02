@@ -6,7 +6,8 @@ import test from 'node:test';
 import { readJournal } from '../src/journal.js';
 import { SUGGESTION_LABEL } from '../src/plugins/agent-loop.js';
 import { mockModelPlugin, type MockStep } from '../src/plugins/mock-model.js';
-import { BASE_SYSTEM, createRuntime } from '../src/runtime.js';
+import { createRuntime } from '../src/runtime.js';
+import { workerSystem } from '../src/worker-prompt.js';
 import type { RunConfig, Variant } from '../src/types.js';
 
 const reply = (content: string) => ({ content, calls: [], finish: 'stop' as const,
@@ -42,14 +43,14 @@ test('O01 four variants preserve original user, use the same worker rules and co
           assert.equal(request.maxOutputTokens, 96);
           return reply('Keep empty input behavior while fixing sum.');
         }
-        assert.equal(request.system, BASE_SYSTEM);
+        assert.equal(request.system, workerSystem([], { maxModelRequests: 2, maxToolCalls: 2, timeoutMs: 5000, maxOutputTokens: 96, maxInputChars: 20000 }, 2, 2));
         assert.deepEqual(request.messages[0], { role: 'user', content: 'Fix sum; keep empty input behavior.' });
         return reply('Done.');
       },
       request => {
         seen.push(request.kind);
         assert.equal(request.kind, 'worker');
-        assert.equal(request.system, BASE_SYSTEM + SUGGESTION_LABEL + 'Keep empty input behavior while fixing sum.');
+        assert.equal(request.system, workerSystem([], { maxModelRequests: 2, maxToolCalls: 2, timeoutMs: 5000, maxOutputTokens: 96, maxInputChars: 20000 }, 1, 2) + SUGGESTION_LABEL + 'Keep empty input behavior while fixing sum.');
         assert.deepEqual(request.messages[0], { role: 'user', content: 'Fix sum; keep empty input behavior.' });
         return reply('Done.');
       },

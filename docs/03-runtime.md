@@ -2,9 +2,9 @@
 
 ## 循环
 
-1. runtime装配并校验配置，创建含共同deadline的Accounting；Loop.run写run_start与原始user任务。
+1. runtime装配并校验配置，创建含共同deadline的Accounting；Loop.run写run_start（新提示版本为promptVersion:2）与原始user任务。
 2. 有PromptOptimizerService时调用一次optimize，结果作为“任务表述建议”system段；原始user任务保留，系统规则优先。
-3. 调用ContextManager.build取得system/messages/tools。
+3. 调用ContextManager.build取得system/messages/tools；如发生summary，先从共同预算扣除，再刷新本次worker可见的剩余额度。
 4. 经共享ModelService请求worker，统一记录和计量。
 5. 无calls且finish=stop：保存assistant，返回completed。不自动验证最终回答。
 6. 有calls：保存assistant，按返回顺序串行执行；每次先检查工具预算，再记录开始、执行与结果，回到步骤3。
@@ -19,6 +19,16 @@ ModelService包装器先检查signal、deadline、请求额度、输入JSON长�
 工具参数校验前计数，因此非法参数/越权也占额度。多个calls超过剩余额度，只执行允许的前缀，其余标未执行并tool_limit终止，不再向模型发不完整工具轮次。
 
 无自动retry。usage缺失记null并单列已知token。durationMs包含optimizer/summary，验收耗时另记。输入请求体超过maxInputChars则context_overflow，各组同限制。
+
+## P0共同worker提示（2026-11-02）
+
+四组共用相同提示规则。除原始任务和可选O建议外，worker能看到配置中的完整精确writable列表、仅有文件工具且不能运行测试的能力边界，以及剩余总模型请求（包括本次worker）、工具次数与单次输出上限。提示要求简短说明必要操作，已有信息足够时避免重复回读，完成必要修改后清楚报告；不能声称未运行的测试通过。
+
+这些信息不授予新权限或免费请求。工具拒绝仍消耗原工具额度，O与summary仍消耗总模型额度，输出截断仍为明确模型错误；Loop不根据隐藏验收决定何时结束。没有新增规划器或结束验证门禁。
+
+动态预算文本使用固定宽度，使摘要前后更新计数时system长度不变；Context构建后刷新数字，避免summary消耗额度后提示仍显示旧数。日志长度/压缩触发指标仍覆盖完整发送内容。
+
+新run_start显式标记promptVersion:2；旧仅含input的日志仍按历史提示复核。独立评测校验器从配置、已派发模型请求和工具事件重建完整worker system，检查可写列表、预算、原任务、O建议和长度；不能把任意请求system当成可信依据。旧M6/M9报告与raw run不原地更新；P0后的真实比较必须使用新实现提交和新runId。
 
 ## Prompt Optimizer（O）
 

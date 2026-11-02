@@ -119,8 +119,12 @@ export function parseEvent(value: unknown): Event {
   let data: unknown;
   switch (type) {
     case 'run_start': {
-      const payload = object(input.data, 'run_start data', ['input']);
-      data = { input: text(payload.input, 'run_start.input') };
+      const raw = input.data as Record<string, unknown>;
+      const modern = raw !== null && typeof raw === 'object' && Object.hasOwn(raw, 'promptVersion');
+      const payload = object(input.data, 'run_start data', modern ? ['input', 'promptVersion'] : ['input']);
+      if (modern && payload.promptVersion !== 2) throw new Error('run_start.promptVersion: expected 2');
+      data = modern ? { input: text(payload.input, 'run_start.input'), promptVersion: 2 }
+        : { input: text(payload.input, 'run_start.input') };
       break;
     }
     case 'message': {

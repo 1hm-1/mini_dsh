@@ -2,6 +2,7 @@ import { performance } from 'node:perf_hooks';
 import { Accounting, ModelCallError } from '../accounting.js';
 import { parseModelResponse } from '../model-events.js';
 import { parseToolResult } from '../tool-events.js';
+import { workerSystem } from '../worker-prompt.js';
 import type { MiniPlugin } from '../plugin.js';
 import type { SessionService } from '../services/index.js';
 import type { ModelResponse, RunResult, Termination, ToolCall, ToolResult } from '../types.js';
@@ -46,12 +47,13 @@ function normalize(response: unknown): ModelResponse {
   } catch { throw new ModelCallError('model_error'); }
 }
 
-export function agentLoopPlugin(options: { system: string; accounting: Accounting }): MiniPlugin {
+export function agentLoopPlugin(options: { system: string; accounting: Accounting; prompt?: { writable: readonly string[] } }): MiniPlugin {
   if (typeof options.system !== 'string' || !(options.accounting instanceof Accounting)) {
     throw new Error('agent loop requires system and Accounting');
   }
   const baseSystem = options.system;
   const accounting = options.accounting;
+  const writable = options.prompt ? [...options.prompt.writable] : null;
   return { name: 'agent-loop', dependencies: ['session', 'model', 'tools', 'contextManager', 'events'], setup(ctx) {
     const session = ctx.get('session');
     const model = ctx.get('model');
@@ -120,11 +122,11 @@ export function agentLoopPlugin(options: { system: string; accounting: Accountin
           return true;
         };
         try {
-          await record('run_start', { input });
+          await record('run_start', writable ? { input, promptVersion: 2 } : { input });
           started = true;
           await message({ role: 'user', content: input });
           check();
-          let system = baseSystem;
+          let suggestionSuffix = '';
           if (optimizer) {
             let suggestion: string;
             try { suggestion = await optimizer.optimize(input, signal); }
@@ -135,15 +137,25 @@ export function agentLoopPlugin(options: { system: string; accounting: Accountin
             }
             check();
             if (typeof suggestion !== 'string' || suggestion.trim() === '') throw new ModelCallError('model_error');
-            system += SUGGESTION_LABEL + suggestion;
+            suggestionSuffix = SUGGESTION_LABEL + suggestion;
           }
           while (true) {
             check();
-            const projection = await contextManager.build({ system, signal });
+            const beforeSystem = writable
+              ? workerSystem(writable, accounting.budget,
+                accounting.budget.maxModelRequests - accounting.modelRequests,
+                accounting.budget.maxToolCalls - toolCalls) + suggestionSuffix
+              : baseSystem + suggestionSuffix;
+            // The padded counters keep system length fixed when build spends a summary request.
+            const projection = await contextManager.build({ system: beforeSystem, signal });
             check();
             accounting.check();
             const response = normalize(await model.complete({
-              kind: 'worker', system: projection.system, messages: projection.messages,
+              kind: 'worker', system: writable
+                ? workerSystem(writable, accounting.budget,
+                  accounting.budget.maxModelRequests - accounting.modelRequests,
+                  accounting.budget.maxToolCalls - toolCalls) + suggestionSuffix
+                : projection.system, messages: projection.messages,
               tools: projection.tools, contextMetrics: projection.contextMetrics,
               maxOutputTokens: accounting.budget.maxOutputTokens, signal,
             }));

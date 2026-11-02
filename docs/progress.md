@@ -741,3 +741,32 @@ GPT-6 Luna high负责根README与`.github/workflows/ci.yml`；主审运行同等
 - 报告提交后的`git status --short`为空；`node --import tsx benchmark/check-freeze.mjs`退出0，原benchmark提交/hash一致、12题S8/H4、错误hash/commit拒绝、provider=null。CI全部步骤的本地等价检查完成。
 - 本次报告/CI提交只改变交付材料；实际实验的implementationCommit仍是`6f779ba9712d88fafac76fd6c43df8dbb38e8442`，未将较晚文档提交冒充运行版本。M6分析与C/O机制提交不变。
 - M0–M9 DONE。最终144次四组实验完成、全部失败与辅助成本保留、验证通过。负结果不构成工程验收失败；当前证据不支持C/O成功率收益。没有额外付费重跑，没有为提高full成绩改题/调机制。GitHub Actions在线结果独立于已通过的本地命令，未运行完成前不标记在线通过。
+
+
+### P0：共同worker执行提示与额度可见性（2026-11-02，工程验收完成）
+
+用户在性能检查后明确批准P0。开始时git status --short为空，已阅读README、00/03/08/10及现有接口；M0–M9历史状态与报告不重写。按AGENTS由GPT-6 Sol（medium）子智能体实现，主智能体负责设计审阅、独立边界测试与验收。当前工单见08，决策见ADR-014。
+
+四组runtime共用新版worker提示：展示真实配置的精确writable列表，说明五种文件工具及无shell/测试执行能力；每次worker展示剩余总模型请求（包括本次worker）、工具次数和输出上限。额度唯一来源是Accounting，writable在插件创建时快照；O/summary和被拒工具继续计数。预算字段等宽，Context.build后刷新数字，确保summary已扣额且长度估算/触发计算不漂移。提示要求编辑前读文件、聚焦修改、简短可见说明、减少不必要的重复回读，必要修改后直接清楚报告，不声称未执行的测试通过。
+
+新run_start记录promptVersion:2。journal parser严格限制旧/新形状；eval从配置及派发事件重建完整worker提示，拒绝伪造白名单、模型/工具余额和移除版本标记。旧无版本日志保留原BASE_SYSTEM复算。未改公共服务接口、内核、权限、五工具、硬预算/终止/评分、C/O算法、variants、实验配置或冻结题库；src无eval依赖。
+
+主审纠正了红测草稿“including this worker”的额度歧义（额度10首次显示10，下一次9）；复核后补强工具调用前的简短说明指令，并移除重复预算来源。主审新增六项独立边界用例，覆盖四组辅助调用扣额、权限拒绝消耗工具额度、摘要后伪造余额、零工具余额合法final、超额仍tool_limit以及length仍model_error且记账无重试。独立用例创建时实现已就绪，因此不称其先红。
+
+| 实际命令/操作 | 退出码 | 结果与证据 |
+| --- | --- | --- |
+| 子智能体：node --import tsx --test tests/p0-prompt.test.ts（实现前） | 1 | 旧worker提示缺少精确writable路径，红测确认；后续新增预算/版本伪造检查 |
+| 主审：node --import tsx --test tests/p0-boundaries.test.ts | 0 | 6/6独立边界测试通过；后续补强摘要后伪造余额覆盖 |
+| 子智能体：npm run check（首次集成） | 1 | 11项eval用例暴露verify仍将run_start精确比为仅input；修复为parser校验完整形状、verify核对任务input |
+| 子智能体、主审分别：npm run check | 各0 | 最终typecheck与314项具名测试通过，0失败/跳过；主审日志/tmp/mini-harness-p0-main-check.log |
+| 子智能体：npm run eval:verify -- --run runs/2026-09-24T13-25-30-131Z-e441166e-f602-430b-a3f8-c14c091d777b | 0 | 旧M6真实baseline passed=true/errors=[]，未调用模型 |
+| 子智能体：npm run eval:verify -- --run runs/2026-09-24T15-18-52-983Z-c2434904-189f-4143-891b-f516dc9b67e3 | 0 | 旧M9真实四组passed=true/errors=[]，未调用模型 |
+| 主审：node --import tsx /tmp/mini-harness-p0-smoke.mjs | 0 | 复用tests/optimizer-fixture.ts，四组×S/H两夹具×2次，16/16功能通过且verify通过；provider=mock/phase=smoke |
+| 主审：node --import tsx benchmark/preflight.mjs runs/p0-preflight-20261102-01 | 0 | 全12题preflight通过，原初始失败/参考两层通过；日志/tmp/mini-harness-p0-preflight.log |
+| 主审Python：1896受保护路径SHA-256复核与src依赖检查 | 0 | benchmark/specs/experiments/reports及旧M6/M9原始run全部未变；src_eval_imports=[] |
+| 主审：node --import tsx benchmark/check-freeze.mjs（提交前） | 1 | 先被implementation Git tree must be clean前置拒绝，不能记为冻结通过；提交后的实际结果另记 |
+| 主审：git diff --check | 0 | 无空白错误 |
+
+保留工程run：runs/p0-engineering-20261102-01/runs/2026-11-02T14-58-10-446Z-5f8d9b83-adfb-4edd-bdbe-91ca24660d9c/，实现提交前如实dirty=true。默认8192/.75/4窗口与16模型/24工具预算；S/H夹具均为工程验证，合成长历史没有进入题库。输出与额外摘要计量可从该run的manifest/result/journal/report复核。预检证据为runs/p0-preflight-20261102-01/。
+
+P0工程验收完成，P1/P2未实施。没有新付费评测，当前不能宣称成功率提升；M9真实成绩仍属于旧实现。后续新真实实验须引用新实现提交、新runId并完整保留可比矩阵，不与历史主表混样。独立本地实现提交及干净树冻结复核结果另记。

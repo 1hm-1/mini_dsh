@@ -55,6 +55,8 @@ node --env-file=.env --import tsx eval/cli.ts --config experiments/ablation-deep
 
 该配置安排12题×4组×3次，共144次attempt；重新运行会产生新的run和API费用，不会覆盖现有M9证据。
 
+2026-11-02用户批准P0共同执行提示改进：四组worker展示精确可写路径、剩余总模型/工具额度与单次输出上限，明确文件工具能力并减少无必要回读和冗长说明。新日志以promptVersion:2区分，旧M6/M9日志继续兼容复核。上述真实成绩属于P0之前的实现；本次改进仅做离线工程验证，尚无新的真实成功率结论。硬预算、权限、C/O算法、题库及评分保持不变。
+
 单次执行使用[配置模板](specs/config.example.json)填写真实model/endpoint、workspace、精确可写文件列表和sessionPath，并在环境中设置HARNESS_API_KEY；CLI不自动加载.env：
 
 ```sh

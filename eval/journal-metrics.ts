@@ -7,6 +7,7 @@ import { OPTIMIZER_SYSTEM } from '../src/plugins/prompt-optimizer.js';
 import { SUGGESTION_LABEL } from '../src/plugins/agent-loop.js';
 import { fileToolSchemas } from '../src/plugins/file-tools.js';
 import { BASE_SYSTEM } from '../src/runtime.js';
+import { workerSystem } from '../src/worker-prompt.js';
 import type { ContextCompactedData } from '../src/context-events.js';
 import type { ContextObservationData, RequestData, ResponseData } from '../src/model-events.js';
 import type { ToolEndData } from '../src/tool-events.js';
@@ -72,7 +73,14 @@ export function inspectJournal(journal: JournalRead, config: RunConfig): Journal
   const result = (events.at(-1)!.data as { result: RunResult }).result;
   const contextEnabled = variantFlags(settings.variant).context;
   const optimizerEnabled = variantFlags(settings.variant).optimizer;
-  const input = (events[0]!.data as { input: string }).input;
+  const start = events[0]!.data as { input: string; promptVersion?: number };
+  const input = start.input;
+  if (start.promptVersion !== undefined && start.promptVersion !== 2) throw new Error('journal metrics: unsupported prompt version');
+  const modernPrompt = start.promptVersion === 2;
+  const expectedWorkerSystem = (modelUsed: number, toolsUsed: number) => modernPrompt
+    ? workerSystem(settings.writable, settings.budget,
+      settings.budget.maxModelRequests - modelUsed, settings.budget.maxToolCalls - toolsUsed)
+    : BASE_SYSTEM;
   const optimizerInputBody = optimizerEnabled ? encodeChatRequest(settings.model, {
     kind: 'optimizer', system: OPTIMIZER_SYSTEM, messages: [{ role: 'user', content: input }],
     tools: [], maxOutputTokens: Math.min(512, settings.budget.maxOutputTokens),
@@ -207,7 +215,8 @@ export function inspectJournal(journal: JournalRead, config: RunConfig): Journal
       if (data.requestChars > settings.budget.maxInputChars) throw new Error('journal metrics: request exceeds maxInputChars');
       if (data.kind === 'worker') {
         if (optimizerEnabled && suggestion === null) throw new Error('journal metrics: worker before valid optimizer suggestion');
-        equal(system.content, optimizerEnabled ? BASE_SYSTEM + SUGGESTION_LABEL + suggestion : BASE_SYSTEM, 'worker system');
+        equal(system.content, expectedWorkerSystem(requests.length, toolCalls)
+          + (optimizerEnabled ? SUGGESTION_LABEL + suggestion : ''), 'worker system');
         seenWorkerRequest = true;
         const expectedBefore = projection(history, boundary, summary);
         const preEstimate = preAfterCompaction?.estimate ?? estimate(system.content, expectedBefore, tools);
@@ -359,7 +368,7 @@ export function inspectJournal(journal: JournalRead, config: RunConfig): Journal
   }
   if (optimizerEnabled && suggestion !== null && !seenWorkerRequest
     && result.termination === 'context_overflow') {
-    const workerSystem = BASE_SYSTEM + SUGGESTION_LABEL + suggestion;
+    const workerSystem = expectedWorkerSystem(requests.length, toolCalls) + SUGGESTION_LABEL + suggestion;
     const workerMessages: Message[] = [{ role: 'user', content: input }];
     const workerTools = fileToolSchemas();
     const workerBody = encodeChatRequest(settings.model, {
