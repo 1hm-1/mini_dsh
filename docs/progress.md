@@ -825,3 +825,18 @@ P0.E DONE。没有额外付费试跑、模型/题库/预算调优或远程发布
 - 提交后git status --short为空；node --import tsx benchmark/check-freeze.mjs退出0，12题S8/H4、原benchmark提交/hash保持、错误hash/commit拒绝均true、provider=null。
 - 真实运行implementationCommit仍为e92bae1956a39d19ba63ccdaa9319646a65ad5ed。本次提交只保存派生结果和交付材料，不将较晚报告提交冒充实验版本。本条通过独立文档提交记录实际SHA。
 - P0.E DONE。144次完整真实API结果、全部失败及控制脚本退出码捕获缺失均已如实记录并完成复核，没有追加运行。
+
+
+### GitHub更新同步（2026-11-03）
+
+用户明确要求将已有项目更新同步到GitHub，授权本次远程推送。开始时工作区干净，当前分支codex/p0-execution-guidance；远程main为1d21d40596647d3c8568fd7a886fa67454deb501，已有5个本地提交可直接fast-forward，未覆盖远程历史。
+
+| 实际命令/检查 | 退出码 | 结果与证据 |
+| --- | --- | --- |
+| npm run check（显式使用Node v24.20.0路径） | 0 | typecheck与314项测试通过，0失败/跳过；日志/tmp/mini-harness-github-sync-check.log |
+| node --import tsx benchmark/check-freeze.mjs（独立执行） | 0 | passed=true，12题S8/H4；原benchmark提交/hash保持，错误hash/commit拒绝均true，provider=null |
+| Python：逐提交检查待推送blob及忽略路径 | 0 | 5提交、192个唯一blob；凭据模式/本地凭据值匹配0，.env/runs/node_modules路径违规0；未输出凭据 |
+| timeout 60s git -c core.sshCommand="ssh -o BatchMode=yes -o ConnectTimeout=10" push origin HEAD:refs/heads/main | 0 | GitHub 1hm-1/mini_dsh的main由1d21d40更新至674426516bcdb7bb12abcdc59e2c448cb1e16a84，包含P0实现、真实评测报告与派生证据 |
+| timeout 25s git -c core.sshCommand="ssh -o BatchMode=yes -o ConnectTimeout=10" ls-remote git@github.com:1hm-1/mini_dsh.git refs/heads/main | 0 | 远程main独立复核为674426516bcdb7bb12abcdc59e2c448cb1e16a84 |
+
+默认非交互Shell未加载npm路径，首次检查未运行；显式使用已安装Node 24后上述check实际通过。HTTPS fetch因GnuTLS连接中断失败，后续停滞的只读查询已停止；改用已配置SSH地址完成同步，未更改远程地址。该进度条目通过后续文档提交同步。未启动新付费实验，原始runs、.env和node_modules未上传；未将本地检查等同于GitHub Actions在线通过。
