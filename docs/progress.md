@@ -778,3 +778,14 @@ P0工程验收完成，P1/P2未实施。没有新付费评测，当前不能宣�
 - P0实现提交：ffaf4040446f27bb90e935f8e40756ce368b3942（feat: expose worker permissions and shared execution budgets）。git switch -c、指定14文件git add、git diff --cached --check及git commit -F /tmp/mini-harness-p0-commit.txt均退出0；未推送远程。
 - 实现提交后git status --short为空。node --import tsx benchmark/check-freeze.mjs退出0：passed=true，12题S8/H4、原benchmark提交9fd463f618edfe25e8a683a62b7f540f3e644f90及manifest SHA d3d3321d3347017e58be60215e00a7ceb8e75fee5d4d77a2c07b0677160165a2保持，invalidHashRejected/invalidCommitRejected均true、provider=null。提交前的clean-tree拒绝已解除。
 - 本条通过后续独立文档提交保存真实SHA和复核结果；实现代码不再改动。P0 DONE，无新增真实模型成绩。
+
+
+### P0.E：用户授权的改进后真实四组评测（2026-11-02，准备完成）
+
+用户明确要求“启动真实API测评，测试实战数据”，授权本次唯一完整144次矩阵。依AGENTS由GPT-6 Luna（high）子智能体执行及整理新证据，主智能体审阅配置、归因与验收。执行智能体模型不属于实验因素。P0实现提交ffaf4040446f27bb90e935f8e40756ce368b3942已为HEAD祖先；本段先单独提交，再从干净树启动。
+
+沿用experiments/ablation-deepseek.json，不修改配置：12冻结题×baseline/context/optimizer/full×3次，新run完整重跑四组。DeepSeek Flash、temperature=0、非思考模式；共同16次模型请求（包含O/summary）、24次工具、120000ms、4096输出token、128000输入字符，Context窗口8192/.75/4。不开额外试跑、不自动重试或挑选重跑、不随结果改题/调参/提前停止；保留全部成功失败。此次授权不覆盖后续额外付费运行或远程发布。
+
+主审实际前置检查：git status --short为空；解析实验配置并逐字段对比旧M9 manifest的taskIds/variants/repeats/model/budget/context/phase/benchmarkManifest一致、attempts=144（退出0）；Node --env-file加载后仅输出keyPresent=true，不打印密钥（退出0）；node --import tsx benchmark/check-freeze.mjs退出0，原冻结提交/hash一致且两类错误引用均被拒；git merge-base --is-ancestor ffaf4040446f27bb90e935f8e40756ce368b3942 HEAD退出0。现有314测试/四组离线集成/全12题preflight已在P0验收完成，之后未改实现。
+
+拟执行唯一命令：node --env-file=.env --import tsx eval/cli.ts --config experiments/ablation-deepseek.json。stdout/stderr/退出码保存在新的忽略目录runs/p0-api-control-20261102-01/；实际runId、implementationCommit、开始/完成与verify结果运行后补记。运行期间不修改tracked文件。新报告使用独立路径，不覆盖旧M6/M9；与历史成绩的变化仅作跨运行描述，需核对实际model/fingerprint，不能仅凭时间前后差异断言P0因果收益。
