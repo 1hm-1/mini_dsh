@@ -770,3 +770,11 @@ GPT-6 Luna high负责根README与`.github/workflows/ci.yml`；主审运行同等
 保留工程run：runs/p0-engineering-20261102-01/runs/2026-11-02T14-58-10-446Z-5f8d9b83-adfb-4edd-bdbe-91ca24660d9c/，实现提交前如实dirty=true。默认8192/.75/4窗口与16模型/24工具预算；S/H夹具均为工程验证，合成长历史没有进入题库。输出与额外摘要计量可从该run的manifest/result/journal/report复核。预检证据为runs/p0-preflight-20261102-01/。
 
 P0工程验收完成，P1/P2未实施。没有新付费评测，当前不能宣称成功率提升；M9真实成绩仍属于旧实现。后续新真实实验须引用新实现提交、新runId并完整保留可比矩阵，不与历史主表混样。独立本地实现提交及干净树冻结复核结果另记。
+
+
+### P0本地提交与冻结复核（2026-11-02，DONE）
+
+- 本地分支：codex/p0-execution-guidance。
+- P0实现提交：ffaf4040446f27bb90e935f8e40756ce368b3942（feat: expose worker permissions and shared execution budgets）。git switch -c、指定14文件git add、git diff --cached --check及git commit -F /tmp/mini-harness-p0-commit.txt均退出0；未推送远程。
+- 实现提交后git status --short为空。node --import tsx benchmark/check-freeze.mjs退出0：passed=true，12题S8/H4、原benchmark提交9fd463f618edfe25e8a683a62b7f540f3e644f90及manifest SHA d3d3321d3347017e58be60215e00a7ceb8e75fee5d4d77a2c07b0677160165a2保持，invalidHashRejected/invalidCommitRejected均true、provider=null。提交前的clean-tree拒绝已解除。
+- 本条通过后续独立文档提交保存真实SHA和复核结果；实现代码不再改动。P0 DONE，无新增真实模型成绩。
