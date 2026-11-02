@@ -1,0 +1,25 @@
+[
+  {
+    "taskId": "h02-chunk-parser",
+    "variant": "full",
+    "repeat": 1,
+    "orderIndex": 28,
+    "compactedSeq": 89,
+    "summaryRequestSeq": 87,
+    "summaryResponseSeq": 88,
+    "fromMessageIndex": 1,
+    "toMessageIndex": 17,
+    "preCompressionEstimatedTokens": 6191,
+    "postCompressionEstimatedTokens": 3845,
+    "estimatedTokenReduction": 2346,
+    "postObservationSeq": 90,
+    "summaryText": "<｜｜DSML｜｜ calls>\n<｜｜DSML｜｜ invoke name=\"run_command\">\n<｜｜DSML｜｜ parameter name=\"command\" string=\"true\">node --test public.test.mjs 2>&1 | tail -40</｜｜DSML｜｜ parameter>\n</｜｜DSML｜｜ invoke>\n</｜｜DSML｜｜ calls>",
+    "summaryChars": 204,
+    "containsDSMLCalls": true,
+    "invokedToolNames": [
+      "run_command"
+    ],
+    "responseFinish": "stop",
+    "responseError": null
+  }
+]

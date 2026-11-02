@@ -1,0 +1,6 @@
+"taskId","variant","repeat","callId","name","path","errorCode","startSeq","endSeq","nextWorkerRequestSeq","nextSuccessfulWorkerResponseSeq","laterSameKeySuccessfulStartSeqs","laterSamePathSuccessfulStartSeqs","laterToolStartSeqs","correctionConclusion"
+"h03-module-navigation","context","2","call_00_X7elSVypQC6DXQa2pWTl6877","edit_file","routes/dynamic.mjs","permission_denied","72","73","76","77","[]","[]","[79,86]","null"
+"h04-issue-refactor","optimizer","2","call_00_KkfXZiwX1vMkIlfw7Mmz1966","list_files","","permission_denied","9","10","13","14","[]","[]","[16,23,26,29,32,35,42,45,48,51,58,61,68,71,74,77,80]","null"
+"h02-chunk-parser","optimizer","3","call_00_HjyAenPEopkeHu883jA29908","edit_file","src/tokenizer.mjs","permission_denied","78","79","82","83","[]","[]","[85]","null"
+"h04-issue-refactor","full","3","call_00_xPuPBWO7D7VGI3uwBg6o7028","list_files","","permission_denied","9","10","13","14","[]","[]","[16,23,26,29,32,35,42,45,48,51,58,61,68,71,74,77,80]","null"
+"h04-issue-refactor","optimizer","3","call_00_Mah8KdrBIK89o7WW2f4S4561","list_files","","permission_denied","9","10","13","14","[]","[]","[16,23,26,29,32,35,42,45,48,51,54,61,64,67,70,73]","null"

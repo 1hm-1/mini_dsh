@@ -1,0 +1,168 @@
+{
+  "schemaVersion": 1,
+  "runId": "2026-11-02T15-05-36-983Z-7a50e349-25e7-4b93-bd7f-abadcc7043ac",
+  "taskId": "h03-module-navigation",
+  "suite": "H",
+  "repeat": 1,
+  "variant": "full",
+  "orderIndex": 35,
+  "journalPath": "attempts/h03-module-navigation-full-1/journal.jsonl",
+  "resultPath": "attempts/h03-module-navigation-full-1/result.json",
+  "passed": false,
+  "functionalPass": false,
+  "failureReason": "model_error",
+  "termination": "model_error",
+  "answer": null,
+  "integrity": {
+    "passed": true,
+    "changedPaths": [],
+    "violations": []
+  },
+  "changedPaths": [],
+  "changes": [],
+  "checks": {
+    "public": {
+      "passed": false,
+      "completed": true,
+      "testCount": 4,
+      "passedTests": 2,
+      "failedTests": 2,
+      "timedOut": false,
+      "outputPath": "attempts/h03-module-navigation-full-1/public-output.txt",
+      "failedAssertions": [
+        {
+          "name": "entry selects static route before earlier dynamic route",
+          "testId": 1,
+          "message": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  {\n+   params: {\n+     id: 'new'\n+   },\n+   route: 'user-detail'\n-   params: {},\n-   route: 'user-new'\n  }\n",
+          "code": "ERR_TEST_FAILURE"
+        },
+        {
+          "name": "fallback is last and adapter uses the same entry",
+          "testId": 3,
+          "message": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  {\n    params: {},\n+   route: 'not-found'\n-   route: 'health'\n  }\n",
+          "code": "ERR_TEST_FAILURE"
+        }
+      ]
+    },
+    "acceptance": {
+      "passed": false,
+      "completed": true,
+      "testCount": 8,
+      "passedTests": 5,
+      "failedTests": 3,
+      "timedOut": false,
+      "outputPath": "attempts/h03-module-navigation-full-1/acceptance-output.txt",
+      "failedAssertions": [
+        {
+          "name": "static wins despite dynamic and fallback declaration order",
+          "testId": 1,
+          "message": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  {\n+   params: {\n+     id: 'new'\n+   },\n+   route: 'user-detail'\n-   params: {},\n-   route: 'user-new'\n  }\n",
+          "code": "ERR_TEST_FAILURE"
+        },
+        {
+          "name": "dynamic segment keeps original case",
+          "testId": 2,
+          "message": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  {\n+   params: {},\n+   route: 'not-found'\n-   params: {\n-     slug: 'Hello'\n-   },\n-   route: 'post-detail'\n  }\n",
+          "code": "ERR_TEST_FAILURE"
+        },
+        {
+          "name": "legacy compatibility export stays separate",
+          "testId": 5,
+          "message": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  {\n    params: {},\n+   route: 'legacy-help'\n-   route: 'not-found'\n  }\n",
+          "code": "ERR_TEST_FAILURE"
+        }
+      ]
+    }
+  },
+  "model": {
+    "workerRequestAttempts": 0,
+    "workerDispatched": 0,
+    "workerSuccessfulResponses": 0,
+    "totalRequestAttempts": 1,
+    "totalDispatchedRequests": 1,
+    "optimizerRequests": 1,
+    "summaryRequests": 0,
+    "inputTokens": 580,
+    "outputTokens": 512,
+    "knownInputTokens": 580,
+    "knownOutputTokens": 512,
+    "missingInputUsageRequests": 0,
+    "missingOutputUsageRequests": 0,
+    "contextStats": {
+      "workerRequests": 0,
+      "meanEstimatedInputTokens": null,
+      "peakEstimatedInputTokens": null,
+      "peakRequestChars": null,
+      "thresholdRequests": 0,
+      "eligibleCompactionRequests": 0
+    },
+    "observationOnly": [],
+    "compactions": [],
+    "optimizerOutputs": [
+      {
+        "taskId": "h03-module-navigation",
+        "variant": "full",
+        "repeat": 1,
+        "orderIndex": 35,
+        "requestSeq": 3,
+        "responseSeq": 4,
+        "dispatched": true,
+        "responseError": "model_error",
+        "finish": "length",
+        "acceptedText": "Implement `dispatch(path)` in `entry.mjs` as the application entry point: it takes an absolute URL pathname string (no query string) and returns `{ route, params }`, throwing `TypeError` for invalid paths (non-string, empty, or not starting with `/`). Matching must be case sensitive and must not alter the pathname text, so a trailing slash is distinct from the route without it. The route ID is a string and `params` is a new plain object. The default routes in `fixtures/routes.mjs` are the production route table used by `dispatch`. Also implement the lower-level exported resolver `resolveFromRegistry(path, records)`, which applies the same matching policy to supplied records.\n\nSupplied `records` are guaranteed to be an array of valid records; invalid record shapes are out of scope. Route IDs and static paths are strings. Dynamic parameter names are unique within each pattern, nonempty, and match `[A-Za-z][A-Za-z0-9]*`; matching paths remain plain pathname strings. Records have one of three shapes: `{ kind: 'static', path, route }`, `{ kind: 'dynamic', pattern, route }`, or `{ kind: 'fallback', route }`. Static paths match exactly. A dynamic pattern starts with `/` and uses `:name` for a whole, nonempty path segment; it may contain literal segments. On a match, return parameters with the original segment values. Among matching records, any static route wins over any dynamic route regardless of declaration order; otherwise the first matching dynamic route wins; fallback is considered only if neither matched. Within static matches, use the first declared static record; if multiple fallbacks exist, use the first declared fallback. With no match and no fallback, return `null`. All records and returned values must remain independent of later calls; do not mutate records. The fixture deliberately lists a dynamic `/users/:id` before the static `/users/new` and includes a fallback to expose ordering.\n\nKeep `legacyResolve(path)` in `legacy.mjs` and its old `/old/help` behavior unchanged; it is a separate compatibility API, not the production entry point. The HTTP/CLI adapters and path/query/header utilities have separate responsibilities and must continue to behave as their exported APIs specify; they are included because they are real users or support modules, not as instructions to edit them. Edit only the writ",
+        "actualModel": "deepseek-flash",
+        "fingerprint": "bc19ba97cbe016479903222bb1578db6"
+      }
+    ]
+  },
+  "requests": [
+    {
+      "taskId": "h03-module-navigation",
+      "repeat": 1,
+      "variant": "full",
+      "requestSeq": 3,
+      "responseSeq": 4,
+      "kind": "optimizer",
+      "dispatched": true,
+      "responseError": "model_error",
+      "successfulResponse": false,
+      "finish": "length",
+      "observationSeq": null,
+      "requestChars": 2840,
+      "estimatedInputTokens": 680,
+      "estimatedDeltaFromPriorWorker": null,
+      "preCompressionEstimatedTokens": null,
+      "olderRounds": null,
+      "thresholdReached": null,
+      "compactionEligible": null,
+      "inputTokens": 580,
+      "outputTokens": 512,
+      "cumulativeKnownInputTokens": 580,
+      "cumulativeKnownOutputTokens": 512,
+      "cumulativeInputTokensExact": 580,
+      "cumulativeOutputTokensExact": 512,
+      "missingInputUsageRequests": 0,
+      "missingOutputUsageRequests": 0,
+      "actualModel": "deepseek-flash",
+      "fingerprint": "bc19ba97cbe016479903222bb1578db6"
+    }
+  ],
+  "tools": {
+    "toolStartCount": 0,
+    "dispatchedCount": 0,
+    "skippedCount": 0,
+    "repeatBasis": "all tool_start intents, including undispatched; quota uses dispatchedCount only",
+    "exactRepeatCount": 0,
+    "consecutiveRepeatCount": 0,
+    "dispatchedExactRepeatCount": 0,
+    "dispatchedConsecutiveRepeatCount": 0,
+    "readBackAttempts": 0,
+    "readBackCount": 0,
+    "comparableReadBacks": 0,
+    "errorCount": 0,
+    "calls": [],
+    "repeatedKeys": [],
+    "readBacks": [],
+    "errors": []
+  }
+}

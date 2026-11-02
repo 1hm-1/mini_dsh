@@ -789,3 +789,31 @@ P0工程验收完成，P1/P2未实施。没有新付费评测，当前不能宣�
 主审实际前置检查：git status --short为空；解析实验配置并逐字段对比旧M9 manifest的taskIds/variants/repeats/model/budget/context/phase/benchmarkManifest一致、attempts=144（退出0）；Node --env-file加载后仅输出keyPresent=true，不打印密钥（退出0）；node --import tsx benchmark/check-freeze.mjs退出0，原冻结提交/hash一致且两类错误引用均被拒；git merge-base --is-ancestor ffaf4040446f27bb90e935f8e40756ce368b3942 HEAD退出0。现有314测试/四组离线集成/全12题preflight已在P0验收完成，之后未改实现。
 
 拟执行唯一命令：node --env-file=.env --import tsx eval/cli.ts --config experiments/ablation-deepseek.json。stdout/stderr/退出码保存在新的忽略目录runs/p0-api-control-20261102-01/；实际runId、implementationCommit、开始/完成与verify结果运行后补记。运行期间不修改tracked文件。新报告使用独立路径，不覆盖旧M6/M9；与历史成绩的变化仅作跨运行描述，需核对实际model/fingerprint，不能仅凭时间前后差异断言P0因果收益。
+
+
+### P0.E：真实API结果、独立复算与交付（2026-11-02，DONE）
+
+执行子智能体为GPT-6 Luna（high），主审保持同一运行期tracked文件不变。唯一真实运行产生runId=2026-11-02T15-05-36-983Z-7a50e349-25e7-4b93-bd7f-abadcc7043ac，implementationCommit=e92bae1956a39d19ba63ccdaa9319646a65ad5ed，dirty=false，provider=http/phase=ablation，144/144完整。P0机制实现提交仍为ffaf4040446f27bb90e935f8e40756ce368b3942；新报告提交不能冒充实际运行提交。
+
+控制日志位于runs/p0-api-control-20261102-01/：stdout.log含最终runId/provider/http/attempts=144 JSON，stderr.log为0字节。外层Shell记录退出码时变量展开为空，最后exit命令返回1，exit-code.txt仅1字节换行，实际Node退出码未捕获，记null，不能记为0或把外层1当成runtime成绩。没有因此重跑API；完整矩阵由144条结果、官方summary/report、verify和独立计数证明。此限制明确写入报告与verify.json。
+
+本轮strict：baseline S18/24 H9/12 总27/36（75.00%）；context S19/24 H11/12 总30/36（83.33%）；optimizer S20/24 H8/12 总28/36（77.78%）；full S20/24 H7/12 总27/36（75.00%）。full-baseline总体0百分点、S +8.33、H -16.67。总体112/144 strict、114/144功能及边界通过；失败32=18 acceptance_test+4 public_test+8 model_error+1 tool_limit+1 request_limit。最终代码已过验收却终止失败的仅h02 full r1与optimizer r1两次。
+
+700次真实请求=627worker+72optimizer+1summary，全部usage完整；input=1427198/output=168161，总1595359token。四组工具共1043次、5次错误全部permission_denied。实际模型deepseek-flash、fingerprint=bc19ba97cbe016479903222bb1578db6在本轮统一；与旧M9的aeb56401ca74e127821c4f9126dcb669不同。所有144条promptVersion=2。context没有summary/compaction，故其分差不能归因实际摘要；full唯一一次摘要压缩6191→3845估算token，仍含DSML的run_command标记（没有工具派发），不能宣称语义保真。
+
+跨运行仅描述：旧→新strict成功93→112、权限拒绝46→5、功能已过却终止失败27→2、最后有效修改后的read_file 286→42、请求1065→700、token3116131→1595359。但功能通过120→114、S strict81→77、baseline功能31→27；fingerprint变化与同题有限重复不能隔离P0因果效果。旧9次length全worker，本轮8次length=1worker4096+7optimizer512；h03的optimizer/full各3次均在O阶段截断，另一次是h04 full r3。m01仍四组0/3，m02 baseline/context仍有异常类型错误；这些反例与全部失败均保留。
+
+新报告：reports/p0-api-report-2026-11-02.md。新证据：reports/evidence/2026-11-02T15-05-36-983Z-7a50e349-25e7-4b93-bd7f-abadcc7043ac/，含144份逐次派生指标、独立raw事件审计、固定选取规则的5份代表trace（41条原始事件）、复算脚本、verify记录和SHA索引。旧M6/M9报告/证据未更新或混入本轮主表。
+
+| 实际命令/操作 | 退出码 | 结果 |
+| --- | --- | --- |
+| 唯一node --env-file=.env --import tsx eval/cli.ts --config experiments/ablation-deepseek.json | Node未知；外层1 | 退出码捕获问题如上，144次完整且无API重试/重跑 |
+| npm run eval:verify -- --run runs/2026-11-02T15-05-36-983Z-7a50e349-25e7-4b93-bd7f-abadcc7043ac | 0 | passed=true/errors=[] |
+| node --import tsx reports/evidence/<旧M9run>/metrics.mjs runs/<新run> reports/evidence/<新run>/metrics | 0 | 144 processed/missing0，700请求、5工具错误、32失败、1compaction、72optimizer |
+| node reports/evidence/<旧M9run>/counter.mjs runs/<新run> reports/evidence/<新run>/metrics | 0 | 原始、逐次派生、官方summary按variant/suite一致 |
+| 主审python3 /tmp/mini-harness-p0-real-audit.py <新run> <旧run> /tmp/mini-harness-p0-real-audit.json | 1→0 | 初次临时脚本换行语法错误；修正后完整复算两个独立run的请求/工具/token/成功率/压缩并与官方summary一致；修正版保存为新evidence/p0-audit.py |
+| python3 reports/evidence/<新run>/build-review.py <新run> <新evidence> reports/p0-api-report-2026-11-02.md runs/p0-api-control-20261102-01 | 0 | 1071原始文件、168派生文件、3控制文件与报告SHA索引；5trace/41事件 |
+| 主审独立Python：逐文件hash/大小、逐seq事件、旧保护路径、运行时diff、报告链接 | 0 | 1243项新索引全部匹配，41事件与原journal一致，1896项旧文件未变，src/eval/benchmark/specs/experiments相对e92bae1无改动 |
+| git diff --check | 0 | 无空白错误 |
+
+P0.E DONE。没有额外付费试跑、模型/题库/预算调优或远程发布；P1/P2未实施。当前结果支持记录效率与收尾行为的观察变化，不支持“已隔离证明P0提高代码正确性”，也不支持context组未执行摘要却有摘要收益。结果/证据本地提交及提交后冻结复核另记。

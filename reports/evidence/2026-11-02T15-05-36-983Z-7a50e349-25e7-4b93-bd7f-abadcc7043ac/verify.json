@@ -1,0 +1,73 @@
+{
+  "runId": "2026-11-02T15-05-36-983Z-7a50e349-25e7-4b93-bd7f-abadcc7043ac",
+  "implementationCommit": "e92bae1956a39d19ba63ccdaa9319646a65ad5ed",
+  "benchmarkCommit": "9fd463f618edfe25e8a683a62b7f540f3e644f90",
+  "run": {
+    "command": "node --env-file=.env --import tsx eval/cli.ts --config experiments/ablation-deepseek.json",
+    "scheduledAttempts": 144,
+    "capturedFinalJson": {
+      "provider": "http",
+      "attempts": 144
+    },
+    "stderrBytes": 0,
+    "nodeExitCode": null,
+    "launcherWrapperExitCode": 1,
+    "exitCaptureIssue": "The shell wrapper's final exit received an empty argument after variable expansion; the Node CLI exit code was not captured. The CLI completed all scheduled attempts and emitted its final JSON."
+  },
+  "commands": [
+    {
+      "command": "npm run eval:verify -- --run runs/2026-11-02T15-05-36-983Z-7a50e349-25e7-4b93-bd7f-abadcc7043ac",
+      "exitCode": 0,
+      "result": {
+        "passed": true,
+        "errors": []
+      }
+    },
+    {
+      "command": "node --import tsx reports/evidence/2026-09-24T15-18-52-983Z-c2434904-189f-4143-891b-f516dc9b67e3/metrics.mjs runs/2026-11-02T15-05-36-983Z-7a50e349-25e7-4b93-bd7f-abadcc7043ac reports/evidence/2026-11-02T15-05-36-983Z-7a50e349-25e7-4b93-bd7f-abadcc7043ac/metrics",
+      "exitCode": 0,
+      "result": {
+        "expected": 144,
+        "processed": 144,
+        "missing": 0,
+        "requestRows": 700,
+        "toolErrors": 5,
+        "readBackRows": 42,
+        "failures": 32,
+        "compactions": 1,
+        "optimizerOutputs": 72
+      }
+    },
+    {
+      "command": "node reports/evidence/2026-09-24T15-18-52-983Z-c2434904-189f-4143-891b-f516dc9b67e3/counter.mjs runs/2026-11-02T15-05-36-983Z-7a50e349-25e7-4b93-bd7f-abadcc7043ac reports/evidence/2026-11-02T15-05-36-983Z-7a50e349-25e7-4b93-bd7f-abadcc7043ac/metrics",
+      "exitCode": 0,
+      "result": {
+        "matchingDerived": true,
+        "matchingOfficialSummary": true,
+        "attempts": 144
+      }
+    },
+    {
+      "command": "python3 reports/evidence/2026-11-02T15-05-36-983Z-7a50e349-25e7-4b93-bd7f-abadcc7043ac/p0-audit.py runs/2026-11-02T15-05-36-983Z-7a50e349-25e7-4b93-bd7f-abadcc7043ac runs/2026-09-24T15-18-52-983Z-c2434904-189f-4143-891b-f516dc9b67e3 /tmp/mini-harness-p0-real-audit.json",
+      "exitCode": 0,
+      "result": {
+        "newAttempts": 144,
+        "oldAttempts": 144,
+        "matchingOfficialSummary": true
+      }
+    },
+    {
+      "command": "python3 reports/evidence/2026-11-02T15-05-36-983Z-7a50e349-25e7-4b93-bd7f-abadcc7043ac/build-review.py runs/2026-11-02T15-05-36-983Z-7a50e349-25e7-4b93-bd7f-abadcc7043ac reports/evidence/2026-11-02T15-05-36-983Z-7a50e349-25e7-4b93-bd7f-abadcc7043ac reports/p0-api-report-2026-11-02.md runs/p0-api-control-20261102-01",
+      "exitCode": 0,
+      "result": {
+        "rawFiles": 1071,
+        "evidenceFiles": 168,
+        "controlFiles": 3,
+        "traces": 5,
+        "events": 41
+      }
+    }
+  ],
+  "apiInvocations": 1,
+  "retriesOrReruns": 0
+}

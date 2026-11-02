@@ -1,0 +1,440 @@
+{
+  "runId": "2026-11-02T15-05-36-983Z-7a50e349-25e7-4b93-bd7f-abadcc7043ac",
+  "source": "raw result.json plus journal tool_start events",
+  "partitionKeys": [
+    "variant",
+    "suite"
+  ],
+  "matchingDerived": true,
+  "matchingOfficialSummary": true,
+  "summaryChecks": {
+    "baseline.S": {
+      "attempts": true,
+      "passed": true,
+      "modelRequests": true,
+      "workerRequests": true,
+      "optimizerRequests": true,
+      "summaryRequests": true,
+      "toolCalls": true,
+      "toolErrors": true,
+      "inputTokens": true,
+      "outputTokens": true,
+      "compactions": true,
+      "termination": true
+    },
+    "baseline.H": {
+      "attempts": true,
+      "passed": true,
+      "modelRequests": true,
+      "workerRequests": true,
+      "optimizerRequests": true,
+      "summaryRequests": true,
+      "toolCalls": true,
+      "toolErrors": true,
+      "inputTokens": true,
+      "outputTokens": true,
+      "compactions": true,
+      "termination": true
+    },
+    "baseline.overall": {
+      "attempts": true,
+      "passed": true,
+      "modelRequests": true,
+      "workerRequests": true,
+      "optimizerRequests": true,
+      "summaryRequests": true,
+      "toolCalls": true,
+      "toolErrors": true,
+      "inputTokens": true,
+      "outputTokens": true,
+      "compactions": true,
+      "termination": true
+    },
+    "context.S": {
+      "attempts": true,
+      "passed": true,
+      "modelRequests": true,
+      "workerRequests": true,
+      "optimizerRequests": true,
+      "summaryRequests": true,
+      "toolCalls": true,
+      "toolErrors": true,
+      "inputTokens": true,
+      "outputTokens": true,
+      "compactions": true,
+      "termination": true
+    },
+    "context.H": {
+      "attempts": true,
+      "passed": true,
+      "modelRequests": true,
+      "workerRequests": true,
+      "optimizerRequests": true,
+      "summaryRequests": true,
+      "toolCalls": true,
+      "toolErrors": true,
+      "inputTokens": true,
+      "outputTokens": true,
+      "compactions": true,
+      "termination": true
+    },
+    "context.overall": {
+      "attempts": true,
+      "passed": true,
+      "modelRequests": true,
+      "workerRequests": true,
+      "optimizerRequests": true,
+      "summaryRequests": true,
+      "toolCalls": true,
+      "toolErrors": true,
+      "inputTokens": true,
+      "outputTokens": true,
+      "compactions": true,
+      "termination": true
+    },
+    "optimizer.S": {
+      "attempts": true,
+      "passed": true,
+      "modelRequests": true,
+      "workerRequests": true,
+      "optimizerRequests": true,
+      "summaryRequests": true,
+      "toolCalls": true,
+      "toolErrors": true,
+      "inputTokens": true,
+      "outputTokens": true,
+      "compactions": true,
+      "termination": true
+    },
+    "optimizer.H": {
+      "attempts": true,
+      "passed": true,
+      "modelRequests": true,
+      "workerRequests": true,
+      "optimizerRequests": true,
+      "summaryRequests": true,
+      "toolCalls": true,
+      "toolErrors": true,
+      "inputTokens": true,
+      "outputTokens": true,
+      "compactions": true,
+      "termination": true
+    },
+    "optimizer.overall": {
+      "attempts": true,
+      "passed": true,
+      "modelRequests": true,
+      "workerRequests": true,
+      "optimizerRequests": true,
+      "summaryRequests": true,
+      "toolCalls": true,
+      "toolErrors": true,
+      "inputTokens": true,
+      "outputTokens": true,
+      "compactions": true,
+      "termination": true
+    },
+    "full.S": {
+      "attempts": true,
+      "passed": true,
+      "modelRequests": true,
+      "workerRequests": true,
+      "optimizerRequests": true,
+      "summaryRequests": true,
+      "toolCalls": true,
+      "toolErrors": true,
+      "inputTokens": true,
+      "outputTokens": true,
+      "compactions": true,
+      "termination": true
+    },
+    "full.H": {
+      "attempts": true,
+      "passed": true,
+      "modelRequests": true,
+      "workerRequests": true,
+      "optimizerRequests": true,
+      "summaryRequests": true,
+      "toolCalls": true,
+      "toolErrors": true,
+      "inputTokens": true,
+      "outputTokens": true,
+      "compactions": true,
+      "termination": true
+    },
+    "full.overall": {
+      "attempts": true,
+      "passed": true,
+      "modelRequests": true,
+      "workerRequests": true,
+      "optimizerRequests": true,
+      "summaryRequests": true,
+      "toolCalls": true,
+      "toolErrors": true,
+      "inputTokens": true,
+      "outputTokens": true,
+      "compactions": true,
+      "termination": true
+    }
+  },
+  "byVariant": {
+    "baseline": {
+      "S": {
+        "attempts": 24,
+        "passed": 18,
+        "functionalPass": 18,
+        "toolStarts": 91,
+        "toolCalls": 91,
+        "toolErrors": 0,
+        "modelRequests": 87,
+        "workerRequests": 87,
+        "optimizerRequests": 0,
+        "summaryRequests": 0,
+        "inputTokens": 112799,
+        "outputTokens": 17773,
+        "knownInputTokens": 112799,
+        "knownOutputTokens": 17773,
+        "compactions": 0,
+        "termination": {
+          "completed": 24
+        }
+      },
+      "H": {
+        "attempts": 12,
+        "passed": 9,
+        "functionalPass": 9,
+        "toolStarts": 186,
+        "toolCalls": 186,
+        "toolErrors": 0,
+        "modelRequests": 75,
+        "workerRequests": 75,
+        "optimizerRequests": 0,
+        "summaryRequests": 0,
+        "inputTokens": 238973,
+        "outputTokens": 26583,
+        "knownInputTokens": 238973,
+        "knownOutputTokens": 26583,
+        "compactions": 0,
+        "termination": {
+          "completed": 12
+        }
+      },
+      "overall": {
+        "attempts": 36,
+        "passed": 27,
+        "functionalPass": 27,
+        "toolStarts": 277,
+        "toolCalls": 277,
+        "toolErrors": 0,
+        "modelRequests": 162,
+        "workerRequests": 162,
+        "optimizerRequests": 0,
+        "summaryRequests": 0,
+        "inputTokens": 351772,
+        "outputTokens": 44356,
+        "knownInputTokens": 351772,
+        "knownOutputTokens": 44356,
+        "compactions": 0,
+        "termination": {
+          "completed": 36
+        }
+      }
+    },
+    "context": {
+      "S": {
+        "attempts": 24,
+        "passed": 19,
+        "functionalPass": 19,
+        "toolStarts": 90,
+        "toolCalls": 90,
+        "toolErrors": 0,
+        "modelRequests": 86,
+        "workerRequests": 86,
+        "optimizerRequests": 0,
+        "summaryRequests": 0,
+        "inputTokens": 109925,
+        "outputTokens": 17625,
+        "knownInputTokens": 109925,
+        "knownOutputTokens": 17625,
+        "compactions": 0,
+        "termination": {
+          "completed": 24
+        }
+      },
+      "H": {
+        "attempts": 12,
+        "passed": 11,
+        "functionalPass": 11,
+        "toolStarts": 179,
+        "toolCalls": 179,
+        "toolErrors": 1,
+        "modelRequests": 75,
+        "workerRequests": 75,
+        "optimizerRequests": 0,
+        "summaryRequests": 0,
+        "inputTokens": 221860,
+        "outputTokens": 25361,
+        "knownInputTokens": 221860,
+        "knownOutputTokens": 25361,
+        "compactions": 0,
+        "termination": {
+          "completed": 11,
+          "model_error": 1
+        }
+      },
+      "overall": {
+        "attempts": 36,
+        "passed": 30,
+        "functionalPass": 30,
+        "toolStarts": 269,
+        "toolCalls": 269,
+        "toolErrors": 1,
+        "modelRequests": 161,
+        "workerRequests": 161,
+        "optimizerRequests": 0,
+        "summaryRequests": 0,
+        "inputTokens": 331785,
+        "outputTokens": 42986,
+        "knownInputTokens": 331785,
+        "knownOutputTokens": 42986,
+        "compactions": 0,
+        "termination": {
+          "completed": 35,
+          "model_error": 1
+        }
+      }
+    },
+    "optimizer": {
+      "S": {
+        "attempts": 24,
+        "passed": 20,
+        "functionalPass": 20,
+        "toolStarts": 106,
+        "toolCalls": 106,
+        "toolErrors": 0,
+        "modelRequests": 117,
+        "workerRequests": 93,
+        "optimizerRequests": 24,
+        "summaryRequests": 0,
+        "inputTokens": 151822,
+        "outputTokens": 20466,
+        "knownInputTokens": 151822,
+        "knownOutputTokens": 20466,
+        "compactions": 0,
+        "termination": {
+          "completed": 24
+        }
+      },
+      "H": {
+        "attempts": 12,
+        "passed": 8,
+        "functionalPass": 9,
+        "toolStarts": 153,
+        "toolCalls": 153,
+        "toolErrors": 3,
+        "modelRequests": 79,
+        "workerRequests": 67,
+        "optimizerRequests": 12,
+        "summaryRequests": 0,
+        "inputTokens": 258419,
+        "outputTokens": 21260,
+        "knownInputTokens": 258419,
+        "knownOutputTokens": 21260,
+        "compactions": 0,
+        "termination": {
+          "completed": 8,
+          "request_limit": 1,
+          "model_error": 3
+        }
+      },
+      "overall": {
+        "attempts": 36,
+        "passed": 28,
+        "functionalPass": 29,
+        "toolStarts": 259,
+        "toolCalls": 259,
+        "toolErrors": 3,
+        "modelRequests": 196,
+        "workerRequests": 160,
+        "optimizerRequests": 36,
+        "summaryRequests": 0,
+        "inputTokens": 410241,
+        "outputTokens": 41726,
+        "knownInputTokens": 410241,
+        "knownOutputTokens": 41726,
+        "compactions": 0,
+        "termination": {
+          "completed": 32,
+          "request_limit": 1,
+          "model_error": 3
+        }
+      }
+    },
+    "full": {
+      "S": {
+        "attempts": 24,
+        "passed": 20,
+        "functionalPass": 20,
+        "toolStarts": 106,
+        "toolCalls": 106,
+        "toolErrors": 0,
+        "modelRequests": 119,
+        "workerRequests": 95,
+        "optimizerRequests": 24,
+        "summaryRequests": 0,
+        "inputTokens": 157547,
+        "outputTokens": 21011,
+        "knownInputTokens": 157547,
+        "knownOutputTokens": 21011,
+        "compactions": 0,
+        "termination": {
+          "completed": 24
+        }
+      },
+      "H": {
+        "attempts": 12,
+        "passed": 7,
+        "functionalPass": 8,
+        "toolStarts": 133,
+        "toolCalls": 132,
+        "toolErrors": 1,
+        "modelRequests": 62,
+        "workerRequests": 49,
+        "optimizerRequests": 12,
+        "summaryRequests": 1,
+        "inputTokens": 175853,
+        "outputTokens": 18082,
+        "knownInputTokens": 175853,
+        "knownOutputTokens": 18082,
+        "compactions": 1,
+        "termination": {
+          "completed": 7,
+          "tool_limit": 1,
+          "model_error": 4
+        }
+      },
+      "overall": {
+        "attempts": 36,
+        "passed": 27,
+        "functionalPass": 28,
+        "toolStarts": 239,
+        "toolCalls": 238,
+        "toolErrors": 1,
+        "modelRequests": 181,
+        "workerRequests": 144,
+        "optimizerRequests": 36,
+        "summaryRequests": 1,
+        "inputTokens": 333400,
+        "outputTokens": 39093,
+        "knownInputTokens": 333400,
+        "knownOutputTokens": 39093,
+        "compactions": 1,
+        "termination": {
+          "completed": 31,
+          "tool_limit": 1,
+          "model_error": 4
+        }
+      }
+    }
+  }
+}

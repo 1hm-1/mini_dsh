@@ -4,6 +4,8 @@
 
 **M0–M9基础实现与真实评测已完成。** 12题冻结资产、M6真实baseline、Context Manager与Prompt Optimizer及M9真实四组144次消融均有本地证据。M6 baseline为23/36（S20/24、H3/12）；M9新跑baseline为25/36，四组结果为baseline 25/36、context 23/36、optimizer 24/36、full 21/36，full较M9 baseline低11.11个百分点。M9没有显示机制带来成功率收益；14次压缩确实降低估算输入长度，但其中12条摘要包含DSML工具调用标记，需要结合报告中的质量风险一起解读。详见[M9消融报告](reports/ablation-report.md)、[M9证据索引](reports/evidence/2026-09-24T15-18-52-983Z-c2434904-189f-4143-891b-f516dc9b67e3/README.md)、[M6 baseline报告](reports/baseline-report.md)、[M6失败分析](reports/baseline-failure-analysis.md)和[进度](docs/progress.md)。题库资产和离线复核命令见[Benchmark v1](benchmark/README.md)。
 
+**P0改进后真实评测（2026-11-02）已完成144次。** baseline/context/optimizer/full分别27/36（75.00%）、30/36（83.33%）、28/36（77.78%）、27/36（75.00%），full与同轮baseline持平。本轮700个真实模型请求、1,595,359个输入加输出token；context组0次摘要，full仅1次，不能把context的观测分差解释为已执行压缩的收益。相比9月运行，权限拒绝46→5、功能已过但终止失败27→2，纯功能/完整性通过却120→114；服务fingerprint也已变化，前后差异不能单独归因P0。新成绩、失败、成本与限制见[P0真实评测报告](reports/p0-api-report-2026-11-02.md)及[新证据](reports/evidence/2026-11-02T15-05-36-983Z-7a50e349-25e7-4b93-bd7f-abadcc7043ac/README.md)。旧M6/M9报告和主表保留，不与本轮混样。
+
 ```text
 M0 工程/接口 → M1 Plugin/Session → M2 Tools
 → M3 Baseline Runtime → M4 Evaluator
@@ -55,7 +57,7 @@ node --env-file=.env --import tsx eval/cli.ts --config experiments/ablation-deep
 
 该配置安排12题×4组×3次，共144次attempt；重新运行会产生新的run和API费用，不会覆盖现有M9证据。
 
-2026-11-02用户批准P0共同执行提示改进：四组worker展示精确可写路径、剩余总模型/工具额度与单次输出上限，明确文件工具能力并减少无必要回读和冗长说明。新日志以promptVersion:2区分，旧M6/M9日志继续兼容复核。上述真实成绩属于P0之前的实现；本次改进仅做离线工程验证，尚无新的真实成功率结论。硬预算、权限、C/O算法、题库及评分保持不变。
+2026-11-02用户批准P0共同执行提示改进及后续真实API评测：四组worker展示精确可写路径、剩余总模型/工具额度与单次输出上限，明确文件工具能力并减少无必要回读和冗长说明。新日志以promptVersion:2区分，旧M6/M9日志继续兼容复核。P0实现提交为ffaf404，真实运行提交为e92bae1；本轮结果独立见上方P0报告。硬预算、权限、C/O算法、题库及评分保持不变。
 
 单次执行使用[配置模板](specs/config.example.json)填写真实model/endpoint、workspace、精确可写文件列表和sessionPath，并在环境中设置HARNESS_API_KEY；CLI不自动加载.env：
 

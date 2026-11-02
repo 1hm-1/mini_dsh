@@ -1,0 +1,192 @@
+{
+  "schemaVersion": 1,
+  "runId": "2026-11-02T15-05-36-983Z-7a50e349-25e7-4b93-bd7f-abadcc7043ac",
+  "taskId": "h04-issue-refactor",
+  "suite": "H",
+  "repeat": 2,
+  "variant": "full",
+  "orderIndex": 85,
+  "journalPath": "attempts/h04-issue-refactor-full-2/journal.jsonl",
+  "resultPath": "attempts/h04-issue-refactor-full-2/result.json",
+  "passed": false,
+  "functionalPass": false,
+  "failureReason": "model_error",
+  "termination": "model_error",
+  "answer": null,
+  "integrity": {
+    "passed": true,
+    "changedPaths": [],
+    "violations": []
+  },
+  "changedPaths": [],
+  "changes": [],
+  "checks": {
+    "public": {
+      "passed": false,
+      "completed": true,
+      "testCount": 3,
+      "passedTests": 0,
+      "failedTests": 3,
+      "timedOut": false,
+      "outputPath": "attempts/h04-issue-refactor-full-2/public-output.txt",
+      "failedAssertions": [
+        {
+          "name": "normalization applies distinct casing and stable tag de-duplication",
+          "testId": 1,
+          "message": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  {\n+   assignee: 'Ada',\n-   assignee: 'ada',\n    id: 'B-2',\n    tags: [\n+     'UI',\n      'ui',\n+     '',\n+     'BackEnd'\n-     'backend'\n    ],\n+   title: 'fix api'\n-   title: 'Fix API'\n  }\n",
+          "code": "ERR_TEST_FAILURE"
+        },
+        {
+          "name": "list and search preserve input order",
+          "testId": 2,
+          "message": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n+   'A',\n    'B',\n-   'A'\n  ]\n",
+          "code": "ERR_TEST_FAILURE"
+        },
+        {
+          "name": "activity and serialization use normalized records",
+          "testId": 3,
+          "message": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n+   ' X |null| A '\n-   'X|-|a'\n  ]\n",
+          "code": "ERR_TEST_FAILURE"
+        }
+      ]
+    },
+    "acceptance": {
+      "passed": false,
+      "completed": true,
+      "testCount": 7,
+      "passedTests": 1,
+      "failedTests": 6,
+      "timedOut": false,
+      "outputPath": "attempts/h04-issue-refactor-full-2/acceptance-output.txt",
+      "failedAssertions": [
+        {
+          "name": "frozen issue and tags stay unchanged",
+          "testId": 1,
+          "message": "Cannot assign to read only property 'id' of object '#<Object>'",
+          "code": "ERR_TEST_FAILURE"
+        },
+        {
+          "name": "stable order and duplicate IDs remain separate",
+          "testId": 2,
+          "message": "Cannot assign to read only property '0' of object '[object Array]'",
+          "code": "ERR_TEST_FAILURE"
+        },
+        {
+          "name": "search trims and matches title or normalized tag only",
+          "testId": 3,
+          "message": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n+ []\n- [\n-   'B',\n-   'C'\n- ]\n",
+          "code": "ERR_TEST_FAILURE"
+        },
+        {
+          "name": "null and blank assignees render as unassigned",
+          "testId": 4,
+          "message": "Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n+   'A|null|',\n+   'B|   |X'\n-   'A|-|',\n-   'B|-|x'\n  ]\n",
+          "code": "ERR_TEST_FAILURE"
+        },
+        {
+          "name": "serialization omits extra fields and preserves key order",
+          "testId": 5,
+          "message": "Expected values to be strictly equal:\n+ actual - expected\n\n+ '[{\"id\":\" A \",\"title\":\" Hi \",\"tags\":[\"X\"],\"assignee\":null,\"extra\":3}]'\n- '[{\"id\":\"A\",\"title\":\"Hi\",\"tags\":[\"x\"],\"assignee\":null}]'\n",
+          "code": "ERR_TEST_FAILURE"
+        },
+        {
+          "name": "validation error class and message propagate through consumers",
+          "testId": 6,
+          "message": "Missing expected exception (TypeError).",
+          "code": "ERR_TEST_FAILURE"
+        }
+      ]
+    }
+  },
+  "model": {
+    "workerRequestAttempts": 0,
+    "workerDispatched": 0,
+    "workerSuccessfulResponses": 0,
+    "totalRequestAttempts": 1,
+    "totalDispatchedRequests": 1,
+    "optimizerRequests": 1,
+    "summaryRequests": 0,
+    "inputTokens": 961,
+    "outputTokens": 512,
+    "knownInputTokens": 961,
+    "knownOutputTokens": 512,
+    "missingInputUsageRequests": 0,
+    "missingOutputUsageRequests": 0,
+    "contextStats": {
+      "workerRequests": 0,
+      "meanEstimatedInputTokens": null,
+      "peakEstimatedInputTokens": null,
+      "peakRequestChars": null,
+      "thresholdRequests": 0,
+      "eligibleCompactionRequests": 0
+    },
+    "observationOnly": [],
+    "compactions": [],
+    "optimizerOutputs": [
+      {
+        "taskId": "h04-issue-refactor",
+        "variant": "full",
+        "repeat": 2,
+        "orderIndex": 85,
+        "requestSeq": 3,
+        "responseSeq": 4,
+        "dispatched": true,
+        "responseError": "model_error",
+        "finish": "length",
+        "acceptedText": "Repair the shared issue normalization and the affected issue views so the list page, search results, activity export, and JSON export agree on order and on tag/assignee display, without changing public entry names or the behavior of unrelated helpers. Keep the work confined to the five writable source files.\n\nA raw issue must be a non-array object with own fields `id`, `title`, `tags`, and `assignee`. `id` must be a string whose trimmed value is nonempty; `title` must be a string (it may trim to empty); `tags` must be an array of strings; `assignee` must be a string or `null`. Additional fields may exist but must not be copied to normalized output. A malformed issue must throw `TypeError` with message `invalid issue`. `normalizeIssue(issue)` must return a fresh object with property order `id`, `title`, `tags`, `assignee`. Trim the ID and title but preserve their case. For tags, trim each label, lowercase it with JavaScript `toLowerCase()`, omit empty labels, then keep only the first occurrence of each normalized label in its original order. The resulting tags array must be new. For a string assignee, trim and lowercase it; empty or whitespace-only becomes `null`. An input `null` assignee remains `null`. Never mutate the record or nested tags array; frozen inputs must work.\n\nFor example, `{ id: ' B-2 ', title: '  Fix API  ', tags: [' UI ', 'ui', '', 'BackEnd'], assignee: ' Ada ' }` normalizes to `{ id: 'B-2', title: 'Fix API', tags: ['ui', 'backend'], assignee: 'ada' }`. A raw issue with `assignee: null` stays unassigned. The display title stays `Fix API`, not `fix api`; this intentionally differs from tag and assignee casing.\n\n`listIssues(issues)` must accept only an array (`TypeError('issues must be an array')` otherwise), return a fresh array of normalized issues, and preserve input order exactly. Duplicate IDs are allowed and remain separate entries. `searchIssues(issues, query)` must use that same normalized list; query must be a string (`TypeError('query must be a string')` otherwise). Trim and lowercase the query, then return matching issues in original order when the query is a substring of the normalized title",
+        "actualModel": "deepseek-flash",
+        "fingerprint": "bc19ba97cbe016479903222bb1578db6"
+      }
+    ]
+  },
+  "requests": [
+    {
+      "taskId": "h04-issue-refactor",
+      "repeat": 2,
+      "variant": "full",
+      "requestSeq": 3,
+      "responseSeq": 4,
+      "kind": "optimizer",
+      "dispatched": true,
+      "responseError": "model_error",
+      "successfulResponse": false,
+      "finish": "length",
+      "observationSeq": null,
+      "requestChars": 4473,
+      "estimatedInputTokens": 1088,
+      "estimatedDeltaFromPriorWorker": null,
+      "preCompressionEstimatedTokens": null,
+      "olderRounds": null,
+      "thresholdReached": null,
+      "compactionEligible": null,
+      "inputTokens": 961,
+      "outputTokens": 512,
+      "cumulativeKnownInputTokens": 961,
+      "cumulativeKnownOutputTokens": 512,
+      "cumulativeInputTokensExact": 961,
+      "cumulativeOutputTokensExact": 512,
+      "missingInputUsageRequests": 0,
+      "missingOutputUsageRequests": 0,
+      "actualModel": "deepseek-flash",
+      "fingerprint": "bc19ba97cbe016479903222bb1578db6"
+    }
+  ],
+  "tools": {
+    "toolStartCount": 0,
+    "dispatchedCount": 0,
+    "skippedCount": 0,
+    "repeatBasis": "all tool_start intents, including undispatched; quota uses dispatchedCount only",
+    "exactRepeatCount": 0,
+    "consecutiveRepeatCount": 0,
+    "dispatchedExactRepeatCount": 0,
+    "dispatchedConsecutiveRepeatCount": 0,
+    "readBackAttempts": 0,
+    "readBackCount": 0,
+    "comparableReadBacks": 0,
+    "errorCount": 0,
+    "calls": [],
+    "repeatedKeys": [],
+    "readBacks": [],
+    "errors": []
+  }
+}

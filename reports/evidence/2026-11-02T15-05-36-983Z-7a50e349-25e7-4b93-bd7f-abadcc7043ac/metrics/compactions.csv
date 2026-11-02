@@ -1,0 +1,6 @@
+"taskId","variant","repeat","orderIndex","compactedSeq","summaryRequestSeq","summaryResponseSeq","fromMessageIndex","toMessageIndex","preCompressionEstimatedTokens","postCompressionEstimatedTokens","estimatedTokenReduction","postObservationSeq","summaryText","summaryChars","containsDSMLCalls","invokedToolNames","responseFinish","responseError"
+"h02-chunk-parser","full","1","28","89","87","88","1","17","6191","3845","2346","90","<｜｜DSML｜｜ calls>
+<｜｜DSML｜｜ invoke name=""run_command"">
+<｜｜DSML｜｜ parameter name=""command"" string=""true"">node --test public.test.mjs 2>&1 | tail -40</｜｜DSML｜｜ parameter>
+</｜｜DSML｜｜ invoke>
+</｜｜DSML｜｜ calls>","204","true","[""run_command""]","stop","null"

@@ -1,0 +1,56 @@
+{
+  "rule": "Earliest schedule order per strict failureReason, plus the first actual compaction. No best-repeat selection.",
+  "traces": [
+    {
+      "stem": "b03-config-full-1",
+      "reasons": [
+        "earliest-failure:acceptance_test"
+      ],
+      "path": "b03-config-full-1.json",
+      "eventCount": 7,
+      "sourceJournal": "attempts/b03-config-full-1/journal.jsonl",
+      "sourceJournalSha256": "82e1f55032cf7574c0067f43c65fef5209f66f9b652bcc0281d5895f687fe545"
+    },
+    {
+      "stem": "h01-config-pipeline-baseline-1",
+      "reasons": [
+        "earliest-failure:public_test"
+      ],
+      "path": "h01-config-pipeline-baseline-1.json",
+      "eventCount": 7,
+      "sourceJournal": "attempts/h01-config-pipeline-baseline-1/journal.jsonl",
+      "sourceJournalSha256": "c39c0049fcb626b34ca3685ebd6673e61661ff01c3bce2fd065f54c7a066845d"
+    },
+    {
+      "stem": "h02-chunk-parser-full-1",
+      "reasons": [
+        "earliest-failure:tool_limit",
+        "first-actual-compaction"
+      ],
+      "path": "h02-chunk-parser-full-1.json",
+      "eventCount": 14,
+      "sourceJournal": "attempts/h02-chunk-parser-full-1/journal.jsonl",
+      "sourceJournalSha256": "94344e28a182cf80dad099f9c4bcba9b565519af29d65214bb84b4c99860b707"
+    },
+    {
+      "stem": "h02-chunk-parser-optimizer-1",
+      "reasons": [
+        "earliest-failure:request_limit"
+      ],
+      "path": "h02-chunk-parser-optimizer-1.json",
+      "eventCount": 9,
+      "sourceJournal": "attempts/h02-chunk-parser-optimizer-1/journal.jsonl",
+      "sourceJournalSha256": "461909279182a704b331787b34a28c22f9e82c50bb06528a66626e130dad980c"
+    },
+    {
+      "stem": "h03-module-navigation-optimizer-1",
+      "reasons": [
+        "earliest-failure:model_error"
+      ],
+      "path": "h03-module-navigation-optimizer-1.json",
+      "eventCount": 4,
+      "sourceJournal": "attempts/h03-module-navigation-optimizer-1/journal.jsonl",
+      "sourceJournalSha256": "679ef99399910b68202b4369e3c54d348a7ab4e7403375cecebeeacdbe6c976a"
+    }
+  ]
+}
