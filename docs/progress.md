@@ -817,3 +817,11 @@ P0工程验收完成，P1/P2未实施。没有新付费评测，当前不能宣�
 | git diff --check | 0 | 无空白错误 |
 
 P0.E DONE。没有额外付费试跑、模型/题库/预算调优或远程发布；P1/P2未实施。当前结果支持记录效率与收尾行为的观察变化，不支持“已隔离证明P0提高代码正确性”，也不支持context组未执行摘要却有摘要收益。结果/证据本地提交及提交后冻结复核另记。
+
+
+### P0.E最终本地提交与冻结复核（2026-11-02）
+
+- 报告/新证据/README/进度提交：d143b0beca0de2162264e2ac94115d0ac9cbf15e（report: record post-P0 real API evaluation），173个文件。git diff --cached --check与git commit均退出0；原始runs、.env和node_modules未进入提交，未推送远程。
+- 提交后git status --short为空；node --import tsx benchmark/check-freeze.mjs退出0，12题S8/H4、原benchmark提交/hash保持、错误hash/commit拒绝均true、provider=null。
+- 真实运行implementationCommit仍为e92bae1956a39d19ba63ccdaa9319646a65ad5ed。本次提交只保存派生结果和交付材料，不将较晚报告提交冒充实验版本。本条通过独立文档提交记录实际SHA。
+- P0.E DONE。144次完整真实API结果、全部失败及控制脚本退出码捕获缺失均已如实记录并完成复核，没有追加运行。
